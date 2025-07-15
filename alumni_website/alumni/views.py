@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.contrib import messages
 from .models import *
+import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -66,6 +67,30 @@ def logout_view(request):
     return render(request, "alumni/login.html")
 
 def profile(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        field = data.get("field")
+        value = data.get("value")
+
+        profile = Profile.objects.get(user=request.user)
+
+        ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "career", "location"}
+
+        if field in ALLOWED_FIELDS and hasattr(profile, field):
+            if field == "graduation_year":
+                try:
+                    value = int(value)
+                except (ValueError, TypeError):
+                    return JsonResponse({
+                        "status": "error",
+                        "message": "Graduation year must be a valid number.",
+                    }, status=400)
+            setattr(profile, field, value)
+            profile.save()
+            return JsonResponse({"status": "success", "message": f"{field} updated."})
+        else:
+            return JsonResponse({"status": "error", "message": "Invalid field."}, status=400)
+        
     profile = get_object_or_404(Profile, user=request.user)
     return render(request, "alumni/profile.html", {
         "profile": profile,

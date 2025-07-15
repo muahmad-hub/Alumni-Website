@@ -12,33 +12,30 @@ document.addEventListener('DOMContentLoaded', function() {
     var textArea = document.getElementById("textarea");
     
     let field = null;
-
-    // Blur any focused element on load to remove cursor
+    let fieldHTML = null;
+    let icon = null;
     if(document.activeElement) document.activeElement.blur();
 
-    // Handle clicking pencil/edit buttons (show input fields)
     editButtons.forEach(function(btn) {
         btn.onclick = function() {
             modal.style.display = "block";
             field = this.getAttribute("id");
+            fieldHTML = document.querySelectorAll(`.${field}_text`)
+            icon = this
 
-            // Show input fields, hide upload section
             inputContent.style.display = "block";
             uploadContent.style.display = "none";
 
-            // Set placeholder and clear inputs
             let placeholder_text = this.getAttribute("data-placeholder");
             let title_text = this.getAttribute("data-title");
 
-            if(field === "about") {
-                // Show textarea for 'about'
+            if(field === "about_me") {
                 textInput.style.display = "none";
                 textArea.style.display = "block";
                 textArea.value = "";
                 textArea.placeholder = placeholder_text;
                 textArea.focus();
             } else {
-                // Show text input for others
                 textArea.style.display = "none";
                 textInput.style.display = "block";
                 textInput.value = "";
@@ -48,52 +45,73 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle clicking profile picture button (show file upload)
     profilePicButton.onclick = function() {
         modal.style.display = "block";
-        field = "profile_picture"; // Or any value you want for backend
+        field = "profile_picture";
 
-        // Show upload, hide input fields
+
         inputContent.style.display = "none";
         uploadContent.style.display = "block";
 
-        // Blur inputs if any focused
+
         textInput.blur();
         textArea.blur();
     };
 
-    // Close modal when clicking the X
+
     closeBtn.onclick = function() {
+        error_div.style.display = "none"
         modal.style.display = "none";
     };
 
-    // Close modal when clicking outside the modal content
+
     window.onclick = function(event) {
         if(event.target == modal) {
+            error_div.style.display = "none"
             modal.style.display = "none";
         }
     };
 
-    // Submit button for text update
+
     document.getElementById("submit_button").onclick = function(event) {
-        event.preventDefault();  // prevent default form submission
+        event.preventDefault();
 
-        let value = textInput.style.display === "block" ? textInput.value : textArea.value;
+        let value;
+        if (textInput.style.display === "block") {
+            value = textInput.value;
+        } else {
+            value = textArea.value;
+        }
 
-        fetch("/profile_update", {
+        fetch("profile", {
             method: "POST",
-            headers: { "Content-type": "application/json" },
+            headers: { 
+                "Content-type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
             body: JSON.stringify({
                 field: field,
-                value: value
+                value: value,
             })
         })
         .then(response => response.json())
         .then(data => {
             console.log("Update success:", data);
-            modal.style.display = "none";
+            if (data.status === "error"){
+                error_div = document.getElementById("error-message")
+                error_div.style.display = "block"
+                error_div.innerHTML = data.message
+            }
+            else{
+                fieldHTML.forEach( element => {
+                    element.innerHTML = value;
+                })
+                icon.style.display = "none";
+                modal.style.display = "none";
+            }
             // Optionally update the profile fields on the page here
         })
+
         .catch(error => console.error("Error: ", error));
     };
 
