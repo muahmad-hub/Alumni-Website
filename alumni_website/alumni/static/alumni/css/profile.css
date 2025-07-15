@@ -15,6 +15,45 @@
 
 
 
+
+
+
+
+
+
+
+
+.pop_up_input.text_line,
+.pop_up_input.textarea {
+    display: none;
+}
+#input_content, #upload_content {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .profilePic {
   width: 150px; 
   height: 150px;
@@ -175,6 +214,11 @@
   outline: none;
   box-shadow: 0 0 8px rgba(139, 47, 47, 0.3);
   background-color: #fff;
+}
+
+.pop_up_input:focus {
+  outline: none; 
+  border-color: rgb(75, 30, 30);
 }
 
 .profile_pic_button {

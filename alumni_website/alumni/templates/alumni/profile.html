@@ -17,7 +17,7 @@
     <div class="container-fluid p-0 profile-img-container bg-maroon-light mb-5 text-center">
         <div style="position: relative; display: inline-block;">
         
-            <button type="button" class = "profile_pic_button">
+            <button type="button" class = "profile_pic_button open_modal">
                 <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'alumni/images/profile_image.jpg' %}{% endif %}" 
                     alt="Profile Picture" 
                     class="img-fluid rounded-circle profilePic">
@@ -111,21 +111,47 @@
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Edit Profile</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <form enctype="multipart/form-data" action="/edit_pfp" method="post">
 
-        <div id="input_content">
-        <label for="name" class="pop_up_label">Edit:</label>
-        <input type="text" id="text" name="name" class="pop_up_input text_line" placeholder="Enter" data-field="None">
-        <textarea type="text" id="text" name="name" class="pop_up_input textarea" placeholder="Enter" data-field="None"></textarea>
-        <button type="submit" class="pop_up_button" id="submit_button">Save</button><br><br>
+        <div id="input_content" style="display:none;">
+            <label for="name" class="pop_up_label">Edit:</label>
+            <input type="text" id="text" name="name" class="pop_up_input text_line" placeholder="Enter" data-field="None">
+            <textarea id="textarea" name="name" class="pop_up_input textarea" placeholder="Enter" data-field="None"></textarea>
+            <button type="submit" class="pop_up_button" id="submit_button">Save</button><br><br>
         </div>
 
-        <div id="upload_content">
-        <input type="file" id="file" name="file">
-        <button type="submit" class="pop_up_button" id="pop_up_file_button">Upload File</button>
+        <div id="upload_content" style="display:none;">
+            <input type="file" id="file" name="file">
+            <button type="submit" class="pop_up_button" id="pop_up_file_button">Upload File</button>
         </div>
 
     </form>
+
+
+
+
+
+
+
+
+
+    
+
   </div>
 </div>
 
