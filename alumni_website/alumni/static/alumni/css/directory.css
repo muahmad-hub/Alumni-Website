@@ -1,0 +1,120 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: #fffaf4;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #5B0A18; /* burgundy */
+    padding: 15px 20px;
+    text-align: left;
+}
+
+.navbar a {
+    color: #fff;
+    margin-right: 20px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.header {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+    background: linear-gradient(90deg, #F5D7D7, #F7E3DA);
+    color: #5B0A18;
+    font-size: 2rem;
+}
+
+.directory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 40px 60px;
+}
+
+.alumni-card {
+    background-color: #fff7f0;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.alumni-card:hover {
+    transform: translateY(-5px);
+}
+
+.alumni-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 2px solid #5B0A18;
+}
+
+.alumni-card h2 {
+    font-size: 1.5rem;
+    color: #5B0A18;
+    margin-bottom: 10px;
+}
+
+.alumni-card p {
+    margin: 5px 0;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.view-profile {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background-color: #5B0A18;
+    color: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.view-profile:hover {
+    background-color: #73101f;
+}
+
+.search-container {
+    text-align: center;
+    margin: 30px auto 10px;
+}
+
+.search-container form {
+    display: inline-flex;
+    background: #fff;
+    border: 2px solid #5B0A18;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-container input[type="text"] {
+    border: none;
+    padding: 12px 20px;
+    width: 300px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-container button {
+    background-color: #5B0A18;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.search-container button:hover {
+    background-color: #73101f;
+}
