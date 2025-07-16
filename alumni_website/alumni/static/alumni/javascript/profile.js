@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var textInput = document.getElementById("text");
     var textArea = document.getElementById("textarea");
+
+    var error_div = document.getElementById("error-message");
     
     let field = null;
     let fieldHTML = null;
@@ -109,12 +111,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon.style.display = "none";
                 modal.style.display = "none";
             }
-            // Optionally update the profile fields on the page here
         })
 
         .catch(error => console.error("Error: ", error));
     };
-
-    // The file upload button just submits form normally, no JS needed here
 
 });

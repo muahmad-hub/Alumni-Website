@@ -1,14 +1,14 @@
-/* General Reset for Profile Section */
+
 .profile {
-  margin: 0;  /* Remove any default margins */
-  padding: 0; /* Remove any default padding */
+  margin: 0; 
+  padding: 0; 
 }
 
-/* Full Width for the Profile Image Container */
+
 .profile-img-container {
   width: 100%;
-  padding: 0; /* Remove any padding */
-  margin: 0;  /* Remove any margin */
+  padding: 0; 
+  margin: 0; 
 }
 
 
@@ -35,10 +35,42 @@
   display: none;
 }
 
+ .confirm_edit_button {
+    display: block;
+    width: 150px;
+    padding: 10px;
+    background-color: maroon;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    margin: 20px auto 0;
+    margin-bottom: 2%;;
+  }
+  .confirm_edit_button:hover {
+    background-color: darkred;
+  }
+
+  .confirm_edit_link{
+    text-decoration: none;
+    color: white;
+  }
 
 
 
+.back-button-container {
+  position: fixed;
+  left: 15px;   
+  top: 13%;   
+  z-index: 10;
+}
 
+.back-icon {
+  font-size: 2rem;
+  color: white; 
+}
 
 
 

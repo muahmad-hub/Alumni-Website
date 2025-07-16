@@ -1,120 +1,122 @@
-body {
-    font-family: 'Open Sans', sans-serif;
-    background: #fffaf4;
-    margin: 0;
-    padding: 0;
+/* Container Section */
+.alumni-section {
+  padding: 40px 20px;
+  background-color: #fdfcfc;
 }
 
-.navbar {
-    background-color: #5B0A18; /* burgundy */
-    padding: 15px 20px;
-    text-align: left;
+/* Heading Style */
+.alumni-heading {
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: 2.2rem;
+  color: #5C0A1B;
+  position: relative;
 }
 
-.navbar a {
-    color: #fff;
-    margin-right: 20px;
-    text-decoration: none;
-    font-size: 1rem;
+.alumni-heading::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #5C0A1B;
+  margin: 10px auto 0 auto;
+  border-radius: 10px;
 }
 
-.header {
-    text-align: center;
-    padding: 40px 20px 20px 20px;
-    background: linear-gradient(90deg, #F5D7D7, #F7E3DA);
-    color: #5B0A18;
-    font-size: 2rem;
-}
-
-.directory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    padding: 40px 60px;
-}
-
+/* Card Styling */
 .alumni-card {
-    background-color: #fff7f0;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 20px;
-    text-align: center;
-    transition: transform 0.3s ease;
+  cursor: pointer !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(92, 10, 27, 0.1);
+  background-color: #fff;
 }
 
 .alumni-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(92, 10, 27, 0.15);
 }
+
+/* Card Image */
+.alumni-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+/* Card Text */
+.alumni-card .card-title {
+  font-family: 'Segoe UI', sans-serif;
+  color: #5C0A1B;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.alumni-card .card-text {
+  color: #444;
+  font-size: 0.95rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Search Bar Container */
+.search-container {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 15px;
+}
+
+/* Input Styling */
+.search-input {
+  width: 70%;
+  padding: 12px 18px;
+  border: 2px solid #5C0A1B;
+  border-radius: 30px 0 0 30px;
+  outline: none;
+  font-size: 1rem;
+  color: #5C0A1B;
+  font-family: 'Segoe UI', sans-serif;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #8b2437;
+}
+
+/* Button Styling */
+.search-btn {
+  padding: 12px 20px;
+  border: 2px solid #5C0A1B;
+  background-color: #5C0A1B;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  border-radius: 0 30px 30px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.search-btn:hover {
+  background-color: #8b2437;
+  transform: scale(1.03);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .search-input {
+    width: 60%;
+    font-size: 0.9rem;
+  }
+
+  .search-btn {
+    font-size: 0.9rem;
+    padding: 10px 16px;
+  }
 
 .alumni-card img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border: 2px solid #5B0A18;
+height: 200px;
+}
 }
 
-.alumni-card h2 {
-    font-size: 1.5rem;
-    color: #5B0A18;
-    margin-bottom: 10px;
-}
-
-.alumni-card p {
-    margin: 5px 0;
-    color: #333;
-    font-size: 0.95rem;
-}
-
-.view-profile {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 8px 16px;
-    background-color: #5B0A18;
-    color: #fff;
-    border-radius: 20px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-
-.view-profile:hover {
-    background-color: #73101f;
-}
-
-.search-container {
-    text-align: center;
-    margin: 30px auto 10px;
-}
-
-.search-container form {
-    display: inline-flex;
-    background: #fff;
-    border: 2px solid #5B0A18;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-container input[type="text"] {
-    border: none;
-    padding: 12px 20px;
-    width: 300px;
-    font-size: 1rem;
-    outline: none;
-}
-
-.search-container button {
-    background-color: #5B0A18;
-    color: #fff;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-}
-
-.search-container button:hover {
-    background-color: #73101f;
-}

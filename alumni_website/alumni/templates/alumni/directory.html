@@ -1,0 +1,31 @@
+{% extends "alumni/layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'alumni/css/directory.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+
+{% block title %}
+    Directory
+{% endblock %}
+
+{% block main %}
+
+
+<div class="container alumni-section">
+  <h2 class="mb-4 text-center alumni-heading">Our Alumni</h2>
+
+
+    <div class="search-container text-center mb-5">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search alumni by name, year, or field...">
+        <button class="search-btn">Search</button>
+    </div>
+
+    <div id="alumni-container" class="row g-4"></div>
+</div>
+
+
+<script src="{% static 'alumni/javascript/directory.js' %}"></script>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from .models import *
 import json
+from django.templatetags.static import static
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -80,6 +81,12 @@ def profile(request):
             if field == "graduation_year":
                 try:
                     value = int(value)
+
+                    if value < 2021 or value > 2040:
+                        return JsonResponse({
+                        "status": "error",
+                        "message": "Graduation year must be 2021 or greater.",
+                    }, status=400)
                 except (ValueError, TypeError):
                     return JsonResponse({
                         "status": "error",
@@ -96,4 +103,46 @@ def profile(request):
         "profile": profile,
     })
 
+def edit_profile(request):
+    profile = Profile.objects.get(user=request.user)
+
+    return render(request, "alumni/edit_profile.html", {
+        "profile": profile,
+    })
+
+def directory(request):
+    return render(request, "alumni/directory.html")
+
+def search_directory(request):
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        alumni = Profile.objects.filter(name__icontains=query)
+    else:
+        alumni = Profile.objects.all()
+
+    results = []
+
+    for alum in alumni:
+        if all([alum.graduation_year, alum.career, alum.university]):
+            result = {
+                "id": alum.user.id,
+                "name": alum.name,
+                "profile_url": alum.profile_url if alum.profile_url else static("alumni/images/profile_image.jpg"),
+                "graduation_year": alum.graduation_year,
+                "career": alum.career,
+                "university": alum.university,
+            }
+            results.append(result)
+    
+
+    return JsonResponse({
+        "results": results,
+    })
+
+def view_profile(request, id):
+    profile = Profile.objects.get(user = Users.objects.get(id = id))
+    return render(request, "alumni/view_profile.html", {
+        "profile": profile,
+    })
 
