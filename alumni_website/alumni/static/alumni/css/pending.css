@@ -1,0 +1,50 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+}
+
+.pending-requests-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.pending-requests-container h2 {
+  text-align: center;
+  color: #800000; /* Qatar Airways Maroon */
+  margin-bottom: 30px;
+}
+
+.request-card {
+  background: linear-gradient(135deg, #fffaf5, #f0e6e6);
+  border-left: 5px solid #800000;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: transform 0.2s ease;
+}
+
+.request-card:hover {
+  transform: scale(1.02);
+}
+
+.mentor-info h3 {
+  color: #4b2c2c;
+  margin-bottom: 8px;
+}
+
+.mentor-info p {
+  margin: 4px 0;
+  color: #333;
+}
+
+.action-note p {
+  color: #800000;
+  font-style: italic;
+  font-size: 0.95em;
+}

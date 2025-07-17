@@ -1,0 +1,69 @@
+{% extends "alumni/layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'alumni/css/mentor_dashboard.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+
+{% block title %}
+    Directory
+{% endblock %}
+
+{% block main %}
+
+
+ <div class="dashboard-container">
+    <header>
+      <h1>Welcome, {{ profile.name }}</h1>
+      <p class="subtitle">Here are your latest mentorship requests.</p>
+    </header>
+
+    <div class="requests-grid">
+        {% if requests_none %}
+            {% for req in requests_none %}
+            <div class="request-card">
+                <h2>{{ req.student_name }}</h2>
+                <p><strong>Name:</strong> {{ req.mentee.profile.name }}</p>
+                <p><strong>Graduation Year:</strong> {{ req.mentee.profile.graduation_year }}</p>
+                <div class="card-actions">
+                <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
+                <a href="{% url 'accept_mentor' req.id req.mentor.user.id %}" class="accept-btn">Accept</a>
+                <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-requests">No mentorship requests at the moment.</p>
+        {% endif %}
+    </div>
+
+
+
+    {% if requests_true %}<p class="subtitle">Accepted Requests</p>{% endif %}
+    <div class="requests-grid">
+        {% if requests_true %}
+            {% for req in requests_true %}
+            <div class="request-card">
+                <h2>{{ req.student_name }}</h2>
+                <p><strong>Name:</strong> {{ req.mentee.profile.name }}</p>
+                <p><strong>Graduation Year:</strong> {{ req.mentee.profile.graduation_year }}</p>
+                <div class="card-actions">
+                <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
+                <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+
+
+
+
+</div>
+
+
+
+{% endblock %} 

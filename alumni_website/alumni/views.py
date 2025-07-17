@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib import messages
 from .models import *
+import datetime
 import json
 from django.templatetags.static import static
 
@@ -11,9 +12,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
+@login_required
 def home(request):
     messages.success(request, "Welcome to the alumni site!")
-    return render(request, "alumni/home.html")  
+
+    pending_requests = MentorMatch.objects.filter(mentee=request.user, accept__isnull=True)
+
+    return render(request, "alumni/home.html", {
+        "pending_requests": pending_requests,
+    })  
 
 def login_view(request):
     if request.method == "POST":
@@ -63,10 +70,12 @@ def sign_up(request):
         else:
             return render(request, "alumni/sign_up.html")
 
+@login_required
 def logout_view(request):
     logout(request)
     return render(request, "alumni/login.html")
 
+@login_required
 def profile(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -103,6 +112,7 @@ def profile(request):
         "profile": profile,
     })
 
+@login_required
 def edit_profile(request):
     profile = Profile.objects.get(user=request.user)
 
@@ -110,9 +120,11 @@ def edit_profile(request):
         "profile": profile,
     })
 
+@login_required
 def directory(request):
     return render(request, "alumni/directory.html")
 
+@login_required
 def search_directory(request):
     query = request.GET.get("q", "").strip()
 
@@ -140,9 +152,133 @@ def search_directory(request):
         "results": results,
     })
 
+@login_required
 def view_profile(request, id):
     profile = Profile.objects.get(user = Users.objects.get(id = id))
+    is_match = True
+    try:
+        match = MentorMatch.objects.get(mentor=Mentor.objects.get(user=Users.objects.get(id=id)), mentee=request.user)
+        if match.accept == False:
+            is_match = False
+    except MentorMatch.DoesNotExist:
+        is_match = False
+
     return render(request, "alumni/view_profile.html", {
         "profile": profile,
+        "is_match": is_match,
     })
 
+@login_required
+def mentor_directory(request):
+    return render(request, "alumni/mentor_directory.html", {
+    })
+
+@login_required
+def mentor_search_directory(request):
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        alumni = Mentor.objects.filter(skills__skill__icontains=query)
+    else:
+        alumni = Mentor.objects.all()
+
+    results = []
+
+    for alum in alumni:
+
+        skills_list = []
+        for skill in alum.user.mentor.skills.all():
+            skills_list.append(skill.skill)
+
+        if all([alum.user.profile.graduation_year, alum.user.profile.career, alum.user.profile.university]):
+            result = {
+                "id": alum.user.id,
+                "name": alum.user.profile.name,
+                "skills": skills_list,
+                "profile_url": alum.user.profile.profile_url if alum.user.profile.profile_url else static("alumni/images/profile_image.jpg"),
+                "graduation_year": alum.user.profile.graduation_year,
+                "career": alum.user.profile.career,
+                "university": alum.user.profile.university,
+            }
+            results.append(result)
+    
+
+    return JsonResponse({
+        "results": results,
+    })
+
+@login_required
+def mentor_signup(request):
+    if request.method == 'POST':
+        industry = request.POST.get("industry")
+        experience = request.POST.get("experience")
+        skills = []
+        skills.append(request.POST.get("skill1"))
+        skills.append(request.POST.get("skill2"))
+        skills.append(request.POST.get("skill3"))
+        availability = request.POST.get("availability")
+
+        mentor = Mentor(user = request.user, availability = availability, industry = industry, experience = experience, created_at = datetime.datetime.now(), updated_at = datetime.datetime.now())
+        mentor.save()
+        for i in range(3):
+            skill = Skills(mentor = mentor, skill = skills[i])
+            skill.save()
+
+        return render(request, 'alumni/mentor_signup.html', {
+            "message": "You are now a Mentor :)"
+        })
+
+    mentors = Mentor.objects.all()
+    print(mentors)
+    is_mentor = False
+    for mentor in mentors:
+        if request.user == mentor.user:
+            print(mentor.user)
+            is_mentor = True
+            break
+
+    skills = Skills.objects.distinct("skill")[:10]
+
+    profile = Profile.objects.get(user = request.user)
+
+    return render(request, "alumni/mentor_signup.html", {
+        "skills": skills,
+        "profile": profile,
+        "is_mentor": is_mentor,
+    })
+
+@login_required
+def mentor_match(request, mentor_id):
+    if request.method == "POST":
+        match = MentorMatch(mentor = Mentor.objects.get(user = Users.objects.get(id=mentor_id)), mentee = request.user, accept=None)
+        match.save()
+
+        return redirect('view_profile', id=mentor_id)
+
+@login_required
+def mentor_dashboard(request):
+    requests_none = MentorMatch.objects.filter(mentor=Mentor.objects.get(user=request.user), accept=None)
+    requests_true = MentorMatch.objects.filter(mentor=Mentor.objects.get(user=request.user), accept=True)
+    return render(request, "alumni/mentor_dashboard.html", {
+        "requests_none": requests_none,
+        "requests_true": requests_true,
+        "profile": Profile.objects.get(user = request.user),
+    })
+
+@login_required
+def accept_mentor(request, match_id, mentor_id):
+    if request.user.id == mentor_id:
+        match = MentorMatch.objects.get(id = match_id)
+        match.accept = True
+        match.save()
+
+        return redirect("mentor_dashboard")
+    
+@login_required
+def decline_mentor(request, match_id, mentor_id):
+    if request.user.id == mentor_id:
+        match = MentorMatch.objects.get(id = match_id)
+        match.accept = False
+        match.save()
+
+        return redirect("mentor_dashboard")

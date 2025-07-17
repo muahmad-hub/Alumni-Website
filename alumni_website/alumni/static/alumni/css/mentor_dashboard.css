@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4f4f4;
+  color: #2e1b1b;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+header h1 {
+  color: #8A1538;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 18px;
+}
+
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.request-card {
+  background-color: #fff;
+  border-top: 5px solid #8A1538;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+.request-card h2 {
+  margin-top: 0;
+  color: #6e102b;
+}
+
+.request-card p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.card-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-actions a {
+  padding: 10px 16px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.view-btn {
+  background-color: #007b8a;
+  color: white;
+}
+
+.accept-btn {
+  background-color: #218739;
+  color: white;
+}
+
+.decline-btn {
+  background-color: #a0191f;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #005f6d;
+}
+
+.accept-btn:hover {
+  background-color: #16692d;
+}
+
+.decline-btn:hover {
+  background-color: #7d1319;
+}
+
+.no-requests {
+  text-align: center;
+  color: #888;
+  font-size: 18px;
+  grid-column: 1 / -1;
+}

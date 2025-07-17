@@ -30,6 +30,20 @@
                     {{ profile.name|default:"Need to enter Name"}}
                 </span>
             </h3>
+            
+            {% if only_view %}
+            {% else %}
+                {% if is_match %}
+                    <p class="requested">Requested</p>
+                {% else %}
+                    <form action="{% url 'mentor_match' profile.user.id %}" method="post">
+                        {% csrf_token %}
+                        <button id="request_mentor" name="request_mentor" class="confirm_edit_button">Request Mentor</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+
             <p class="lead text-dark"> 
                 Class of <span class="graduation_year_text">{{ profile.graduation_year|default:"Need to add graduation year" }}</span> 
                 <strong>•</strong> Student at <span class="university_text">{{ profile.university|default:"Need to enter University" }}</span>

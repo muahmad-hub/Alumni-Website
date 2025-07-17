@@ -1,4 +1,10 @@
 {% extends "alumni/layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'alumni/css/pending.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+{% endblock %}
 
 {% block title %}
     Home
@@ -6,6 +12,36 @@
 
 {% block main %}
 
-    <h1>Home</h1>
+{% if pending_requests %}
+
+<div class="pending-requests-container">
+  <h2>Your Pending Mentor Requests</h2>
+
+
+  {% for request in pending_requests %}
+    <div class="request-card">
+        <div class="mentor-info">
+        <h3>{{ request.mentor.user.profile.name }}</h3>
+        {% if request.mentor.skills.all %}
+            <p><strong>Skill:</strong> 
+            {% for skill in request.mentor.skills.all %}
+                <span>{{ skill.skill }}, </span>
+            {% endfor %}
+            </p> 
+        {% endif %}
+        <p><strong>Status:</strong> Pending</p>
+        </div>
+        <div class="action-note">
+        <p>Waiting for mentor to respond.</p>
+        </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="pending-requests-container">
+    <h2>No requests yet :)</h2>
+</div>
+{% endif %}
 
 {% endblock %}
