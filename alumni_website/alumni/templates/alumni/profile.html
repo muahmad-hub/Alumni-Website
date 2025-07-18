@@ -105,6 +105,42 @@
                     </div>
                 </div>
             </div>
+
+
+
+
+            <div class="custom-control custom-checkbox job_check">
+                <input type="checkbox" class="custom-control-input" id="job_check" name="job_check">
+                <label class="custom-control-label text-maroon">Do you have a job</label>
+            </div>
+            
+            <div class="col-md-5 mb-4" id="job_section">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-maroon">Job</h5>
+                        <p class="card-text">
+                            <span class="role_text">
+                            {{ profile.role|default:"Need to enter you Role " }}
+                            {% if profile.role is none or profile.role == "" %}
+                            <button class="btn btn-link pencil open_modal" id="role" data-title="Role" data-placeholder="Enter your role">
+                                <i class="bi bi-pencil"></i>
+                            </button> 
+                            </span>
+                            {% endif %}
+                            at <span class="employer_text">{{ profile.employer|default:" and need to add employer" }}
+                            {% if profile.employer is none or profile.employer == "" %}
+                                <button class="btn btn-link pencil open_modal" id="employer" data-title="Employer" data-placeholder="Enter your employer">
+                                    <i class="bi bi-pencil"></i>
+                                </button> 
+                            {% endif %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
     </div>
 

@@ -12,11 +12,26 @@ document.addEventListener('DOMContentLoaded', function() {
     var textArea = document.getElementById("textarea");
 
     var error_div = document.getElementById("error-message");
+
+    var job_check = document.getElementById("job_check")
+    var job_section = document.getElementById("job_section")
     
     let field = null;
     let fieldHTML = null;
     let icon = null;
     if(document.activeElement) document.activeElement.blur();
+
+    // Checks if user has job related information that must be shown
+
+    fetch("/get_profile_info")
+    .then(response => response.json())
+    .then(data => {
+        if(data.employer || data.role){
+            job_check.checked = true
+            job_section.style.display = "block"
+        }
+    })
+    .catch(error => console.error("Error: ", error));
 
     editButtons.forEach(function(btn) {
         btn.onclick = function() {
@@ -115,5 +130,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .catch(error => console.error("Error: ", error));
     };
+
+    job_check.addEventListener("change", function(){
+        if (job_check.checked){
+            job_section.style.display = "block"
+        }
+        else{
+            job_section.style.display = "none"
+        }
+    })
 
 });

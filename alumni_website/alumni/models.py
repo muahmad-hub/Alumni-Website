@@ -12,6 +12,9 @@ class Profile(models.Model):
     about_me = models.TextField(null=True, blank=True)
     career = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
+    role = models.CharField(max_length=255, null=True, blank=True)
+    has_job = models.BooleanField(null=True)
+    employer = models.CharField(max_length=255, null=True, blank=True)
     profile_url = models.SlugField(unique=True, null=True, blank=True)
 
 class Mentor(models.Model):

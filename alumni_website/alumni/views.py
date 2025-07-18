@@ -4,6 +4,8 @@ from .models import *
 import datetime
 import json
 from django.templatetags.static import static
+from django.forms.models import model_to_dict
+from django.db.models import Q
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -84,7 +86,7 @@ def profile(request):
 
         profile = Profile.objects.get(user=request.user)
 
-        ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "career", "location"}
+        ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "career", "location", "role", "employer"}
 
         if field in ALLOWED_FIELDS and hasattr(profile, field):
             if field == "graduation_year":
@@ -101,6 +103,11 @@ def profile(request):
                         "status": "error",
                         "message": "Graduation year must be a valid number.",
                     }, status=400)
+                
+            if field == "employer" or field == "job":
+                setattr(profile, "has_job", "True")
+                profile.save()
+
             setattr(profile, field, value)
             profile.save()
             return JsonResponse({"status": "success", "message": f"{field} updated."})
@@ -111,6 +118,12 @@ def profile(request):
     return render(request, "alumni/profile.html", {
         "profile": profile,
     })
+
+@login_required
+def get_profile_info(request):
+    profile = Profile.objects.get(user = request.user)
+    data = model_to_dict(profile)
+    return JsonResponse(data)
 
 @login_required
 def edit_profile(request):
@@ -170,17 +183,33 @@ def view_profile(request, id):
 
 @login_required
 def mentor_directory(request):
+    years = Profile.objects.filter(graduation_year__isnull=False).values("graduation_year").distinct().order_by('-graduation_year')
+    university = Profile.objects.filter(university__isnull=False).values("university").distinct()
+
     return render(request, "alumni/mentor_directory.html", {
+        "years": years,
+        "university": university,
     })
 
 @login_required
 def mentor_search_directory(request):
-    query = request.GET.get("q", "").strip()
+
+    query = request.GET.get("q", "").lower().strip()
+    batch_year = request.GET.get("batch_year", "")
+    university = request.GET.get("uni", "")
+
+    filter_conditions = Q()
 
     if query:
-        alumni = Mentor.objects.filter(skills__skill__icontains=query)
-    else:
-        alumni = Mentor.objects.all()
+        filter_conditions &= Q(skills__skill__icontains=query)
+
+    if batch_year and batch_year != "Batch Year":
+        filter_conditions &= Q(user__profile__graduation_year=batch_year)
+
+    if university and university != "University":
+        filter_conditions &= Q(user__profile__university__icontains=university)
+        
+    alumni = Mentor.objects.filter(filter_conditions).distinct()
 
     results = []
 
@@ -199,6 +228,9 @@ def mentor_search_directory(request):
                 "graduation_year": alum.user.profile.graduation_year,
                 "career": alum.user.profile.career,
                 "university": alum.user.profile.university,
+                "has_job": alum.user.profile.has_job,
+                "employer": alum.user.profile.employer,
+                "role": alum.user.profile.role,
             }
             results.append(result)
     

@@ -20,4 +20,5 @@ urlpatterns = [
     path("mentor_dashboard", views.mentor_dashboard, name="mentor_dashboard"),
     path("accept_mentor/<int:match_id>/<int:mentor_id>", views.accept_mentor, name="accept_mentor"),
     path("decline_mentor/<int:match_id>/<int:mentor_id>", views.decline_mentor, name="decline_mentor"),
+    path("get_profile_info", views.get_profile_info, name="get_profile_info"),
 ]
