@@ -15,9 +15,9 @@
 {% if pending_requests %}
 
 <div class="pending-requests-container">
-  <h2>Your Pending Mentor Requests</h2>
+  <h2 class="title">Accepted Requests for Mentorship</h2>
 
-
+<div class="requests-grid">
   {% for request in pending_requests %}
     <div class="request-card">
         <div class="mentor-info">
@@ -32,15 +32,16 @@
         <p><strong>Status:</strong> Pending</p>
         </div>
         <div class="action-note">
-        <p>Waiting for mentor to respond.</p>
+        <button class="btn accept-btn">Accepted</p>
         </div>
     </div>
   {% endfor %}
 </div>
+</div>
 
 {% else %}
 <div class="pending-requests-container">
-    <h2>No requests yet :)</h2>
+    <h2 class="title">No updates yet :)</h2>
 </div>
 {% endif %}
 

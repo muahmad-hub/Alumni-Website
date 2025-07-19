@@ -31,7 +31,7 @@
                 </span>
             </h3>
             
-            {% if only_view %}
+            {% if only_view or user.id == profile.user.id %}
             {% else %}
                 {% if is_match %}
                     <p class="requested">Requested</p>
