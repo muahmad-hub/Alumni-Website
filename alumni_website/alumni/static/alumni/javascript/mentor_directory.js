@@ -65,7 +65,7 @@ function display_data(data){
         alumni_info = `
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card h-100 alumni-card" data-user-id = "${alumni.id}">
-                    <img src="${alumni.profile_url || '/static/images/profile_image.jpg'}" class="card-img-top" alt="Alumni_card">
+                    <img src="${alumni.profile_url || 'images/profile_image.jpg'}" class="card-img-top" alt="Alumni_card">
                     <div class="card-body">
                     <h5 class="card-title">${alumni.name}</h5>
                 `

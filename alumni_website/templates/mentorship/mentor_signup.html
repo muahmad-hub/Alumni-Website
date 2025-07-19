@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'mentorship/css/mentor_signup.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+
+{% block title %}
+    Directory
+{% endblock %}
+
+{% block main %}
+
+
+<div class="mentor-form-container">
+
+
+{% if is_mentor %}
+    <h2>You are already a Mentor :)</h2>
+{% elif message %}
+    <h2>{{ message }}</h2>
+{% else %}
+<h2>Become a Mentor</h2>
+<form method="POST" action="{% url 'mentor_signup' %}">
+    {% csrf_token %}
+    <label>Full Name</label>
+    <input type="text" id="full_name" name="full_name" required value="{{ profile.name }}">
+
+    <label>Email</label>
+    <input type="email" id="email" name="email" required value="{{ user.email }}">
+
+    <label>Industry / Field</label>
+    <input type="text" id="industry" name="industry" required value="{{ profile.career }}">
+
+    <label>Years of Experience</label>
+    <input type="number" id="experience" name="experience" min="0" required>
+
+    <label>Pick your top 3 skills</label>
+    <input name="skill1" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <datalist id="skills">
+        {% for skill in skills %}
+        <option value="{{ skill.skill }}">
+        {% endfor %}
+    </datalist><br>
+
+    <input name="skill2" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <datalist id="skills">
+        {% for skill in skills %}
+        <option value="{{ skill.skill }}">
+        {% endfor %}
+    </datalist><br>
+
+    <input name="skill3" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <datalist id="skills">
+        {% for skill in skills %}
+        <option value="{{ skill.skill }}">
+        {% endfor %}
+    </datalist>
+
+    <label>Availability</label>
+    <select id="availability" name="availability" class="form-control">
+        <option value="weekends">Weekends</option>
+        <option value="evenings">Evenings</option>
+        <option value="mornings">Mornings</option>
+        <option value="any">Any</option>
+    </select>
+    
+
+    <button type="submit">Submit</button>
+</form>
+{% endif %}
+
+
+<script src="{% static 'directory/javascript/mentor_directory.js' %}"></script>
+{% endblock %}

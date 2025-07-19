@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@600&display=swap');
+
+
+body {
+  background-color: #FFFDD0;
+  font-family: 'Open Sans', sans-serif;
+  color: #2c2c2c;
+}
+
+.bg-maroon {
+  background-color: #4e1002 !important;
+}
+
+.bg-maroon-light {
+  background-color: #c69393 !important;
+}
+
+.text-maroon {
+  color: #4e1002;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  border-radius: 50%;
+}
+
+.profile-img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+  background: linear-gradient(to right, #c69393, #f7e4d4);
+}
+
+.profilePic {
+  border: 5px solid #4e1002;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+}
+
+.card {
+  background-color: #fffaf0;
+  border-left: 4px solid #b8860b;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #4e1002;
+}
+

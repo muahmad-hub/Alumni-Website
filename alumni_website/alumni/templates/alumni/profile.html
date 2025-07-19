@@ -182,6 +182,7 @@
 {% block javascript %}
     <script>
         let csrfToken = "{{ csrf_token }}"
+        get_profile_info = "{% url 'get_profile_info' %}"
     </script>
      <script src="{% static 'alumni/javascript/profile.js' %}"></script>
 {% endblock %}
