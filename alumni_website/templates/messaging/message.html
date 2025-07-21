@@ -15,12 +15,12 @@
   
   <div class="chat-messages" id="chat-box">
 
-    {% for message in message_chat reversed %}
+    {% for message in messages reversed %}
       {% include 'messaging/partials/chat_message.html' with message=message sender=user %}
     {% endfor %}
   </div>
 
-  <form class="chat-input" action="{% url 'message_room' %}" method="post">
+  <form class="chat-input" action="{% url 'chat_room' group_name %}" method="post">
     {% csrf_token %}
     <input type="text" name="message" placeholder="Type a message..." required autocomplete="off" id="message_input"/>
     <button type="submit" id="message_send">Send</button>
@@ -33,8 +33,9 @@
 {% block javascript %}
 
   <script>
-    var csrfToken = "{{ csrf_token }}";
-    var currentUserId = "{{ user.id }}";
+    var groupName = "{{ group_name }}"
+    var csrfToken = "{{ csrf_token }}"
+    var currentUserId = "{{ user.id }}"
   </script>
   <script src="{% static 'messaging/javascript/messaging.js' %}"></script>
 {% endblock %}

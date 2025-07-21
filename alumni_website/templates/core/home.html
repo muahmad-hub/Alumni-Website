@@ -31,9 +31,9 @@
         {% endif %}
         <p><strong>Status:</strong> Pending</p>
         </div>
-        <div class="action-note">
+        <form class="action-note" action="{% url 'get_or_create_chat_room' request.mentor.user.id %}">
         <button class="btn accept-btn">Accepted</p>
-        </div>
+        </form>
     </div>
   {% endfor %}
 </div>

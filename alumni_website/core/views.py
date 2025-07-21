@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def home(request):
-    messages.success(request, "Welcome to the alumni site!")
+    # messages.success(request, "Welcome to the alumni site!")
 
     pending_requests = MentorMatch.objects.filter(mentee=request.user, accept=True)
 

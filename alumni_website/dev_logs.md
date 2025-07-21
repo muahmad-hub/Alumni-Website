@@ -46,6 +46,31 @@
 - Using WebSocket protocol is much more effecient for this purpose as it is a protocol that supports bidirectional data transfer. It starts off by a handshake proccess where the client requests the sever and if valid the server responds back. After this initial step the WebSocket connection is made and data can be sent from and to the server with ease.
 - Channels are like mailbox for each user. When a WebSocket connection is intitiated by a user, a channel specific to that user is also created. Channels help the server route data towards the users. Without it the server wont know where to route and hence send messages. 
 - The proccess of sending data can be synchronous (works like a queue, waits for one line of code to be completed and then runs the next) or asynchronous (multipel lines of codes can be run while it waits for some previous code to finish its work). Both can be used for sending messages. However, asynchronous code will be much more effeicient for sending data for real time chats.
+### Feature
+- Extended the chat app's functionality to allow private chats between two users. 
+- A unique id is generated for each private chat app which allows the chat app to be referenced through the url.
+- Added a channels layer along with consumer.py and routing.py to allow the WebSocket to work
+- Used Javascript to dynamically update the data
 ### Decision
-- I intitially created the code to be synchronous, but later withced to being asynchronous as it was much more effeicient and better for many users
-### TALK ABOU TTHE BUG
+- I initially wrote the code using a synchronous approach, but later switched to an asynchronous implementation as it proved to be significantly more efficient and better suited for handling multiple users concurrently
+### Bug 1: Database was not allowing for more than one user to be registered in a messaeg group
+```python
+class Groups(models.Model):
+    group_name = models.CharField(max_length=255, unique=True)
+    ...
+
+class Members(models.Model):
+    group = models.ForeignKey(
+        Groups,
+        related_name="members",
+        default=shortuuid.uuid,
+        unique=True,
+        on_delete=models.CASCADE
+    )
+    ...
+```
+### Solution
+- I had set the Members group Foreign key to be unique, which resulted in error. The group_name in the Groups database should be unique and have a uuid for the url to referance
+### Bug 2: When the user sends the first message after their window reloads, the message is not rendered dynamically, but for the rest of the messages, they are dynamically added
+### Solution
+- I had nested onmessage in the javascript file that caused the error

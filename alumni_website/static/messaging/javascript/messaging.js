@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
+
   const form = document.querySelector('.chat-input');
   const messageInput = document.getElementById('message_input');
   const chatBox = document.getElementById('chat-box');
 
-  const groupName = 'Test';
   const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
   const chatSocket = new WebSocket(
     `${wsScheme}://${window.location.host}/ws/message/${groupName}/`
@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   
   chatSocket.onmessage = function (event) {
-    chatSocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     let html;
     if (data.sender_id == currentUserId) {
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     chatBox.insertAdjacentHTML('beforeend', html);
     scroll_to_bottom();
     }
-  }
+
 
   chatSocket.onclose = function () {
     console.log('WebSocket connection closed');
