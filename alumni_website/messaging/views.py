@@ -7,7 +7,7 @@ def message_room(request):
     message_group = get_object_or_404(MessageGroup, group_name="Test")
     message_chat = message_group.group_messages.all().order_by('-sent_time')[:30]
 
-    if request.htmx:
+    if request.method == "POST":
         message = request.POST.get("message")
         message_group = get_object_or_404(MessageGroup, group_name="Test")
 

@@ -16,11 +16,11 @@
   <div class="chat-messages" id="chat-box">
 
     {% for message in message_chat reversed %}
-      {% include 'messaging/partials/chat_message.html' with message=message user=user %}
+      {% include 'messaging/partials/chat_message.html' with message=message sender=user %}
     {% endfor %}
   </div>
 
-  <form class="chat-input" hx-post="{% url 'message_room' %}" hx-target=".chat-messages" hx-swap="beforeend">
+  <form class="chat-input" action="{% url 'message_room' %}" method="post">
     {% csrf_token %}
     <input type="text" name="message" placeholder="Type a message..." required autocomplete="off" id="message_input"/>
     <button type="submit" id="message_send">Send</button>
@@ -31,5 +31,10 @@
 {% endblock %}
 
 {% block javascript %}
+
+  <script>
+    var csrfToken = "{{ csrf_token }}";
+    var currentUserId = "{{ user.id }}";
+  </script>
   <script src="{% static 'messaging/javascript/messaging.js' %}"></script>
 {% endblock %}

@@ -1,1 +1,2 @@
 django-htmx
+django-daphne (python -m pip install -U 'channels[daphne]')

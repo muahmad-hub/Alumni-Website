@@ -1,4 +1,4 @@
-{% if message.sender == user %}
+{% if sender == message.sender %}
     <div class="message sent">{{ message.message }}</div>
 {% else %}
     <div class="message received">{{ message.message }}</div>

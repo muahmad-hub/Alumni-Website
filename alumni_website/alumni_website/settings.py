@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,6 +61,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Channel layers configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 MIDDLEWARE = [
@@ -93,7 +101,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'alumni_website.wsgi.application'
+# WSGI_APPLICATION = 'alumni_website.wsgi.application'
+
+ASGI_APPLICATION = 'alumni_website.asgi.application'
 
 
 # Database
