@@ -24,4 +24,5 @@ urlpatterns = [
     path('mentorship/', include('mentorship.urls')),
     path('directory/', include('directory.urls')),
     path('', include('core.urls')),
+    path('messaging/', include('messaging.urls')),
 ]

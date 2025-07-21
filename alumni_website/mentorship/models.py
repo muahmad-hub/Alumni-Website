@@ -8,17 +8,29 @@ class Mentor(models.Model):
     experience = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
+
+    def __str__(self):
+        return f'name: {self.user.email}'
     
 
 class Skills(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE, related_name="skills")
     skill = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.mentor
+
 class Languages(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE, related_name="languages")
     language = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.mentor
 
 class MentorMatch(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE, related_name='mentor_matches')
     mentee = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='mentee_matches')
     accept = models.BooleanField(null=True, default=None)
+
+    def __str__(self):
+        return self.mentor

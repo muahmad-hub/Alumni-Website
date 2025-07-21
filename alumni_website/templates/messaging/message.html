@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'messaging/css/messaging.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+
+{% endblock %}
+
+{% block main %}
+
+<div class="chat-container">
+  <div class="chat-header">Mentor: John Smith</div>
+  
+  <div class="chat-messages" id="chat-box">
+
+    {% for message in message_chat reversed %}
+      {% include 'messaging/partials/chat_message.html' with message=message user=user %}
+    {% endfor %}
+  </div>
+
+  <form class="chat-input" hx-post="{% url 'message_room' %}" hx-target=".chat-messages" hx-swap="beforeend">
+    {% csrf_token %}
+    <input type="text" name="message" placeholder="Type a message..." required autocomplete="off" id="message_input"/>
+    <button type="submit" id="message_send">Send</button>
+  </form>
+</div>
+
+
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'messaging/javascript/messaging.js' %}"></script>
+{% endblock %}

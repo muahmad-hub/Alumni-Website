@@ -7,7 +7,7 @@ document.getElementById("alumni-container").addEventListener("click", function(e
     if (card){
         id = card.getAttribute("data-user-id")
         console.log(id)
-        window.location.href = `/view_profile/${id}`
+        window.location.href = `/profile/view_profile/${id}`
     }
     })
 

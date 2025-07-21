@@ -13,3 +13,6 @@ class Profile(models.Model):
     has_job = models.BooleanField(null=True)
     employer = models.CharField(max_length=255, null=True, blank=True)
     profile_url = models.SlugField(unique=True, null=True, blank=True)
+
+    def __str__(self):
+        return f'name: {self.name}, email: {self.user.email}'

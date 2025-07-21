@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'directory', 
     'mentorship', 
     'authentication',
+    'messaging',
 ]
 
 # Setting custom user
@@ -69,6 +70,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    #ADDED DJANGO-HTMX MIDLEWARE
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'alumni_website.urls'
