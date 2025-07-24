@@ -4,38 +4,18 @@ from .models import *
 from django.db.models import Count
 from django.http import Http404
 
-# @login_required
-# def message_room(request):
-#     message_group = get_object_or_404(Groups, group_name="Test")
-#     message_chat = message_group.group_messages.all().order_by('-sent_time')[:30]
-
-#     if request.method == "POST":
-#         message = request.POST.get("message")
-#         message_group = get_object_or_404(Groups, group_name="Test")
-
-#         if message_group:
-#             new_message = Messages(group = message_group, sender = request.user, message = message)
-#             new_message.save()
-
-#             return render(request, "messaging/partials/message.html", {
-#                 "message_chat": new_message,
-#                 "user": request.user
-#             })
-
-#     return render(request, "messaging/message.html", {
-#         "message_chat": message_chat
-#     })
-
 @login_required
 def chat_room(request, group_name):
     group = get_object_or_404(Groups, group_name=group_name)
-    
+
     if Members.objects.filter(group=group, user=request.user).exists():
         messages = Messages.objects.filter(group=group).order_by('-sent_time')[:30]
+        online_count = Members.objects.filter(group=group, is_online=True).exclude(user=request.user).count()
         return render(request, "messaging/message.html", {
                 "messages": messages,
                 "user": request.user,
                 "group_name": group_name,
+                "online_count": online_count,
             })
     
     raise Http404
@@ -66,25 +46,3 @@ def get_or_create_chat_room(request, other_user_id):
         Members.objects.create(group = new_group, user = request.user)
         Members.objects.create(group = new_group, user = other_user)
         return redirect('chat_room', group_name = new_group.group_name)
-    
-# @login_required
-# def message_room(request):
-#     message_group = get_object_or_404(Groups, group_name="Test")
-#     message_chat = message_group.group_messages.all().order_by('-sent_time')[:30]
-
-#     if request.method == "POST":
-#         message = request.POST.get("message")
-#         message_group = get_object_or_404(Groups, group_name="Test")
-
-#         if message_group:
-#             new_message = Messages(group = message_group, sender = request.user, message = message)
-#             new_message.save()
-
-#             return render(request, "messaging/partials/message.html", {
-#                 "message_chat": new_message,
-#                 "user": request.user
-#             })
-
-#     return render(request, "messaging/message.html", {
-#         "message_chat": message_chat
-#     })

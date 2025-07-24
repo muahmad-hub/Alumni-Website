@@ -17,7 +17,7 @@
 ## Date: July 17
 ### Feature: Created Mentor system
 - Added link in navigation to allow users to sign up to become mentor through a form
-- **Decision** Chose to prefill form with user data available for better UX as users won't need to enter same information again.
+- **Decision:** Chose to prefill form with user data available for better UX as users won't need to enter same information again.
 - A dashboard is made available to users once they become mentors.
 - Dashboard allows users to see all their mentor requests and allows them to respond to the request by either accepting or declining it. They can also use the view button to view user's profile
 - Edited directory to allow users to search by skills rather than alumni name
@@ -36,7 +36,7 @@
 - **Reflection** Avoid hard coding and test all possible filters when creating a filter feature
 
 ## Date: July 19
-- **Decision** Needed to decide whether to keep using a single app for the project or seperate out into multiple apps. 
+- **Decision:** Needed to decide whether to keep using a single app for the project or seperate out into multiple apps. 
 - I decided to use seperate apps as it would allow the code to be more organised and the project to be scalabale. It would also allow to seperate different logics
 - Seperated the project into 5 apps: 
     - `core`
@@ -67,7 +67,7 @@
 - A unique id is generated for each private chat app which allows the chat app to be referenced through the url.
 - Added a channels layer along with consumer.py and routing.py to allow the WebSocket to work
 - Used Javascript to dynamically update the data (Switched from HTMX to Javascript)
-- **Decision** I initially wrote the code using a synchronous approach, but later switched to an asynchronous implementation as it proved to be significantly more efficient and better suited for handling multiple users concurrently
+- **Decision:** I initially wrote the code using a synchronous approach, but later switched to an asynchronous implementation as it proved to be significantly more efficient and better suited for handling multiple users concurrently
 ### Bug: Database was not allowing for more than one user to be registered in a message group
 ```python
 class Groups(models.Model):
@@ -105,3 +105,41 @@ class Members(models.Model):
 - These categories could then feed into an AI-based mentor matching or alumni recommendation system, using something like A* or BFS to find the most relevant connections based on shared skills. I could even explore using inference or linear programming to build constraints into the recommendations (like making sure recommended skills belong to the same category).
 ### Note
 - I’m still not sure whether I’ll implement this right away. It’s just an idea I’m noting down for now. I need to evaluate how efficient or realistic it would be for the site and whether I have the bandwidth to integrate it with the rest of the system.
+### Feature: Add a real-time User online tracker
+- **Decision:** Initially I set up another Model class called `OnlineUser`. However, it had a lot of the same information as the `Members` model. This would have caused redundancy in data and effected its normalization.
+```python
+class OnlineUser(models.Model):
+    user = models.ForeignKey(Users, related_name="group_memberships", on_delete=models.CASCADE)
+    group = models.ForeignKey(Groups, related_name="members", on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    is_online = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(null=True, blank=True) 
+
+    def __str__(self):
+        return f"{self.user} at {self.joined_at}"
+
+class Members(models.Model):
+    group = models.ForeignKey(Groups, related_name="members", on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, related_name="group_memberships", on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+```
+- Therefore, I decided to add the `is_online` and `last_seen` fields to the `Members` model instead.
+
+- Currently I'm just manually counting number of users that are online in the database but may switch to using Redis later as querying the database everytime maybe inconsistent 
+
+### Bug 1: User Online count wouldnt update properly
+- The user online count was incorrect and wouldn't show the right number of users online
+### Solution
+- I had set my online count to this
+```python
+online_count = Members.objects.filter(is_online=True).count() - 1
+```
+- If the other user was online and I currently opened the chat, it will still show user count as 0 because it didn't fully register that I am also online by the time the data loads on the webpage
+- This code works better as it automatically excludes the current user from the count when querying
+```python
+online_count = Members.objects.filter(group=group, is_online=True).exclude(user=request.user).count()
+```
+### Bug 2: User online count doesn't update when user disconnects
+- The count increments perfectly when a new user opens the chat. The data dynamically updates to the correct count quite well
+- However when a user disconnects, the counter doesn't change dynmically. Only when the user reloads the page is the correct count is seen.
+- The problem seems to be that the database is still not updated with the correct information, but I haven't been able to find the root cause. Might revisit this later or possibly switch to Redis for tracking.

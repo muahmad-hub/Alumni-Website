@@ -8,12 +8,15 @@ class Groups(models.Model):
 
     def __str__(self):
         return f'Group: {self.group_name}, Private: ${self.is_private}'
-    
 
 class Members(models.Model):
     group = models.ForeignKey(Groups, related_name="members", on_delete=models.CASCADE)
     user = models.ForeignKey(Users, related_name="group_memberships", on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
+
+    # Fields for checking User online status
+    is_online = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(null=True, blank=True) 
 
     def __str__(self):
         return f'{self.user} in {self.group}'

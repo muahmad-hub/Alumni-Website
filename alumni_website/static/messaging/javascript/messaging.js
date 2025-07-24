@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('.chat-input');
   const messageInput = document.getElementById('message_input');
   const chatBox = document.getElementById('chat-box');
+  const onlineCount = document.getElementById('online_count')
 
   const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
   const chatSocket = new WebSocket(
@@ -21,15 +22,22 @@ document.addEventListener('DOMContentLoaded', function () {
   chatSocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
     let html;
-    if (data.sender_id == currentUserId) {
-        html = `<div class="message sent">${data.message}</div>`;
-    } else {
-        html = `<div class="message received">${data.message}</div>`;
-    }
-    chatBox.insertAdjacentHTML('beforeend', html);
-    scroll_to_bottom();
-    }
 
+    
+    if(data.message){
+      if (data.sender_id == currentUserId) {
+          html = `<div class="message sent">${data.message}</div>`;
+      } else {
+          html = `<div class="message received">${data.message}</div>`;
+      }
+      chatBox.insertAdjacentHTML('beforeend', html);
+      scroll_to_bottom();
+      }
+
+      if (data.online_count !== undefined) {
+        onlineCount.innerHTML = data.online_count
+      }
+    }
 
   chatSocket.onclose = function () {
     console.log('WebSocket connection closed');
