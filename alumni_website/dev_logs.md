@@ -94,3 +94,14 @@ class Members(models.Model):
 ### Solution
 - I had mistakenly placed the **onmessage** WebSocket event listener inside another function. This caused an initial delay in for the message to be heard.
 - Added the onmessage outside the function
+
+## Date: July 24
+### Thoughts/Ideas
+- Just finished CS50's AI with Python
+    - Learned about search algorithms, specifically Breadth First search and A* search
+    - Explored and implemented concepts like NLP, optimization and linear programming
+    - Also implemented AI's that carry out inference (I still need to internalize and fully understand them)
+- Had an idea: maybe I could integrate some of what I’ve learned into my alumni website. For example, users could enter skills, and I could use NLP to categorize those skills under broader groups like Communicatio, like combining "public speaking" and "presenting projects".
+- These categories could then feed into an AI-based mentor matching or alumni recommendation system, using something like A* or BFS to find the most relevant connections based on shared skills. I could even explore using inference or linear programming to build constraints into the recommendations (like making sure recommended skills belong to the same category).
+### Note
+- I’m still not sure whether I’ll implement this right away. It’s just an idea I’m noting down for now. I need to evaluate how efficient or realistic it would be for the site and whether I have the bandwidth to integrate it with the rest of the system.
