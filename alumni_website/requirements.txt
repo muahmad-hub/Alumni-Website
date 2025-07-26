@@ -1,3 +1,16 @@
-django-htmx
-django-daphne (python -m pip install -U 'channels[daphne]')
-shortuuid
+channels[daphne]==3.0.1
+shortuuid==1.0.1
+nltk==3.8
+transformers
+torch
+hf_xet #for better performance 
+scikit-learn
+numpy
+pandas
+joblib
+
+# django-htmx
+# django-daphne #(python -m pip install -U 'channels[daphne]')
+# shortuuid
+# nltk
+# #punkt #downloaded through nltk downloader. May need to see how to add in production

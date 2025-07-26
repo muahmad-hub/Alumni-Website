@@ -143,3 +143,52 @@ online_count = Members.objects.filter(group=group, is_online=True).exclude(user=
 - The count increments perfectly when a new user opens the chat. The data dynamically updates to the correct count quite well
 - However when a user disconnects, the counter doesn't change dynmically. Only when the user reloads the page is the correct count is seen.
 - The problem seems to be that the database is still not updated with the correct information, but I haven't been able to find the root cause. Might revisit this later or possibly switch to Redis for tracking.
+
+## Date: July 24 & 25
+### Feature: Created AI that categorizes a given skill into a category
+- Built a skill classification system using fine-tuned SVM (Support Vector Machine) model and BERT-based vectorization.
+- The AI takes a skill as an input and predicts its category. For example, it may predict **Maths** belonging to **Academic Skills** category
+- Used HuggingFace Transformer for BERT embeddings
+- Used scikit-learn for SVM implementation
+
+#### Accuracy
+- Train/Test split: 80/20
+- Accuracy: 70.91%
+
+- Train/Test split: 90/10
+- Accuracy: 82.14%
+
+- While the 82.14% accuracy is strong given the small dataset, I believe expanding the data could boost this significantly
+
+### Bug 1: 3D array was being passed to SVM instead of 2D array
+- SVM only works with a 2D array. However, in my code in the training part, SVM was receiving a 3D array and hence couldn't fit the data
+### Solution
+```python
+skill_vector = np.vstack(skill_vector)
+```
+- Used Numpy to convert to 2D array
+### Bug 2: Maths and Math were categorized into different categories
+- Since the AI is not taught and trained on the meaning of words, it would incorrectly categorize **Math** and **Maths** into different categories.
+### Solution:
+- I chose to lemmatize words before turning them into vectors
+- This way some words can be turned into their basic form which improves accuracy
+```python
+lemmatizer = WordNetLemmatizer()
+text = lemmatizer.lemmatize(text)
+```
+### Optimization
+- The model took too long to load because everytime I would call the `vectorize` function from `utils.py`, the `model` and `tokenizer` would be loaded. 
+- To load them only the first time, I took the initialization of the `model` and `tokenizer` outside the function and created another function (`get_model_and_tokenizer`) that loads either of them if not loaded and returns them.
+- Initially when loading `model` and `tokenizer`, the code is still slow. However, the `vectorize` function is significatly faster and so is the `predict_category` function.
+## Reflection
+- The database used for training is still not as comprehensive as I would have liked. This also affects the accuracy of the AI
+- I might work on the database at a later date
+### Notes for future reference
+- Neural networks have three main layers: input, hidden (can be many hidden layers) and output layers
+- There can be several nodes in the input layer which then connect with the hidden layer. When data is sent to the hidden layer, a weighted sum is calculated (this tells us about how much the AI focus on this specific node) and on the hidden layer an activation function is calculated (this tells us whether to forward this data to the next layer or not)
+- Transformers are a type of neural network but have a few distinct features:
+    - They carry out parrallel processing where each word of the sentence is processed in the neural network at the same time
+    - They contain self-attention heads, which essentially allow each token to take into account other words and hence contextualize
+- To be able to classify words/phrases into categories, you first need to convert the phrase into tokens 
+    - BERT has its own tokenization process which adds a CLS token and SEP token at the start and end and also tokenizes words like understand differently, for example, BERT tokenizes unhappiness as "un" and "##happiness"
+- These tokens are then converted into vectors for the AI to understand
