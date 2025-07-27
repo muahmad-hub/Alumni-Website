@@ -32,7 +32,7 @@ def mentor_signup(request):
         mentor = Mentor(user = request.user, availability = availability, industry = industry, experience = experience, created_at = datetime.datetime.now(), updated_at = datetime.datetime.now())
         mentor.save()
         for i in range(3):
-            skill = Skills(mentor = mentor, skill = skills[i])
+            skill = MentorSkills(mentor = mentor, skill = skills[i])
             skill.save()
 
         return render(request, 'mentorship/mentor_signup.html', {
@@ -48,7 +48,7 @@ def mentor_signup(request):
             is_mentor = True
             break
 
-    skills = Skills.objects.distinct("skill")[:10]
+    skills = MentorSkills.objects.distinct("skill")[:10]
 
     profile = Profile.objects.get(user = request.user)
 

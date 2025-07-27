@@ -192,3 +192,11 @@ text = lemmatizer.lemmatize(text)
 - To be able to classify words/phrases into categories, you first need to convert the phrase into tokens 
     - BERT has its own tokenization process which adds a CLS token and SEP token at the start and end and also tokenizes words like understand differently, for example, BERT tokenizes unhappiness as "un" and "##happiness"
 - These tokens are then converted into vectors for the AI to understand
+
+
+Found it confusign abou twhich to start with, mentor system or geneeral user system
+
+Wanted to also categorise goals, so needed to find an effecient way
+
+Goal AI has 82.76% with 80/20 split
+86.21% with 90/10 split

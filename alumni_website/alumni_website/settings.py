@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
+    "channels",
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'core.Users'
 
 # Setting the login path
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/authentication/login/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
@@ -79,8 +80,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    #ADDED DJANGO-HTMX MIDLEWARE
-    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'alumni_website.urls'

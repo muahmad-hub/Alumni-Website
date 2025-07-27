@@ -16,3 +16,19 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'name: {self.name}, email: {self.user.email}'
+    
+class Skill(models.Model):
+    user = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="skills")
+    skill = models.CharField(max_length=255, null=True, blank=True)
+    skill_category = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user} has {self.skill} skill in category {self.skill_category}"
+    
+class Goal(models.Model):
+    user = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="goals")
+    goal = models.CharField(max_length=255, null=True, blank=True)
+    goal_category = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user} has {self.goal} goal in category {self.goal_category}"

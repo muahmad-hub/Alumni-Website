@@ -8,6 +8,7 @@ scikit-learn
 numpy
 pandas
 joblib
+psycopg2-binary # Use psycopg2 for production/deployment
 
 # django-htmx
 # django-daphne #(python -m pip install -U 'channels[daphne]')

@@ -13,7 +13,7 @@ class Mentor(models.Model):
         return f'name: {self.user.email}'
     
 
-class Skills(models.Model):
+class MentorSkills(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE, related_name="skills")
     skill = models.TextField(null=True, blank=True)
 
