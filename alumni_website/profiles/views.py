@@ -3,6 +3,7 @@ from .models import *
 from mentorship.models import MentorMatch, Mentor
 import json
 from django.forms.models import model_to_dict
+from ai.classifier import predict_category_goal, predict_category_skill
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -17,9 +18,9 @@ def profile(request):
 
         profile = Profile.objects.get(user=request.user)
 
-        ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "career", "location", "role", "employer"}
+        ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "career", "location", "role", "employer", "university_location", "skills", "goals", "education_level"}
 
-        if field in ALLOWED_FIELDS and hasattr(profile, field):
+        if field in ALLOWED_FIELDS:
             if field == "graduation_year":
                 try:
                     value = int(value)
@@ -34,20 +35,37 @@ def profile(request):
                         "status": "error",
                         "message": "Graduation year must be a valid number.",
                     }, status=400)
+            
+            if field == "skills":
+                if len(value) != 3:
+                    return JsonResponse({"status": "error", "message": "Invalid field."}, status=400)
+                for skill in value:
+                    skill = Skill.objects.create(profile = profile, skill = skill, skill_category = predict_category_skill(skill)[0])
+
+            if field == "goals":
+                if len(value) != 3:
+                    return JsonResponse({"status": "error", "message": "Invalid field."}, status=400)
+                for goal in value:
+                    goal = Goal.objects.create(profile = profile, goal = goal, goal_category = predict_category_goal(goal)[0])
                 
             if field == "employer" or field == "job":
                 setattr(profile, "has_job", "True")
                 profile.save()
 
-            setattr(profile, field, value)
-            profile.save()
+            if field != "skills" and field != "goals":
+                setattr(profile, field, value)
+                profile.save()    
             return JsonResponse({"status": "success", "message": f"{field} updated."})
         else:
             return JsonResponse({"status": "error", "message": "Invalid field."}, status=400)
         
     profile = get_object_or_404(Profile, user=request.user)
+    skills = Skill.objects.filter(profile = profile)
+    goals = Goal.objects.filter(profile = profile)
     return render(request, "profiles/profile.html", {
         "profile": profile,
+        "skills": skills,
+        "goals": goals,
     })
 
 @login_required

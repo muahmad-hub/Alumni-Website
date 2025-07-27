@@ -27,12 +27,12 @@ SECRET_KEY = 'django-insecure-tmidoz*7t(rb20btb1*9733=8b-eh%09l(^n$%@v8kxxwky(-%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 INSTALLED_APPS = [
-    "channels",
     'daphne',
+    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -1,27 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    var modal = document.getElementById("myModal");
-    var editButtons = document.querySelectorAll(".open_modal");
-    var profilePicButton = document.querySelector(".profile_pic_button");
-    var closeBtn = document.getElementsByClassName("close")[0];
+    var modal = document.getElementById("myModal")
+    var editButtons = document.querySelectorAll(".open_modal")
+    var profilePicButton = document.querySelector(".profile_pic_button")
+    var closeBtn = document.getElementsByClassName("close")[0]
     
-    var inputContent = document.getElementById("input_content");
-    var uploadContent = document.getElementById("upload_content");
+    var inputContent = document.getElementById("input_content")
+    var uploadContent = document.getElementById("upload_content")
 
-    var textInput = document.getElementById("text");
-    var textArea = document.getElementById("textarea");
+    var textInput = document.getElementById("text")
+    var textArea = document.getElementById("textarea")
 
-    var error_div = document.getElementById("error-message");
+    var error_div = document.getElementById("error-message")
 
     var job_check = document.getElementById("job_check")
     var job_section = document.getElementById("job_section")
-    
-    let field = null;
-    let fieldHTML = null;
-    let icon = null;
-    if(document.activeElement) document.activeElement.blur();
 
-    // Checks if user has job related information that must be shown
+    var skills_inputs = document.querySelectorAll(".skills")
+
+    var goals_inputs = document.querySelectorAll(".goals")
+    
+    var education_level = document.getElementById("education_level")
+    
+    let field = null
+    let fieldHTML = null
+    let icon = null
+    if(document.activeElement) document.activeElement.blur()
 
     fetch(get_profile_info)
     .then(response => response.json())
@@ -31,36 +35,51 @@ document.addEventListener('DOMContentLoaded', function() {
             job_section.style.display = "block"
         }
     })
-    .catch(error => console.error("Error: ", error));
+    .catch(error => console.error("Error: ", error))
 
     editButtons.forEach(function(btn) {
         btn.onclick = function() {
-            modal.style.display = "block";
-            field = this.getAttribute("id");
+            modal.style.display = "block"
+            field = this.getAttribute("id")
             fieldHTML = document.querySelectorAll(`.${field}_text`)
             icon = this
 
-            inputContent.style.display = "block";
-            uploadContent.style.display = "none";
+            inputContent.style.display = "block"
+            uploadContent.style.display = "none"
 
-            let placeholder_text = this.getAttribute("data-placeholder");
-            let title_text = this.getAttribute("data-title");
+            let placeholder_text = this.getAttribute("data-placeholder")
+            let title_text = this.getAttribute("data-title")
 
             if(field === "about_me") {
-                textInput.style.display = "none";
-                textArea.style.display = "block";
-                textArea.value = "";
-                textArea.placeholder = placeholder_text;
-                textArea.focus();
-            } else {
-                textArea.style.display = "none";
-                textInput.style.display = "block";
-                textInput.value = "";
-                textInput.placeholder = placeholder_text;
-                textInput.focus();
+                textInput.style.display = "none"
+                textArea.style.display = "block"
+                textArea.value = ""
+                textArea.placeholder = placeholder_text
+                textArea.focus()
+            }
+
+            else if (field === "skills") {
+                textInput.style.display = "none"
+                skills_inputs.forEach(function(input) {
+                    input.style.display = "block"
+                })
+            }
+            else if (field === "goals") {
+                textInput.style.display = "none"
+                goals_inputs.forEach(function(input) {
+                    input.style.display = "block"
+                })
+            }
+            else {
+                textArea.style.display = "none"
+                textInput.style.display = "block"
+                textInput.value = ""
+                textInput.placeholder = placeholder_text
+                textInput.focus()
             }
         }
-    });
+    })
+
 
     profilePicButton.onclick = function() {
         modal.style.display = "block";
@@ -79,6 +98,12 @@ document.addEventListener('DOMContentLoaded', function() {
     closeBtn.onclick = function() {
         error_div.style.display = "none"
         modal.style.display = "none";
+        skills_inputs.forEach(function(input) {
+            input.style.display = "none"
+        })
+        goals_inputs.forEach(function(input) {
+            input.style.display = "none"
+        })
     };
 
 
@@ -86,6 +111,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if(event.target == modal) {
             error_div.style.display = "none"
             modal.style.display = "none";
+            skills_inputs.forEach(function(input) {
+                input.style.display = "none"
+            })
+            goals_inputs.forEach(function(input) {
+                input.style.display = "none"
+            })
         }
     };
 
@@ -94,9 +125,28 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
 
         let value;
-        if (textInput.style.display === "block") {
+        if (field === "skills") {
+            value = [];
+            skills_inputs.forEach(function(input) {
+                const trimmed = input.value.trim();
+                if (trimmed) {
+                    value.push(trimmed);
+                }
+            });
+        } 
+        else if (field === "goals"){
+            value = [];
+            goals_inputs.forEach(function(input) {
+                const trimmed = input.value.trim();
+                if (trimmed) {
+                    value.push(trimmed);
+                }
+            });
+        }
+        else if (textInput.style.display === "block") {
             value = textInput.value;
-        } else {
+        } 
+        else {
             value = textArea.value;
         }
 
@@ -140,4 +190,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     })
 
-});
+
+    education_level.addEventListener("change", function() {
+        value = this.value
+        field = "education_level"
+        
+        fetch(edit_profile , {
+            method: "POST",
+            headers: { 
+                "Content-type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify({
+                field: field,
+                value: value,
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Update success:", data)
+        })
+        .catch(error => console.error("Error: ", error))
+    })
+
+
+
+
+
+})

@@ -85,7 +85,36 @@
                                 </button> 
                             {% endif %}
                             </span>
+                            , <span class="university_location_text">{{ profile.university_location|default:" need to add location of university" }}
+                            {% if profile.university_location is none or profile.university_location == "" %}
+                                <button class="btn btn-link pencil open_modal" id="university_location" data-title="University Location" data-placeholder="Enter your university location">
+                                    <i class="bi bi-pencil"></i>
+                                </button> 
+                            {% endif %}
+                            </span>
                         </p>
+
+
+
+
+
+                        <label for="education_level">What is your highest level of education?</label>
+                        <select id="education_level" name="education_level" class="form-control" required>
+                            <option value="" disabled {% if profile.education_level == "" %}selected{% endif %}>Select your education level</option>
+                            <option value="high_school" {% if profile.education_level == "high_school" %}selected{% endif %}>High School</option>
+                            <option value="bachelor" {% if profile.education_level == "bachelor" %}selected{% endif %}>Bachelor's Degree</option>
+                            <option value="master" {% if profile.education_level == "master" %}selected{% endif %}>Master's Degree</option>
+                            <option value="doctorate" {% if profile.education_level == "doctorate" %}selected{% endif %}>Doctorate/PhD</option>
+                        </select>
+
+
+
+
+
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -102,6 +131,50 @@
                                 </button> 
                             {% endif %}
                         </p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-5 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-maroon">Skills</h5>
+
+                            {% if skills %}
+                                {% for skill in skills %}
+                                    <p class="card-text skill_display">{{ skill.skill }}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p>Need to Enter Skills</p>
+                                <button class="btn btn-link pencil open_modal" id="skills" data-title="skills" data-placeholder="Enter your Skills">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-5 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-maroon">Goals</h5>
+
+                            {% if goals %}
+                                {% for goal in goals %}
+                                    <p class="card-text skill_display">{{ goal.goal }}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p>You can enter goals here. These will be kept private</p>
+                                <button class="btn btn-link pencil open_modal" id="goals" data-title="goals" data-placeholder="Enter your Goals">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            {% endif %}
+
                     </div>
                 </div>
             </div>
@@ -154,9 +227,16 @@
     <form enctype="multipart/form-data" action="/edit_pfp" method="post">
         {% csrf_token %}
         <div id="input_content" style="display:none;">
-            <label for="name" class="pop_up_label">Edit:</label>
             <input type="text" id="text" name="name" class="pop_up_input text_line" placeholder="Enter" data-field="None">
             <textarea id="textarea" name="name" class="pop_up_input textarea" placeholder="Enter" data-field="None"></textarea>
+
+            <input id="skill1" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
+            <input id="skill2" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
+            <input id="skill3" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
+
+            <input id="goal1" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
+            <input id="goal2" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
+            <input id="goal3" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
 
             <div id="error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
 

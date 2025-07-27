@@ -1,13 +1,15 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.shortcuts import get_object_or_404
-from .models import *
+
 import json
 from django.template.loader import render_to_string
 from channels.db import database_sync_to_async
 from datetime import datetime
 
 class MessageConsumer(AsyncWebsocketConsumer):
+
     async def connect(self):
+        from .models import Groups, Members, Messages
         self.user = self.scope['user']
         self.group_name = self.scope['url_route']['kwargs']['group_name']
         self.group = await database_sync_to_async(get_object_or_404)(
@@ -43,6 +45,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
+        from .models import Groups, Members, Messages
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
@@ -83,6 +86,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_online_count(self):
+        from .models import Groups, Members, Messages
         return Members.objects.filter(group=self.group, is_online=True).exclude(user=self.user).count()
 
     async def send_online_status_update(self):

@@ -50,21 +50,21 @@ def train_and_save_model(is_goal):
 
     vector_list = np.vstack(vector_list)
 
-    # clf = svm.SVC(kernel='linear', probability=True)
-    # clf.fit(vector_list, encoded_labels)
+    clf = svm.SVC(kernel='linear', probability=True)
+    clf.fit(vector_list, encoded_labels)
 
 
     # Code for testing accuracy of AI
-    X_train, X_test, y_train, y_test = train_test_split(
-    vector_list, encoded_labels, test_size=0.2, random_state=42
-    )
+    # X_train, X_test, y_train, y_test = train_test_split(
+    # vector_list, encoded_labels, test_size=0.2, random_state=42
+    # )
 
-    clf = svm.SVC(kernel='linear', probability=True)
-    clf.fit(X_train, y_train)
+    # clf = svm.SVC(kernel='linear', probability=True)
+    # clf.fit(X_train, y_train)
 
-    predictions = clf.predict(X_test)
-    acc = accuracy_score(y_test, predictions)
-    print(f"Model accuracy: {acc:.2%}")
+    # predictions = clf.predict(X_test)
+    # acc = accuracy_score(y_test, predictions)
+    # print(f"Model accuracy: {acc:.2%}")
 
     save_model(clf, model_path)
     save_model(encoded_labels_dic, encoder_path)

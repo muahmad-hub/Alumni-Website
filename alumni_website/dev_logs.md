@@ -180,7 +180,7 @@ text = lemmatizer.lemmatize(text)
 - The model took too long to load because everytime I would call the `vectorize` function from `utils.py`, the `model` and `tokenizer` would be loaded. 
 - To load them only the first time, I took the initialization of the `model` and `tokenizer` outside the function and created another function (`get_model_and_tokenizer`) that loads either of them if not loaded and returns them.
 - Initially when loading `model` and `tokenizer`, the code is still slow. However, the `vectorize` function is significatly faster and so is the `predict_category` function.
-## Reflection
+### Reflection
 - The database used for training is still not as comprehensive as I would have liked. This also affects the accuracy of the AI
 - I might work on the database at a later date
 ### Notes for future reference
@@ -193,10 +193,29 @@ text = lemmatizer.lemmatize(text)
     - BERT has its own tokenization process which adds a CLS token and SEP token at the start and end and also tokenizes words like understand differently, for example, BERT tokenizes unhappiness as "un" and "##happiness"
 - These tokens are then converted into vectors for the AI to understand
 
+## Date: July 28
+### What I did
+- Users can now add their skills and goals on their profile page
+- Added `Skills` and `Goals` model which link to the `Profile` model
+- The function `predict_category_skill` and `predict_category_goal` are called to categorize and store the category in the database
+- I also started working on the connection recommendation system and plan to use A* search
+- Edited the classification system to allow classifying user goals as well. For example, users can say they wish to become a project manager in the tech industry which would be classified as a Career goal.
+#### Accuracy of goal classification
+- Train/Test split: 80/20
+- Accuracy: 83.76%
 
-Found it confusign abou twhich to start with, mentor system or geneeral user system
+- Train/Test split: 90/10
+- Accuracy: 86.21%
 
-Wanted to also categorise goals, so needed to find an effecient way
-
-Goal AI has 82.76% with 80/20 split
-86.21% with 90/10 split
+- The goal classification system is much more accurate than the skill classification system. This could possibly be because the inputs are much larger, which reduces the room for error when classifying
+### Bug: Failed WebSocket connection
+- WebSocket connection was not being made when I ran the server
+- The terminal was saying that the app was running on development server rather than the ASGI server
+### Solution
+- I had installed channels version 3.0.1, which is the older version and not compatible with the Django 5.2.4
+- This meant that the app wasn't running as an ASGI application
+### Note
+- Make sure to check `requirements.txt` so that all the dependencies are of the latest version
+### Reflection
+- Since a lot of the features are now being developed, the website does feel a bit cluttered, especially the profile page.
+- I might need to take a day out and work on the UI and UX 
