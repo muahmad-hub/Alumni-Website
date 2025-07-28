@@ -1,7 +1,7 @@
-from compatibility import calculate_score
+from utils import calculate_score
 from profiles.models import *
 import heapq
-from .utils import get_neighbors
+from .utils import get_neighbors, Node
 
 F_THRESHOLD = 0.1
 
@@ -13,14 +13,6 @@ def h(user1, user2):
 
 def f(user1, user2):
     return g(user1, user2) + h(user1, user2)
-
-class Node:
-    def __init__(self, user, cost):
-        self.user = user
-        self.cost = cost
-
-    def __lt__(self, other):
-        return self.cost < other.cost
     
 # Returns user, NOT profile
 def a_star_search(user):
@@ -65,34 +57,3 @@ def a_star_search(user):
             best_f = connection[1]
 
     return best_user
-
-    '''
-    Pseudocode
-
-    class Node:
-        user
-        f(n)
-
-    frontier = []
-    visited = []
-
-    while True:
-        if frontier is empty:
-            return None
-            break
-        Get lowest f(n) user
-        remove from frontier
-        check if in explored set
-        if explored:
-            continue
-        else:
-            add to explored set
-        f(n) >= threshold:
-            return user
-        get_neighbours and add to the frontier, if not in frontier
-
-
-    '''
-
-
-    

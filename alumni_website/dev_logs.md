@@ -144,7 +144,7 @@ online_count = Members.objects.filter(group=group, is_online=True).exclude(user=
 - However when a user disconnects, the counter doesn't change dynmically. Only when the user reloads the page is the correct count is seen.
 - The problem seems to be that the database is still not updated with the correct information, but I haven't been able to find the root cause. Might revisit this later or possibly switch to Redis for tracking.
 
-## Date: July 24 & 25
+## Date: July 25 & 26
 ### Feature: Created AI that categorizes a given skill into a category
 - Built a skill classification system using fine-tuned SVM (Support Vector Machine) model and BERT-based vectorization.
 - The AI takes a skill as an input and predicts its category. For example, it may predict **Maths** belonging to **Academic Skills** category
@@ -193,7 +193,7 @@ text = lemmatizer.lemmatize(text)
     - BERT has its own tokenization process which adds a CLS token and SEP token at the start and end and also tokenizes words like understand differently, for example, BERT tokenizes unhappiness as "un" and "##happiness"
 - These tokens are then converted into vectors for the AI to understand
 
-## Date: July 28
+## Date: July 27
 ### What I did
 - Users can now add their skills and goals on their profile page
 - Added `Skills` and `Goals` model which link to the `Profile` model
@@ -219,3 +219,117 @@ text = lemmatizer.lemmatize(text)
 ### Reflection
 - Since a lot of the features are now being developed, the website does feel a bit cluttered, especially the profile page.
 - I might need to take a day out and work on the UI and UX 
+
+## Date: July 28
+### Features: Added A* inspired search and Personalized Page Rank search for the recommendation system
+- Implemented a modified A* search algorithm that finds the topmost relevant alumni to a specific user and then returns the most relevant out of them.
+- Each User is treated as a node and edges are weighted based on a custom similarity function that takes the following into account:
+    - Skills
+    - Goals
+    - University Location
+    - Current Location
+    - Education Level
+    - Graduation Year
+    - Employer (if any)
+    - Mutual Connections
+- Unlike traditional A* search that has a goal node and traces back the path once the goal node is reached, this modified A* search finds the most relevant users by minimizing cost.
+- I defined `g(n)` as 1 - similarity and `h(n)` as -similarity
+- So if two users are similar, `g(n)` function will be minimised and so will `h(n)`. Therefore, minimising `f(n)`, which is the total cost function.
+- The lower the `f(n)` function, the more similar the users are
+- I also normalized the f(n) to ensure it is a value from 0 to 1 and assigned variables for the weights so it is easier to change them later on in the `calculate_score` function
+- To allow for a more advance and accurate recommendation system, I implemented a Personalized Page Rank algorithm, which will be used in the heuristics of the A* search to create a hybrid system
+- The page rank function will return a dictionary where the keys are users and the value is their Page Rank
+### Notes for future reference
+- heapq, specifically min-heap, is really beneficial for A* algorithm as it allows you to remove the smallest element effeciently because it has o(log n) time complexity compared to O(nlog n) time complexity of a list
+- A* search follows this basic cost function:
+    - f(n) = g(n) + h(n)
+        - f(n) is the total cost function
+        - g(n) is the cost of going from start node to current node
+        - h(n) is the heuristic estimate of going from current node to final node
+- This is the basic pseudocode:
+```python
+'''
+    define class Node
+        user
+        f(n)
+
+    frontier = []
+    visited = []
+
+    while True:
+        if frontier is empty:
+            return None
+            break
+        Get lowest f(n) user
+        remove from frontier
+        check if in explored set
+        if explored:
+            continue
+        else:
+            add to explored set
+        f(n) >= threshold:
+            return user
+        get_neighbours and add to the frontier, if not in frontier
+'''
+```
+- The perosnalized page rank algorithm loops over each person in the database and for each person it calculates their page rank using the personalized page rank formula (page rank = (1 - d) * personalized vector + d * Sum for all neighbours for value -> (page rank of neighbor / number of neigghbors)). We need to take into account whether someone can land on a user randomly, simulating bored random surfers (like in traditional Page Rank). The teleportation step always takes you back the start user in teh personalized page rank. 
+We keep iterating the page rank algorithm until it has iterated a certain amount of times (defined by the max_iterations in the code) or when the total changes in the page ranks is below a threshold
+- Basic pseudocode for Personalized Page Rank algorithm:
+```python
+'''
+Create a graph of all users as nodes 
+Assign each node a rank of 0
+Assign the user node a rank of 1
+
+page_rank
+
+Loop for max iterations:
+
+    new_rank = {}
+
+    for user in page_rank
+        get neighbors of current user
+        
+        if no neighbors:
+            continue
+
+        sum = 0
+        for neighbor in neighbors of current user:
+            sum += page rank of neighbour /  len (number of neighbours of this neighbor)
+
+        page rank of current user += (1 - d) * personalized_vector + d * sum
+
+    if sum of the total change < threshold:
+        break
+        
+return page_rank
+'''
+```
+### Bug: Personalized Page Rank didn't work as intended
+- The formula I used was faulty
+- What I did:
+    - pr = (1 - d) * personalized_vector + d * sum ....
+    - I assumed personalized vector would be the similarity/compatibility score
+### Solution:
+- The personalized vector is suppsoe to add to the page rankings if users randomly land on that user
+- Hence if the node for which the page rank is being calculated is not the start user, then a value of (1-d) is not added to the page rank
+- This correctly simulates if user teleports to the starting user
+
+    I was manually teleporting using if statemtns
+### Next steps
+- Need to add the user values from the Personalized Page Rank algorithm in the `f(n)` function of the A* search to create the hybrid recommendation system
+- Need to find a way to recommend user at specific time (Could possibly store the last time user was recommended a user and based on that recommend them a new user after every set time interval)
+- Need to test and refine the recommendation system
+
+
+
+
+
+
+
+
+
+
+
+
+
