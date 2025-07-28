@@ -16,6 +16,8 @@ class Profile(models.Model):
     education_level = models.CharField(max_length=255, null=True, blank=True)
     profile_url = models.SlugField(unique=True, null=True, blank=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f'name: {self.name}, email: {self.user.email}'
     
@@ -34,3 +36,12 @@ class Goal(models.Model):
 
     def __str__(self):
         return f"{self.profile} has {self.goal} goal in category {self.goal_category}"
+    
+class Connection(models.Model):
+    profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_initiated", null=True)
+    profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_received", null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.profile1} and {self.profile2}"
