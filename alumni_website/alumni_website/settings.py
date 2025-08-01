@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     
     # Initializing my apps
     'core', 
-    'profiles',
+    'profiles.apps.ProfilesConfig',
     'directory', 
     'mentorship', 
     'authentication',

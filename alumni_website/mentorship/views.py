@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import *
 from profiles.models import Profile
 import datetime
+import json
+from django.http import JsonResponse
+from .utils import get_mentor_match
+
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -58,24 +62,74 @@ def mentor_signup(request):
         "is_mentor": is_mentor,
     })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @login_required
-def mentor_match(request, mentor_id):
+def mentor_match(request):
     """
     Handles mentee's request to match with a mentor.
     Creates a MentorMatch object with accept=None (pending).
 
     Args:
         request (HttpRequest): The HTTP request object.
-        mentor_id (int): The ID of the mentor to match with.
+        mentor_id (int): The User ID of the mentor to match with.
 
     Returns:
         HttpResponse: Redirects to the mentor's profile page after request.
     """
     if request.method == "POST":
-        match = MentorMatch(mentor = Mentor.objects.get(user = Users.objects.get(id=mentor_id)), mentee = request.user, accept=None)
-        match.save()
+        data = json.loads(request.body)
+        id = data.get("id")
 
-        return redirect('view_profile', id=mentor_id)
+        if not id:
+            return JsonResponse({"status": "error", "message": "User ID is required"})
+        
+        mentor_match = get_mentor_match(request.user.id, id)
+
+        if mentor_match is not None:
+            mentor_match.delete()
+            return JsonResponse({"status": "success", "message": "Deleted"})
+        else: 
+            match = MentorMatch(mentor = Mentor.objects.get(user = Users.objects.get(id=id)), mentee = request.user)
+            match.save()
+            accepted = match.accept
+            return JsonResponse({"status": "success", "message": "Connected", "accepted": accepted})
+        
+    else:
+        return JsonResponse({"status": "error", "message": "Not post request"})
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @login_required
 def mentor_dashboard(request):

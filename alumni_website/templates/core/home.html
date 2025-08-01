@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-    <link href="{% static 'core/css/pending.css' %}" rel="stylesheet">
+    <link href="{% static 'core/css/home.css' %}" rel="stylesheet">
     <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
 {% endblock %}
 
@@ -11,6 +11,117 @@
 {% endblock %}
 
 {% block main %}
+
+    <div class="top-header"></div>
+
+
+    <section id="alumni" class="alumni">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row mb-5">
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="alumni-intro">
+              <h2>Our Alumni Network</h2>
+              <p>A dynamic community of individuals excelling in universities and careers worldwide. Stay connected, share your journey, and support one another as we continue to grow, learn, and make an impact together.</p>
+              <div class="alumni-stats d-flex flex-wrap">
+                <div class="stat-item">
+                  <span class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="{{ num_alumni }}" data-purecounter-duration="0.3">{{ num_alumni }}</span>
+                  <span class="stat-label">Alumni Worldwide</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="{{ num_countries }}" data-purecounter-duration="0.3">{{ num_countries }}</span>
+                  <span class="stat-label">Countries</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="{{ num_careers }}" data-purecounter-duration="0.3">{{ num_careers }}</span>
+                  <span class="stat-label">Different careers</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="school-image">
+              <img src="/static/images/School-Photo.webp" alt="Alumni gathering" class="img-fluid rounded">
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <div class="alumni-actions">
+        <div class="section-header text-center" data-aos="fade-up" data-aos-delay="200">
+          <h3>Stay Involved</h3>
+          <p>Discover ways to engage with the community and make an impact.</p>
+        </div>
+
+        <div class="actions-cards">
+          <div class="row">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+              <div class="actions-card">
+                <div class="card-icon">
+                  <i class="bi bi-people-fill"></i>
+                </div>
+                <h4>Mentorship Program</h4>
+                <p>Share a little of your experience, and make a big impact. Mentoring doesn’t have to be time-consuming—just offer some guidance and help shape the future.</p>
+                {% if user.is_authenticated %}
+                  {% if user.mentor %}
+                    <a href="{% url 'mentor_dashboard' %}" class = "card-link">View Dashboard</a>
+                  {% else %}
+                    <a href="{% url 'mentor_signup' %}" class = "card-link">Become a Mentor</a>
+                  {% endif %}
+                {% else %}
+                    <a href="{% url 'login_view' %}" class = "card-link">Become a Mentor</a>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+              <div class="actions-card">
+                <div class="card-icon">
+                  <i class="bi bi-person-lines-fill"></i>
+                </div>
+                <h4>Mentor Directory</h4>
+                <p>Explore a network of experienced alumni ready to guide you. Whether you're seeking career advice, academic support, or personal growth, our mentor directory connects you with experts who are eager to share their knowledge and help you succeed. Browse through profiles and find the right mentor for you.</p>
+
+                {% if user.is_authenticated %}
+                  <a href="{% url 'mentor_directory' %}" class="card-link">Mentor Directory</a>
+                {% else %}
+                  <a href="{% url 'login_view' %}" class="card-link">Mentor Directory</a>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+              <div class="actions-card">
+                <div class="card-icon">
+                  <i class="bi bi-search"></i>
+                </div>
+                <h4>Alumni Directory</h4>
+                <p>Connect with fellow alumni from around the world. Whether you're looking for old friends, career opportunities, or a network of professionals in your field, our alumni directory makes it easy to find and reconnect with the people who can help you grow.</p>
+                {% if user.is_authenticated %}
+                  <a href="{% url 'directory' %}" class="card-link">Alumni Directory</a>
+                {% else %}
+                  <a href="{% url 'login_view' %}" class="card-link">Alumni Directory</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 {% if pending_requests %}
 

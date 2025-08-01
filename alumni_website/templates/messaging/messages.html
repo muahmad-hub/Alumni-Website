@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block extra_css %}
+  <link href="{% static 'messaging/css/messages.css' %}" rel="stylesheet">
+  <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+  <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+{% endblock %}
+
+{% block main %}
+
+<div class="main-chat-wrapper" data-aos="fade-up" data-aos-delay="100">
+  <div class="sidebar">
+    <div class="sidebar-search">
+      <input type="text" placeholder="Search..." id="search-messages"/>
+    </div>
+    <div class="contact-list">
+    </div>
+  </div>
+
+
+{% if messages and user and group_name %}
+    {% include 'messaging/message.html' with messages=messages user=user group_name=group_name other_user=other_user has_mentor=has_mentor %}
+{% else %}
+    <div class="chat-container">
+      <div class="chat-header">Select A conversation</div>
+      <div class="chat-messages">
+        <p></p>
+      </div>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    var groupName = "{{ group_name }}";
+    var csrfToken = "{{ csrf_token }}";
+    var currentUserId = "{{ user.id }}";
+  </script>
+  <script src="{% static 'messaging/javascript/open_chats.js' %}"></script>
+{% endblock %}

@@ -321,15 +321,103 @@ return page_rank
 - Need to find a way to recommend user at specific time (Could possibly store the last time user was recommended a user and based on that recommend them a new user after every set time interval)
 - Need to test and refine the recommendation system
 
+## Date: July 29 - August 1
+### Goal: Refine UI/UX
+- My current UI and UX is quite poor as I focused more on functionality and features rather that user experience. Cluttered UI directly impacts user engagement and navigation efficiency. Redesigning for clarity improves usability
+### What I learned
+- Explored and integrated lightweight animation libraries:
+    - AOS, for scroll based animations (such as fade-up)
+    - Purecounter, for animated counters
 
+    - Both are zero-dependency and easy to plug in
+- DRY concept is to **Don't Repeat Yourself**, this is highly important for neat and scalable code. My previous profile page had duplicated logic, which made it hard to trace and debug. Therefore, it is vital to keep my code DRY
+- Python, Javascript and CSS each have their own standard conventions for variable cases
+    - Python (Django, Flask, etc.):
+        - Variables/Functions: snake_case 
+        - Classes: CamelCase
+    - JavaScript (React, Node.js, etc.):
+        - Variables/Functions: camelCase
+        - Classes/Components: PascalCase
+    - CSS Class Names/HTML Attributes: kebab-case
+    - HTML/CSS:
+        - Class Names/Data Attributes: kebab-case
 
-
-
-
-
-
-
-
-
-
-
+    - I previously mixed styles without consistency, which hurt readability. Consistent casing is more important than I initially thought, especially in larger codebases.
+### What I did
+- Added edits to the home page (which is also visible to users who are not logged in)
+- Created a intorduction section with statistics such as number of alumni , number of countries, and different carrers the alumni ave
+- Just below the introduction section is 'take action' section, that has cards that take users to different parts of the website:
+    - One for becoming a mentor
+    - One for accessing mentor directory 
+    - One for accessing alumni directory
+- These cards are nice way for users to learn about the features provided on the website 
+- I also edited models to have more intuitive names
+#### Profile Page
+- Completely changed the profile page view and profile edit functionality.
+    - The previous profile page had becomed too clutered as there were now many fields and each field had a pencil icon next to it which made it incredibly unpleasing to look at and wasnt functional. T=The JavaScript logic relied on scattered event listeners and inconsistent element IDs, which introduced bugs and complexity
+    - I switced to a more minimalistic look so that it is more intuitive for users
+    - I also seperated fields into different sections and each section has its own edit button (instead of each field having its own edit button as in the previous approach)
+        - Personal Information
+        - Bio Section
+        - Education
+        - Skill
+        - Goals
+        - Career
+    - The career section asks users whether they are employed or not through radio buttons
+        - The buttons trigger JavaScript that sends an AJAX request to Django, updating the `has_job` field and dynamically toggling the visibility of the career section based on the response.
+    - On validation errors (e.g., empty fields or invalid graduation year), an error message is rendered and its visibility is set to block
+- For editing information, instead of using javascript, I directly send information to Django as it is much more scalable easier to organise
+- Each section has its own URL route in `views.py`
+#### View Profile
+- When users now visit a users profile page, they have the option to both conenct and Request them as mentor if they are a mentor
+- If any of the button is clicked a message is shown telling users how they'll be updated if they request is updated: 
+`Once None accepts the request, you can chat with them here`
+- A link which redirects to the chat is also provided
+#### Messaging app
+- Implemented a separate, interactive messaging section for the users
+- The app is divided into two key areas:
+    - Contact List: Displays the user's contacts and enables selection to start conversations
+    - Messaging Space: Dynamically updates to display conversations based on the selected contact
+- Dynamic Contact List:
+    - Contacts are loaded asynchronously using JavaScript to fetch the list from the server
+    - The contact list is rendered dynamically on the client side for a faster, more responsive UI
+- Clicking on a contact in the list opens the corresponding conversation in the messaging space on the right side of the screen
+- Each card is a link that loads the page with the corresponding messages.
+- A search bar is integrated into the contact list, enabling users to filter and search for contacts by name dynamically.
+- The search queries are handled client-side, improving performance and responsiveness.
+## Bug 1: Validation error messages were not shown
+- While implementing form validation for the user profile page, I attempted to display error messages by passing a query string when  redirected 
+- However, eventhough invalid data was submitted, no error message appeared on the redirected page.
+## Solution:
+- The issue was with how I attempted to include the error message in the redirect() call in Django
+- I was incorrectly assuming that keyword arguments in redirect() would be for the query parameters in the resulting URL
+- Incorrect syntax:
+    ```python
+    redirect("profile", message = "Graduataion a valid number")
+    ```
+- Correct syntax:
+    ```python 
+    redirect("profile") + "?message=Graduation%20year%20must%20be%20a%20valid%20number"
+    ```
+## Bug 2: AJAX request was not working
+- While implementing profile updates via AJAX, I encountered a persistent Uncaught TypeError in the browser console whenever a fetch request was made to update user data. The error indicated that the response object was being accessed incorrectly or prematurely.
+## Solution:
+- My `.then` was inside the fetch request. Since it is synchronous it didnt work
+- The issue came from improper chaining of the .then() method
+- I had nested .then() inside the fetch() call itself, which led to incorrect promise handling. 
+- Specifically, I was attempting to handle the response synchronously, without awaiting the resolution of the initial fetch promise.
+- Once the .then() chain was moved outside the fetch() call, the promise resolved as expected and the AJAX request executed without errors
+## Bug 3: Messaging Page Returned 404 Error
+- Accessing the messaging page at /messaging/messages/ consistently returned a 404 Not Found error
+## Solution:
+- I was attempting to visit the URL path /messaging/messages/, but I had not actually defined this path in urls.py
+```python
+path("messages", views.messages, name="messages")
+```
+- This only works for /messaging/messages, not /messaging/messages/ (with a trailing slash)
+- I implemented the correct url and I also double-checked the URL patterns in urls.py and used Django's {% url %} template tag where appropriate to avoid hardcoding paths incorrectly.
+- Lesson learnt:
+    - The Network tab in browser DevTools is incredibly helpful for debugging broken links or unexpected 404s by showing exactly what request is being made
+## Next steps:
+- Add another section on the messageing app where users can see any requests, hwen users request to connect.
+- One section can toggle between showing teh connection requests and showing messages

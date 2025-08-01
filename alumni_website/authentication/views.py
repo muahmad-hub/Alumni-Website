@@ -42,13 +42,6 @@ def sign_up(request):
             
             profile = Profile.objects.create(
             user=user,
-            name=None,
-            graduation_year=None,
-            university=None,
-            about_me=None,
-            career=None,
-            location=None,
-            profile_url=None,
             )
 
             profile.save()

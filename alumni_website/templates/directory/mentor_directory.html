@@ -13,34 +13,37 @@
 
 {% block main %}
 
-
-<div class="container alumni-section">
-  <h2 class="mb-4 text-center alumni-heading">Our Mentors</h2>
-
-  <div class="search-container text-center mb-5">
-    <div class="search-flex-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search by skills">
-
-        <select class="form-control select-filter batch-year" id="batch_year">
-        <option default>Batch Year</option>
-        {% for year in years %}
-            <option>{{ year.graduation_year }}</option>
-        {% endfor %}
-        </select>
-
-        <select class="form-control select-filter uni" id="university">
-            <option default>University</option>
-            {% for uni in university %}
-                <option>{{ uni.university }}</option>
-            {% endfor %}
-        </select>
-
-
+<div class="mentors"> 
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4 section-header" data-aos="fade-up" data-aos-delay="200">
+      <h3>Success Stories</h3>
+      <p class="lead">Meet some of our distinguished alumni making a difference around the world</p>
     </div>
+
+    <div class="search-container text-center mb-5" data-aos="fade-up" data-aos-delay="300">
+      
+      <div class="search-flex-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by skills">
+
+          <select class="form-control select-filter batch-year" id="batch_year">
+          <option default>Batch Year</option>
+          {% for year in years %}
+              <option>{{ year.graduation_year }}</option>
+          {% endfor %}
+          </select>
+
+          <select class="form-control select-filter uni" id="university">
+              <option default>University</option>
+              {% for uni in university %}
+                  <option>{{ uni.university }}</option>
+              {% endfor %}
+          </select>
+
+
+      </div>
+    </div>
+    <div id="alumni-container" class="row g-4"></div>
   </div>
-
-
-  <div id="alumni-container" class="row g-4"></div>
 </div>
 
 <script>

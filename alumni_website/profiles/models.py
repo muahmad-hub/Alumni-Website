@@ -3,12 +3,14 @@ from core.models import Users
 
 class Profile(models.Model):
     user = models.OneToOneField(Users, on_delete=models.CASCADE, related_name="profile")
-    name = models.CharField(max_length=255, null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
     graduation_year = models.IntegerField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     university = models.CharField(max_length=255, null=True, blank=True)
     university_location = models.CharField(max_length=255, null=True, blank=True)
     about_me = models.TextField(null=True, blank=True)
-    career = models.CharField(max_length=255, null=True, blank=True)
+    major_uni = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     role = models.CharField(max_length=255, null=True, blank=True)
     has_job = models.BooleanField(null=True)
@@ -19,7 +21,7 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'name: {self.name}, email: {self.user.email}'
+        return f'name: {self.first_name} {self.last_name}, email: {self.user.email}'
     
 class Skill(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="skills", null=True)
@@ -40,6 +42,7 @@ class Goal(models.Model):
 class Connection(models.Model):
     profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_initiated", null=True)
     profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_received", null=True)
+    accepted = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,0 +1,238 @@
+.alumni {
+  margin-top: 7rem;
+  margin-bottom: 4.5rem;
+}
+
+.alumni .alumni-intro h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: var(--heading-color)
+}
+
+.alumni .alumni-intro p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.alumni .alumni-intro .alumni-stats {
+  gap: 2rem;
+}
+
+.alumni .alumni-intro .alumni-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  margin-right: 2rem;
+}
+
+.alumni .alumni-intro .alumni-stats .stat-item .stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  line-height: 1;
+}
+
+.alumni .alumni-intro .alumni-stats .stat-item .stat-label {
+  font-size: 0.95rem;
+  color: var(--heading-color);
+  margin-top: 0.5rem;
+}
+
+.alumni .school-image {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.alumni .school-image img {
+  transition: transform 0.5s ease;
+  width: 100%;
+}
+
+.alumni .school-image img:hover {
+  transform: scale(1.05);
+}
+
+.alumni-actions {
+  padding: 4rem 2rem;
+}
+
+
+.alumni-actions .actions-cards .actions-card {
+  background-color: var(--background-color);
+  border-radius: 15px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  height: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.alumni-actions .actions-cards .actions-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.alumni-actions .actions-cards .actions-card:hover .card-icon {
+  background-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: rotateY(360deg);
+}
+
+.alumni-actions .actions-cards .actions-card .card-icon {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
+  color: var(--accent-color);
+  border-radius: 50%;
+  font-size: 2.5rem;
+  transition: all 0.5s ease;
+}
+
+.alumni-actions .actions-cards .actions-card h4 {
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+}
+
+.alumni-actions .actions-cards .actions-card p {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.alumni-actions .actions-cards .actions-card .card-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+}
+
+.alumni-actions .actions-cards .actions-card .card-link:after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: width 0.3s ease;
+}
+
+.alumni-actions .actions-cards .actions-card .card-link:hover:after {
+  width: 100%;
+}
+
+.alumni-actions .section-header {
+  margin-bottom: 3.5rem;
+}
+
+.alumni-actions .section-header h3 {
+  font-size: 2.2rem;
+  font-family: var(--header-font);
+  color: var(--heading-color);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+}
+
+.alumni-actions .section-header h3:after {
+  content: "";
+  width: 70px;
+  height: 4px;
+  background: var(--accent-color);
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.alumni-actions .section-header p {
+  font-size: 1.15rem;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+  max-width: 700px;
+  margin: 0 auto;
+  margin-top: 1.5rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Previous CSS */
+
+.pending-requests-container{
+    max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.request-card {
+  background-color: #fff;
+  border-top: 5px solid #8A1538;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+.request-card h2 {
+  margin-top: 0;
+  color: #6e102b;
+}
+
+.request-card p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.mentor-info h3 {
+  color: #4b2c2c;
+  margin-bottom: 8px;
+}
+
+.mentor-info p {
+  margin: 4px 0;
+  color: #333;
+}
+
+.action-note p {
+  color: #800000;
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.accept-btn {
+  background-color: #218739;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #16692d;
+  color: white;
+}
+
+.title{
+  color: #8A1538;
+  font-size: 32px;
+  margin-bottom: 10px !important;
+  text-align: center;  
+}

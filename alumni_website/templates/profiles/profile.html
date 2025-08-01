@@ -2,9 +2,10 @@
 {% load static %}
 
 {% block extra_css %}
-     <link href="{%  static 'profiles/css/profile.css'  %}" rel="stylesheet">
-     <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+    <link href="{% static 'profiles/css/profile.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
 {% endblock %}
+
 
 {% block title %}
     Profile
@@ -12,259 +13,576 @@
 
 {% block main %}
 
-    <!-- <div class="container-fluid profile_wrapper"> -->
+<div class="profile-container" data-aos="fade-up">
 
-    <div class="container-fluid p-0 profile-img-container bg-maroon-light mb-5 text-center">
-        <div style="position: relative; display: inline-block;">
-        
-            <button type="button" class = "profile_pic_button open_modal">
-                <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" 
-                    alt="Profile Picture" 
-                    class="img-fluid rounded-circle profilePic">
-            </button>
-            <h3 class="mt-3 text-maroon"><span class="name_text">
-                {{ profile.name|default:"Need to enter Name"}}
-                {% if profile.name is none or profile.name == "" %}
-                        <button class="btn btn-link pencil open_modal" id="name" data-title="First Name" data-placeholder="Enter your first name">
-                            <i class="bi bi-pencil"></i>
-                        </button>
+  {% if request.GET.message %}
+    <div class="alert alert-danger">{{ request.GET.message }}</div>
+  {% endif %}
+
+  <div class="profile-header d-flex align-items-center gap-3 mb-4">
+    <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
+    <div class="profile-info">
+        <h2 class="mb-1">{% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}</h2>
+      {% if profile.user.is_superuser %}
+        <p class="text-muted mb-0 admin">Admin</p>
+      {% endif %}
+        <p class="text-muted mb-0">{% if profile.location %}{{ profile.location }}{% endif %}</p>
+        <p class="text-muted mb-0">
+        {% if profile.has_job %}
+            {{ profile.role }} at {{ profile.employer }}
+        {% else %}
+            {{ profile.university }} at {{ profile.major_uni }}
+        {% endif %}
+        </p>
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Personal Information</h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editPersonalInformation">Edit</button>
+    </div>
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">First name</div>
+            <div class="fs-6">
+                {% if profile.first_name %}
+                    {{ profile.first_name }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your First name</span>
                 {% endif %}
-            </span></h3>
-            <p class="lead text-dark"> 
-                Class of <span class="graduation_year_text">{{ profile.graduation_year|default:"Need to add graduation year" }}
-                    {% if profile.graduation_year is none or profile.graduation_year == "" %}
-                        <button class="btn btn-link pencil open_modal" id="graduation_year" data-title="Graduation Year" data-placeholder="Enter your graduation year">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                    {% endif %}
-                </span> <strong>•</strong> Student at <span class="university_text">
-                    {{ profile.university|default:"Need to enter University" }}
-                    {% if profile.university is none or profile.university == "" %}
-                        <button class="btn btn-link pencil open_modal" id="university" data-title="University" data-placeholder="Enter your university">
-                            <i class="bi bi-pencil"></i>
-                        </button>  
-                    {% endif %}
-                </span>
-            </p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Last Name</div>
+            <div class="fs-6">
+                {% if profile.last_name %}
+                    {{ profile.last_name }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your Last name</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Date of Birth</div>
+            <div class="fs-6">
+                {% if profile.date_of_birth %}
+                    {{ profile.date_of_birth|date:'Y-m-d' }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your Date Of Birth</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Email Address</div>
+            <div class="fs-6">
+                {% if profile.user.email %}
+                    {{ profile.user.email }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your email</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Bio Section</h3>
+      <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editBioSection">Edit</button>    </div>
+    <div class="row g-3">
+      <div class="col-md-12">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">About Me</div>
+            <div class="fs-6">
+                {% if profile.about_me %}
+                    {{ profile.about_me }}
+                {% else %}
+                    <span class="text-muted small">Please write a brief introduction about yourself</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Education</h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editEducationSection">Edit</button>
+    </div>
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Graduation Year</div>
+            <div class="fs-6">
+                {% if profile.graduation_year %}
+                    {{ profile.graduation_year }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your school graduation year</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Education Level</div>
+            <div class="fs-6">
+                {% if profile.education_level %}
+                    {{ profile.education_level }}
+                {% else %}
+                    <span class="text-muted small">Please enter your education level. e.g: Sixth Form, Bachelor's ...</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">University</div>
+            <div class="fs-6">
+                {% if profile.university %}
+                    {{ profile.university }}
+                {% else %}
+                    <span class="text-muted small">Please enter your university</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">University Location</div>
+            <div class="fs-6">
+                {% if profile.university_location %}
+                    {{ profile.university_location }}
+                {% else %}
+                    <span class="text-muted small">Please enter your university location</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">University Major</div>
+            <div class="fs-6">
+                {% if profile.major_uni %}
+                    {{ profile.major_uni }}
+                {% else %}
+                    <span class="text-muted small">Please enter your university major</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Skills</h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editSkillsSection">Edit</button>
+    </div>
+    <div class="row g-3">
+      {% for skill in profile.skills.all %}
+      <div class="col-md-4">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="fs-6">
+              {{ skill.skill }}
+              {% if skill.skill == "" %}
+                <span class="text-muted small">Please Enter a skill</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Goals</h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editGoalsSection">Edit</button>
+    </div>
+    <div class="row g-3">
+      <div class="alert alert-info small">
+        These goals and skills will not appear on your public profile. They help us match you with similar alumni.
+      </div>
+      {% for goal in profile.goals.all %}
+      <div class="col-md-12">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="fs-6">
+              {{ goal.goal }}
+              {% if goal.goal == "" %}
+                <span class="text-muted small">Please enter a goal</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3>Career</h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editCareerSection">Edit</button>
     </div>
 
-    <div class="container-fluid my-4">
-        <div class="row mb-5">
-            <div class="col text-center">
-                <h4 class="text-maroon mb-3">About Me</h4>
-                <p class="px-4 about_me_text">
-                    {{ profile.about_me|default:"Need to write about yourself" }}
-                    {% if profile.about_me is none or profile.about_me == "" %}
-                        <button class="btn btn-link pencil open_modal" id="about_me" data-title="About" data-placeholder="Write a bit about yourself">
-                            <i class="bi bi-pencil"></i>
-                        </button> 
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-
-        <div class="row text-center justify-content-center">
-            <div class="col-md-5 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="card-title text-maroon">Education</h5>
-                        <p class="card-text">
-                            <span class="career_text">
-                            {{ profile.career|default:"Need to enter Career " }}
-                            {% if profile.career is none or profile.career == "" %}
-                            <button class="btn btn-link pencil career open_modal" id="career" data-title="Career" data-placeholder="Enter your career">
-                                <i class="bi bi-pencil"></i>
-                            </button> 
-                            </span>
-                            {% endif %}
-                            at <span class="university_text">{{ profile.university|default:" and need to add university" }}
-                            {% if profile.university is none or profile.university == "" %}
-                                <button class="btn btn-link pencil open_modal" id="university" data-title="University" data-placeholder="Enter your university">
-                                    <i class="bi bi-pencil"></i>
-                                </button> 
-                            {% endif %}
-                            </span>
-                            , <span class="university_location_text">{{ profile.university_location|default:" need to add location of university" }}
-                            {% if profile.university_location is none or profile.university_location == "" %}
-                                <button class="btn btn-link pencil open_modal" id="university_location" data-title="University Location" data-placeholder="Enter your university location">
-                                    <i class="bi bi-pencil"></i>
-                                </button> 
-                            {% endif %}
-                            </span>
-                        </p>
-
-
-
-
-
-                        <label for="education_level">What is your highest level of education?</label>
-                        <select id="education_level" name="education_level" class="form-control" required>
-                            <option value="" disabled {% if profile.education_level == "" %}selected{% endif %}>Select your education level</option>
-                            <option value="high_school" {% if profile.education_level == "high_school" %}selected{% endif %}>High School</option>
-                            <option value="bachelor" {% if profile.education_level == "bachelor" %}selected{% endif %}>Bachelor's Degree</option>
-                            <option value="master" {% if profile.education_level == "master" %}selected{% endif %}>Master's Degree</option>
-                            <option value="doctorate" {% if profile.education_level == "doctorate" %}selected{% endif %}>Doctorate/PhD</option>
-                        </select>
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-5 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="card-title text-maroon">Location</h5>
-                        <p class="card-text location_text">
-                            {{ profile.location|default:"Need to enter Current location" }}
-                            {% if profile.location is none or profile.location == "" %}
-                                <button class="btn btn-link pencil open_modal" id="location" data-title="location" data-placeholder="Enter your location">
-                                    <i class="bi bi-pencil"></i>
-                                </button> 
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="col-md-5 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="card-title text-maroon">Skills</h5>
-
-                            {% if skills %}
-                                {% for skill in skills %}
-                                    <p class="card-text skill_display">{{ skill.skill }}</p>
-                                {% endfor %}
-                            {% else %}
-                                <p>Need to Enter Skills</p>
-                                <button class="btn btn-link pencil open_modal" id="skills" data-title="skills" data-placeholder="Enter your Skills">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            {% endif %}
-
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="col-md-5 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="card-title text-maroon">Goals</h5>
-
-                            {% if goals %}
-                                {% for goal in goals %}
-                                    <p class="card-text skill_display">{{ goal.goal }}</p>
-                                {% endfor %}
-                            {% else %}
-                                <p>You can enter goals here. These will be kept private</p>
-                                <button class="btn btn-link pencil open_modal" id="goals" data-title="goals" data-placeholder="Enter your Goals">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            {% endif %}
-
-                    </div>
-                </div>
-            </div>
-
-
-
-
-            <div class="custom-control custom-checkbox job_check">
-                <input type="checkbox" class="custom-control-input" id="job_check" name="job_check">
-                <label class="custom-control-label text-maroon">Do you have a job</label>
-            </div>
-            
-            <div class="col-md-5 mb-4" id="job_section">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="card-title text-maroon">Job</h5>
-                        <p class="card-text">
-                            <span class="role_text">
-                            {{ profile.role|default:"Need to enter you Role " }}
-                            {% if profile.role is none or profile.role == "" %}
-                            <button class="btn btn-link pencil open_modal" id="role" data-title="Role" data-placeholder="Enter your role">
-                                <i class="bi bi-pencil"></i>
-                            </button> 
-                            </span>
-                            {% endif %}
-                            at <span class="employer_text">{{ profile.employer|default:" and need to add employer" }}
-                            {% if profile.employer is none or profile.employer == "" %}
-                                <button class="btn btn-link pencil open_modal" id="employer" data-title="Employer" data-placeholder="Enter your employer">
-                                    <i class="bi bi-pencil"></i>
-                                </button> 
-                            {% endif %}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-
-
-        </div>
-    </div>
-
-<button type="button" class="edit_button"><a href="{% url 'edit_profile' %}"><i class="bi bi-pencil"></i></a></button>
-
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Edit Profile</h2>
-
-    <form enctype="multipart/form-data" action="/edit_pfp" method="post">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Are you currently employed?</label>
+      <div>
+        <form>
         {% csrf_token %}
-        <div id="input_content" style="display:none;">
-            <input type="text" id="text" name="name" class="pop_up_input text_line" placeholder="Enter" data-field="None">
-            <textarea id="textarea" name="name" class="pop_up_input textarea" placeholder="Enter" data-field="None"></textarea>
-
-            <input id="skill1" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
-            <input id="skill2" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
-            <input id="skill3" class="form-control skills" placeholder="Choose a skill" autocomplete="off" required>
-
-            <input id="goal1" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
-            <input id="goal2" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
-            <input id="goal3" class="form-control goals" placeholder="Choose a goal" autocomplete="off" required>
-
-            <div id="error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
-
-
-            <button type="submit" class="pop_up_button" id="submit_button">Save</button><br><br>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="employment_status" id="employed" value="employed"
+            {% if profile.has_job == True %}checked{% endif %}>
+          <label class="form-check-label" for="employed">Yes</label>
         </div>
-
-        <div id="upload_content" style="display:none;">
-            <input type="file" id="file" name="file">
-            <button type="submit" class="pop_up_button" id="pop_up_file_button">Upload File</button>
+        
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="employment_status" id="not_employed" value="not_employed"
+            {% if profile.has_job == False %}checked{% endif %}>
+          <label class="form-check-label" for="not_employed">No</label>
         </div>
+        </form>
+      </div>
+    </div>
 
-    </form>
+    <div id="job_section">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Role</div>
+            <div class="fs-6">
+              {% if profile.role %}
+              {{ profile.role }}
+              {% else %}
+              <span class="text-muted small">Please enter your role</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Employer</div>
+            <div class="fs-6">
+              {% if profile.employer %}
+              {{ profile.employer }}
+              {% else %}
+              <span class="text-muted small">Please enter your employer's name</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
 
+</div>
+
+<!--Modals for entering Profile info-->
+
+<div class="modal fade" id="editPersonalInformation" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4 rounded-4 border-0 shadow-sm" style="background-color: #fdfdfd;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="editPersonalModalLabel">Edit Your Personal Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form method="POST" action="{% url 'edit_personal_section' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name</label>
+              <input type="text" name="first_name" value="{{ profile.first_name }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              <input type="text" name="last_name" value="{{ profile.last_name }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" name="email" value="{{ profile.user.email }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Date of birth</label>
+              <input type="date" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Location</label>
+              <input type="text" name="location" value="{{ profile.location }}" class="form-control rounded-3">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
-<!-- </div> -->
+<div class="modal fade" id="editBioSection" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4 rounded-4 border-0 shadow-sm" style="background-color: #fdfdfd;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="editBioModalLabel">Edit Your Bio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form method="POST" action="{% url 'edit_bio_section' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
 
 
-{% endblock %}
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">About Me</label>
+              <textarea rows="10" type="text" name="about_me" class="form-control rounded-3">{{ profile.about_me }}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-{% block javascript %}
-    <script>
-        let csrfToken = "{{ csrf_token }}"
-        let edit_profile = "{% url 'profile' %}"
-        get_profile_info = "{% url 'get_profile_info' %}"
+<div class="modal fade" id="editEducationSection" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4 rounded-4 border-0 shadow-sm" style="background-color: #fdfdfd;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="editEducationModalLabel">Edit Your Education Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-    </script>
-     <script src="{% static 'profiles/javascript/profile.js' %}"></script>
-{% endblock %}
+      <form method="POST" action="{% url 'edit_education_section' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Graduation Year</label>
+              <input type="text" name="graduation_year" value="{{ profile.graduation_year }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Education Level</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="education_level">
+                <option {% if profile.education_level == "Sixth Form" %}selected{% endif %}>Sixth Form</option>
+                <option {% if profile.education_level == "Bachelor's" %}selected{% endif %}>Bachelor's</option>
+                <option {% if profile.education_level == "Master's" %}selected{% endif %}>Master's</option>
+                <option {% if profile.education_level == "Doctorate" %}selected{% endif %}>Doctorate</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">University</label>
+              <input type="text" name="university" value="{{ profile.university }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">University Location</label>
+              <input type="text" name="university_location" value="{{ profile.university_location }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Major</label>
+              <input type="text" name="major_uni" value="{{ profile.major_uni }}" class="form-control rounded-3">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editSkillsSection" tabindex="-1" aria-labelledby="editGoalsSkillsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-3 rounded-4 border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="editSkillsLabel">Edit Your Skills</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'edit_skills_section' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
+
+          <div class="row g-3">
+          <div class="col-4">
+            <label class="form-label fw-semibold">Skill 1</label>
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.0 %}{{ profile.skills.all.0.skill }}{% endif %}">
+          </div>
+          <div class="col-4">
+            <label class="form-label fw-semibold">Skill 2</label>
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.1 %}{{ profile.skills.all.1.skill }}{% endif %}">
+          </div>
+          <div class="col-4">
+            <label class="form-label fw-semibold">Skill 3</label>
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.2 %}{{ profile.skills.all.2.skill }}{% endif %}">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editCareerSection" tabindex="-1" aria-labelledby="editGoalsSkillsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-3 rounded-4 border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="editCareerLabel">Edit Your Career Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'edit_career_section' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Role</label>
+              <input type="text" name="role" value="{{ profile.role }}" class="form-control rounded-3">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Employer</label>
+              <input type="text" name="employer" value="{{ profile.employer }}" class="form-control rounded-3">
+            </div>
+          </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="editGoalsSection" tabindex="-1" aria-labelledby="editGoalsSkillsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-3 rounded-4 border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="editGoalsLabel">Edit Your Goals</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'edit_goals_section' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          {% if message %}
+            <div class="alert alert-danger">{{ message }}</div>
+          {% endif %}
+
+          <div class="alert alert-info small">
+            These goals and skills will not appear on your public profile. They help us match you with similar alumni.
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Goal 1</label>
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.0 %}{{ profile.goals.all.0.goal }}{% endif %}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Goal 2</label>
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.1 %}{{ profile.goals.all.1.goal }}{% endif %}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Goal 3</label>
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.2 %}{{ profile.goals.all.2.goal }}{% endif %}">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn save-changes">Save Changes</button>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script>
+    AOS.init({
+      duration: 700,
+      once: true,
+    });
+
+    var csrfToken = `{{ csrf_token }}`
+    var edit_employment_status = `{% url 'edit_employment_status' %}`
+    var mentor_match = `{% url 'mentor_match' %}`
+  </script>
+
+ <script src="{% static 'profiles/javascript/profile.js' %}"></script>
+
+  {% endblock %}

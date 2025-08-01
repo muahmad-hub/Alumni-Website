@@ -25,13 +25,13 @@ def search_directory(request):
     results = []
 
     for alum in alumni:
-        if all([alum.graduation_year, alum.career, alum.university]):
+        if all([alum.graduation_year, alum.major_uni, alum.university]):
             result = {
                 "id": alum.user.id,
                 "name": alum.name,
                 "profile_url": alum.profile_url if alum.profile_url else static("alumni/images/profile_image.jpg"),
                 "graduation_year": alum.graduation_year,
-                "career": alum.career,
+                "major_uni": alum.major_uni,
                 "university": alum.university,
             }
             results.append(result)
@@ -69,7 +69,7 @@ def mentor_search_directory(request):
     if university and university != "University":
         filter_conditions &= Q(user__profile__university__icontains=university)
         
-    alumni = Mentor.objects.filter(filter_conditions).distinct()
+    alumni = Mentor.objects.filter(filter_conditions).exclude(skills__isnull=True).distinct()
 
     results = []
 
@@ -79,14 +79,15 @@ def mentor_search_directory(request):
         for skill in alum.user.mentor.skills.all():
             skills_list.append(skill.skill)
 
-        if all([alum.user.profile.graduation_year, alum.user.profile.career, alum.user.profile.university]):
+        if all([alum.user.profile.graduation_year, alum.user.profile.major_uni, alum.user.profile.university]):
             result = {
                 "id": alum.user.id,
-                "name": alum.user.profile.name,
+                "first_name": alum.user.profile.first_name,
+                "last_name": alum.user.profile.last_name,
                 "skills": skills_list,
                 "profile_url": alum.user.profile.profile_url if alum.user.profile.profile_url else static("/images/profile_image.jpg"),
                 "graduation_year": alum.user.profile.graduation_year,
-                "career": alum.user.profile.career,
+                "major_uni": alum.user.profile.major_uni,
                 "university": alum.user.profile.university,
                 "has_job": alum.user.profile.has_job,
                 "employer": alum.user.profile.employer,

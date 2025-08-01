@@ -1,220 +1,50 @@
 document.addEventListener('DOMContentLoaded', function() {
+    var employed = document.getElementById("employed");
+    var notEmployed = document.getElementById("not_employed");
 
-    var modal = document.getElementById("myModal")
-    var editButtons = document.querySelectorAll(".open_modal")
-    var profilePicButton = document.querySelector(".profile_pic_button")
-    var closeBtn = document.getElementsByClassName("close")[0]
-    
-    var inputContent = document.getElementById("input_content")
-    var uploadContent = document.getElementById("upload_content")
+    var jobSection = document.getElementById("job_section");
+    if (employed.checked) {
+        jobSection.style.display = "block";
+    } else {
+        jobSection.style.display = "none";
+    }
 
-    var textInput = document.getElementById("text")
-    var textArea = document.getElementById("textarea")
+    employed.addEventListener("change", function () {
+        if (employed.checked) {
+            jobSection.style.display = "block";
+            change_employed_status("True");
+        } else {
+            jobSection.style.display = "none";
+            change_employed_status("False");
+        }
+    })
 
-    var error_div = document.getElementById("error-message")
+    notEmployed.addEventListener("change", function () {
+        if (notEmployed.checked) {
+            jobSection.style.display = "none";
+            change_employed_status("False");
+        }
+    })
+})
 
-    var job_check = document.getElementById("job_check")
-    var job_section = document.getElementById("job_section")
+function change_employed_status(value){
+    fetch(edit_employment_status, {
+    method: "POST",
+    headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrfToken,
+    },
+    body: JSON.stringify({
+        "has_job": value
+    })
+    })
 
-    var skills_inputs = document.querySelectorAll(".skills")
-
-    var goals_inputs = document.querySelectorAll(".goals")
-    
-    var education_level = document.getElementById("education_level")
-    
-    let field = null
-    let fieldHTML = null
-    let icon = null
-    if(document.activeElement) document.activeElement.blur()
-
-    fetch(get_profile_info)
     .then(response => response.json())
     .then(data => {
-        if(data.employer || data.role){
-            job_check.checked = true
-            job_section.style.display = "block"
-        }
+        console.log('Success:', data);
     })
-    .catch(error => console.error("Error: ", error))
-
-    editButtons.forEach(function(btn) {
-        btn.onclick = function() {
-            modal.style.display = "block"
-            field = this.getAttribute("id")
-            fieldHTML = document.querySelectorAll(`.${field}_text`)
-            icon = this
-
-            inputContent.style.display = "block"
-            uploadContent.style.display = "none"
-
-            let placeholder_text = this.getAttribute("data-placeholder")
-            let title_text = this.getAttribute("data-title")
-
-            if(field === "about_me") {
-                textInput.style.display = "none"
-                textArea.style.display = "block"
-                textArea.value = ""
-                textArea.placeholder = placeholder_text
-                textArea.focus()
-            }
-
-            else if (field === "skills") {
-                textInput.style.display = "none"
-                skills_inputs.forEach(function(input) {
-                    input.style.display = "block"
-                })
-            }
-            else if (field === "goals") {
-                textInput.style.display = "none"
-                goals_inputs.forEach(function(input) {
-                    input.style.display = "block"
-                })
-            }
-            else {
-                textArea.style.display = "none"
-                textInput.style.display = "block"
-                textInput.value = ""
-                textInput.placeholder = placeholder_text
-                textInput.focus()
-            }
-        }
+    .catch(error => {
+        console.error('Error:', error);
     })
 
-
-    profilePicButton.onclick = function() {
-        modal.style.display = "block";
-        field = "profile_picture";
-
-
-        inputContent.style.display = "none";
-        uploadContent.style.display = "block";
-
-
-        textInput.blur();
-        textArea.blur();
-    };
-
-
-    closeBtn.onclick = function() {
-        error_div.style.display = "none"
-        modal.style.display = "none";
-        skills_inputs.forEach(function(input) {
-            input.style.display = "none"
-        })
-        goals_inputs.forEach(function(input) {
-            input.style.display = "none"
-        })
-    };
-
-
-    window.onclick = function(event) {
-        if(event.target == modal) {
-            error_div.style.display = "none"
-            modal.style.display = "none";
-            skills_inputs.forEach(function(input) {
-                input.style.display = "none"
-            })
-            goals_inputs.forEach(function(input) {
-                input.style.display = "none"
-            })
-        }
-    };
-
-
-    document.getElementById("submit_button").onclick = function(event) {
-        event.preventDefault();
-
-        let value;
-        if (field === "skills") {
-            value = [];
-            skills_inputs.forEach(function(input) {
-                const trimmed = input.value.trim();
-                if (trimmed) {
-                    value.push(trimmed);
-                }
-            });
-        } 
-        else if (field === "goals"){
-            value = [];
-            goals_inputs.forEach(function(input) {
-                const trimmed = input.value.trim();
-                if (trimmed) {
-                    value.push(trimmed);
-                }
-            });
-        }
-        else if (textInput.style.display === "block") {
-            value = textInput.value;
-        } 
-        else {
-            value = textArea.value;
-        }
-
-        fetch(edit_profile , {
-            method: "POST",
-            headers: { 
-                "Content-type": "application/json",
-                "X-CSRFToken": csrfToken,
-            },
-            body: JSON.stringify({
-                field: field,
-                value: value,
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Update success:", data);
-            if (data.status === "error"){
-                error_div = document.getElementById("error-message")
-                error_div.style.display = "block"
-                error_div.innerHTML = data.message
-            }
-            else{
-                fieldHTML.forEach( element => {
-                    element.innerHTML = value;
-                })
-                icon.style.display = "none";
-                modal.style.display = "none";
-            }
-        })
-
-        .catch(error => console.error("Error: ", error));
-    };
-
-    job_check.addEventListener("change", function(){
-        if (job_check.checked){
-            job_section.style.display = "block"
-        }
-        else{
-            job_section.style.display = "none"
-        }
-    })
-
-
-    education_level.addEventListener("change", function() {
-        value = this.value
-        field = "education_level"
-        
-        fetch(edit_profile , {
-            method: "POST",
-            headers: { 
-                "Content-type": "application/json",
-                "X-CSRFToken": csrfToken,
-            },
-            body: JSON.stringify({
-                field: field,
-                value: value,
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Update success:", data)
-        })
-        .catch(error => console.error("Error: ", error))
-    })
-
-
-
-
-
-})
+}

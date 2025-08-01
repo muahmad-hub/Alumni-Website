@@ -43,7 +43,7 @@ function get_alumni(query){
                         <div class="card-body">
                             <h5 class="card-title">${alumni.name}</h5>
                             <p class="card-text">Class of ${alumni.graduation_year}</p>
-                            <p class="card-text">Studying ${alumni.career} at ${alumni.university}</p>
+                            <p class="card-text">Studying ${alumni.major_uni} at ${alumni.university}</p>
                         </div>
                     </div>
                 </div>

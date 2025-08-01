@@ -1,20 +1,19 @@
-{% extends 'layout.html' %}
 {% load static %}
 
-{% block extra_css %}
-    <link href="{% static 'messaging/css/messaging.css' %}" rel="stylesheet">
-    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
-    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
-
-{% endblock %}
-
-{% block main %}
-
-<div class="chat-container">
-  <div class="chat-header">Mentor: John Smith</div>
-  <div>{% include 'messaging/partials/online_count.html' with online_count=online_count %}</div>
+<div class="chat-container"  data-aos="fade-up" data-aos-delay="200">
+  <div class="chat-header">
+    {% if has_mentor == True %}
+      Mentor: 
+    {% endif %}
+    {% if other_user.user.profile.first_name %}
+      {{ other_user.user.profile.first_name }}
+    {% endif %}
+    {% if other_user.user.profile.last_name %}
+      {{ other_user.user.profile.last_name }}
+    {% endif %}
+  </div>
   
-  <div class="chat-messages" id="chat-box">
+  <div class="chat-messages" id="chat-box"  data-aos="fade-up" data-aos-delay="300">
 
     {% for message in messages reversed %}
       {% include 'messaging/partials/chat_message.html' with message=message sender=user %}
@@ -28,15 +27,9 @@
   </form>
 </div>
 
-
-{% endblock %}
-
-{% block javascript %}
-
   <script>
     var groupName = "{{ group_name }}"
     var csrfToken = "{{ csrf_token }}"
     var currentUserId = "{{ user.id }}"
   </script>
   <script src="{% static 'messaging/javascript/messaging.js' %}"></script>
-{% endblock %}

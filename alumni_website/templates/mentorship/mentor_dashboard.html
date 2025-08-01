@@ -15,24 +15,46 @@
 
 
  <div class="dashboard-container">
-    <header>
-      <h1>Welcome, {{ profile.name }}</h1>
+    <header data-aos="fade-up" data-aos-delay="100">
+      <h1>Welcome, 
+        {% if profile.first_name %}
+        {{ profile.first_name }}
+        {% endif %}
+        {% if profile.last_name %}
+        {{ profile.last_name }}
+        {% endif %}
+      </h1>
       <p class="subtitle">Here are your latest mentorship requests.</p>
     </header>
 
-    <div class="requests-grid">
+    <div class="requests-grid" data-aos="fade-up" data-aos-delay="200">
         {% if requests_none %}
             {% for req in requests_none %}
-            <div class="request-card">
-                <h2>{{ req.student_name }}</h2>
-                <p><strong>Name:</strong> {{ req.mentee.profile.name }}</p>
-                <p><strong>Graduation Year:</strong> {{ req.mentee.profile.graduation_year }}</p>
+            <div class="alumni-card" data-aos="fade-up" data-aos-delay="300">
+    <div class="request-card">
+        <div class="flex-container">
+            <img src="{{ alumni.profile_url|default:'/static/images/profile_image.jpg' }}" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
+            <div class="mentor-details">
+                <h4>{{ req.mentee.profile.first_name|default:"" }} {{ req.mentee.profile.last_name|default:"" }}</h4>
+                <p class="mentor-class">Class of {{ req.profile.graduation_year|default:"" }}</p>
+                <span class="mentor-position">
+                    {% if req.profile.major_uni and req.profile.university %}
+                        {{ req.profile.major_uni }} at {{ req.profile.university }}
+                    {% endif %}
+                </span>
+                {% if req.profile.role and req.profile.employer %}
+                    <span class="mentor-position"> | {{ req.profile.role }} at {{ req.profile.employer }}</span>
+                {% endif %}
                 <div class="card-actions">
-                <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
-                <a href="{% url 'accept_mentor' req.id req.mentor.user.id %}" class="accept-btn">Accept</a>
-                <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+                    <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
+                    <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
             {% endfor %}
         {% else %}
             <p class="no-requests">No mentorship requests at the moment.</p>
@@ -40,23 +62,46 @@
     </div>
 
 
-
-    {% if requests_true %}<p class="subtitle">Accepted Requests</p>{% endif %}
+    <div class="accepted-requests" data-aos="fade-up" data-aos-delay="300">
+    {% if requests_true %}
+    <div style="text-align: center;">
+        <h4 class="accepted-requests-title">Accepted Requests</h4>
+    </div>
+    {% endif %}
     <div class="requests-grid">
         {% if requests_true %}
             {% for req in requests_true %}
-            <div class="request-card">
-                <h2>{{ req.student_name }}</h2>
-                <p><strong>Name:</strong> {{ req.mentee.profile.name }}</p>
-                <p><strong>Graduation Year:</strong> {{ req.mentee.profile.graduation_year }}</p>
+
+            <div class="alumni-card" data-aos="fade-up" data-aos-delay="300">
+    <div class="request-card">
+        <div class="flex-container">
+            <img src="{{ alumni.profile_url|default:'/static/images/profile_image.jpg' }}" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
+            <div class="mentor-details">
+                <h4>{{ req.mentee.profile.first_name|default:"" }} {{ req.mentee.profile.last_name|default:"" }}</h4>
+                <p class="mentor-class">Class of {{ req.profile.graduation_year|default:"" }}</p>
+                <span class="mentor-position">
+                    {% if req.profile.major_uni and req.profile.university %}
+                        {{ req.profile.major_uni }} at {{ req.profile.university }}
+                    {% endif %}
+                </span>
+                {% if req.profile.role and req.profile.employer %}
+                    <span class="mentor-position"> | {{ req.profile.role }} at {{ req.profile.employer }}</span>
+                {% endif %}
                 <div class="card-actions">
-                <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
-                <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+                    <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
+                    <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
             {% endfor %}
         {% endif %}
     </div>
+    </div>
+
 
 
 
