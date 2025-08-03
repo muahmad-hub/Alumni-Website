@@ -3,8 +3,10 @@ from .models import *
 from profiles.models import Profile
 import datetime
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from .utils import get_mentor_match
+from messaging.utils import create_chat_room
+
 
 
 from django.shortcuts import render, redirect
@@ -62,25 +64,6 @@ def mentor_signup(request):
         "is_mentor": is_mentor,
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required
 def mentor_match(request):
     """
@@ -115,22 +98,6 @@ def mentor_match(request):
     else:
         return JsonResponse({"status": "error", "message": "Not post request"})
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required
 def mentor_dashboard(request):
     """
@@ -142,12 +109,24 @@ def mentor_dashboard(request):
     Returns:
         HttpResponse: Rendered mentor dashboard page.
     """
-    requests_none = MentorMatch.objects.filter(mentor=Mentor.objects.get(user=request.user), accept=None)
-    requests_true = MentorMatch.objects.filter(mentor=Mentor.objects.get(user=request.user), accept=True)
+    mentor = get_object_or_404(Mentor, user = request.user)
+
+    all_requests = MentorMatch.objects.filter(mentor = mentor).all()
+    accepted_requests = all_requests.filter(accept = True)
+    declined_requests = all_requests.filter(accept = False)
+
+    all_requests_count = all_requests.count()
+    accepted_requests_count = accepted_requests.count()
+    declined_requests_count = declined_requests.count()
+
     return render(request, "mentorship/mentor_dashboard.html", {
-        "requests_none": requests_none,
-        "requests_true": requests_true,
-        "profile": Profile.objects.get(user = request.user),
+        "all_requests": all_requests,
+        "accepted_requests": accepted_requests,
+        "declined_requests": declined_requests,
+
+        "all_requests_count": all_requests_count,
+        "accepted_requests_count": accepted_requests_count,
+        "declined_requests_count": declined_requests_count,
     })
 
 @login_required
@@ -167,8 +146,10 @@ def accept_mentor(request, match_id, mentor_id):
         match = MentorMatch.objects.get(id = match_id)
         match.accept = True
         match.save()
-
+        create_chat_room(request.user, match.mentee)
         return redirect("mentor_dashboard")
+    else:
+        raise Http404
     
 @login_required
 def decline_mentor(request, match_id, mentor_id):

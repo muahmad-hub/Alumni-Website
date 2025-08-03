@@ -58,19 +58,19 @@ function display_data(data){
                         <div class="flex-container">
                         <img src="/static/images/profile_image.jpg" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
                         <div class="mentor-details">
-                            <h4>${alumni.first_name} ${alumni.last_name}</h4>
-                            <p class="mentor-class">Class of ${alumni.graduation_year}</p>
-                            <span class="mentor-position">${alumni.major_uni} at ${alumni.university}</span>
+                            <h4>${alumni.first_name || ""} ${alumni.last_name || ""}</h4>
+                            <p class="mentor-class">Class of ${alumni.graduation_year || ""}</p>
+                            <span class="mentor-position">${alumni.major_uni || ""} at ${alumni.university || ""}</span>
                 `
         if (alumni.has_job){
             alumni_info +=  `
-                <span class="mentor-position"> | ${alumni.role} at ${alumni.employer}</span>
+                <span class="mentor-position"> | ${alumni.role || ""} at ${alumni.employer || ""}</span>
             `
         }
         if (alumni.skills && alumni.skills.length > 0 && alumni.skills[0] !== "") {
             alumni_info += '<p class="mentor-skills">Skills: ';
             alumni.skills.forEach(skill => {
-                alumni_info += `${skill}, `;
+                alumni_info += `${skill || ""}, `;
             });
             alumni_info += `</p>`;
         }
@@ -86,36 +86,11 @@ function display_data(data){
     })
     }
 
-
-
-
     document.querySelectorAll(".view-profile").forEach(temp_var => {
         temp_var.addEventListener("click", function(e){
             e.preventDefault();
             const id = this.getAttribute("data-user-id");
-            window.location.href = `/profile/view_profile/${id}`;
+            window.location.href = `/profile/view_profile/${id}?view=mentor`;
         });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
-
-function open_profile(id){
-    window.location.href = `/view_profile/${id}`
 }

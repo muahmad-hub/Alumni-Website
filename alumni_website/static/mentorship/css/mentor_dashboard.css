@@ -1,4 +1,141 @@
 body {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+  padding: 1rem 3rem 0 3rem;
+}
+
+h2, h5 {
+    color: var(--heading-color);
+    font-weight: 600;
+}
+
+.card-summary {
+    background-color: #ffffff;
+    border-radius: 2.5rem;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stats-card .card-summary:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.card-summary h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 1.3rem;
+}
+
+
+.quick-actions .btn {
+    background-color: #6C63FF;
+    color: white;
+    font-weight: 500;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+}
+
+.quick-actions .btn:hover {
+    background-color: #584ce4;
+}
+
+.table-container {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+
+    max-height: 400px;
+    overflow-y: auto; 
+    display: block;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.view-profile-link{
+  text-decoration: none;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: #6C63FF;
+    border-bottom: 2px solid #6C63FF;
+    background-color: transparent;
+}
+
+.table thead th {
+    color: #343a40;
+    font-weight: 600;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    color: #444;
+}
+
+.status-pending {
+    background-color: #ccbb80;
+    color: #856404;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-accepted {
+    background-color: #ace0b8;
+    color: #0f471c;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-declined {
+    background-color: #d79fa4;
+    color: #6e1720;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.text-success {
+    color: #28a745 !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.text-success:hover,
+.text-danger:hover {
+    text-decoration: underline;
+}
+
+
+
+/* body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background-color: #f4f4f4;
@@ -178,4 +315,4 @@ header h1 {
   color: #888;
   font-size: 18px;
   grid-column: 1 / -1;
-}
+} */

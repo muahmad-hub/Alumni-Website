@@ -13,12 +13,12 @@ def chat_room(request, group_name):
     other_user = Members.objects.filter(
         group=group 
     ).exclude(user=request.user).first()
-
     mentor = is_mentor(request.user, other_user.user)
 
     has_mentor = False
-    if mentor["is_mentor"] == True and other_user.user == mentor["mentor"]:
+    if mentor["is_mentor"]:
         has_mentor = True
+
 
     if Members.objects.filter(group=group, user=request.user).exists():
         messages = Messages.objects.filter(group=group).order_by('-sent_time')[:50]
@@ -30,41 +30,44 @@ def chat_room(request, group_name):
                 "online_count": online_count,
                 "other_user": other_user,
                 "has_mentor": has_mentor,
+                "current_chat": True,
             })
     
     raise Http404
     
-@login_required
-def get_or_create_chat_room(request, other_user_id):
-    other_user = get_object_or_404(Users, id=other_user_id)
-    groups = Groups.objects \
-        .filter(is_private=True) \
-        .filter(members__user__in=[request.user, other_user]) \
-        .annotate(num_members=Count('members')) \
-        .filter(num_members=2) \
-        .distinct()
+# @login_required
+# def get_or_create_chat_room(request, other_user_id):
+#     other_user = get_object_or_404(Users, id=other_user_id)
+#     groups = Groups.objects \
+#         .filter(is_private=True) \
+#         .filter(members__user__in=[request.user, other_user]) \
+#         .annotate(num_members=Count('members')) \
+#         .filter(num_members=2) \
+#         .distinct()
 
-    for g in groups:
-        users_in_group = set(g.members.values_list('user_id', flat=True))
-        if request.user.id in users_in_group and other_user.id in users_in_group:
-            group = g
-            break
-    else:
-        group = None
+#     for g in groups:
+#         users_in_group = set(g.members.values_list('user_id', flat=True))
+#         if request.user.id in users_in_group and other_user.id in users_in_group:
+#             group = g
+#             break
+#     else:
+#         group = None
 
     
-    if group:
-        return redirect('chat_room', group_name = group.group_name)
-    else:
-        new_group = Groups.objects.create(is_private = True)
-        Members.objects.create(group = new_group, user = request.user)
-        Members.objects.create(group = new_group, user = other_user)
-        return redirect('chat_room', group_name = new_group.group_name)
+#     if group:
+#         return redirect('chat_room', group_name = group.group_name)
+#     else:
+#         new_group = Groups.objects.create(is_private = True)
+#         Members.objects.create(group = new_group, user = request.user)
+#         Members.objects.create(group = new_group, user = other_user)
+#         return redirect('chat_room', group_name = new_group.group_name)
     
 
 @login_required
 def messages(request):
-    return render(request, "messaging/messages.html")
+    return render(request, "messaging/messages.html", {
+        "current_chat": False,
+    })
 
 @login_required
 def open_chats(request):

@@ -13,102 +13,177 @@
 
 {% block main %}
 
+ <div class="container-fluid">
+    <div class="row">
 
- <div class="dashboard-container">
-    <header data-aos="fade-up" data-aos-delay="100">
-      <h1>Welcome, 
-        {% if profile.first_name %}
-        {{ profile.first_name }}
-        {% endif %}
-        {% if profile.last_name %}
-        {{ profile.last_name }}
-        {% endif %}
-      </h1>
-      <p class="subtitle">Here are your latest mentorship requests.</p>
-    </header>
+        <main class="container-fluid stats-card">
+            <div class="d-flex justify-content-between align-items-center mt-4"  data-aos="fade-up" data-aos-duration="100">
+                <h2>Welcome, {% if user.profile.first_name %}{{ user.profile.first_name }}{% if user.profile.last_name %} {{ user.profile.last_name }}{% endif %}{% endif %}!</h2>
+            </div>
 
-    <div class="requests-grid" data-aos="fade-up" data-aos-delay="200">
-        {% if requests_none %}
-            {% for req in requests_none %}
-            <div class="alumni-card" data-aos="fade-up" data-aos-delay="300">
-    <div class="request-card">
-        <div class="flex-container">
-            <img src="{{ alumni.profile_url|default:'/static/images/profile_image.jpg' }}" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
-            <div class="mentor-details">
-                <h4>{{ req.mentee.profile.first_name|default:"" }} {{ req.mentee.profile.last_name|default:"" }}</h4>
-                <p class="mentor-class">Class of {{ req.profile.graduation_year|default:"" }}</p>
-                <span class="mentor-position">
-                    {% if req.profile.major_uni and req.profile.university %}
-                        {{ req.profile.major_uni }} at {{ req.profile.university }}
-                    {% endif %}
-                </span>
-                {% if req.profile.role and req.profile.employer %}
-                    <span class="mentor-position"> | {{ req.profile.role }} at {{ req.profile.employer }}</span>
-                {% endif %}
-                <div class="card-actions">
-                    <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
-                    <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+            <div class="row mt-4 g-3">
+                <div class="col-md-4">
+                    <div class="card card-summary text-center p-4"  data-aos="fade-up" data-aos-duration="100">
+                        <h5>Total Requests</h5>
+                        <h2>{{ all_requests_count }}</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-summary text-center p-4" data-aos="fade-up" data-aos-duration="200">
+                        <h5>Accepted Requests</h5>
+                        <h2>{{ accepted_requests_count }}</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-summary text-center p-4"  data-aos="fade-up" data-aos-duration="300">
+                        <h5>Pending Requests</h5>
+                        <h2>{{ declined_requests_count }}</h2>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            <div class="table-container mt-4"  data-aos="fade-up" data-aos-duration="400">
+                <ul class="nav nav-tabs" id="requestTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">All Requests</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="accepted-tab" data-bs-toggle="tab" data-bs-target="#accepted" type="button" role="tab">Accepted</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="declined-tab" data-bs-toggle="tab" data-bs-target="#declined" type="button" role="tab">Declined</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="requestTabsContent">
+                    <!-- All Requests -->
+                <div class="tab-pane fade show active" id="all" role="tabpanel">
+                    <table class="table table-hover mt-3">
+                        <thead>
+                            <tr>
+                                <th>Mentee Name</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in all_requests %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'view_profile' req.mentee.id %}" class="view-profile-link">
+                                            {% if req.mentee.profile.first_name or req.mentee.profile.last_name %}
+                                                {% if req.mentee.profile.first_name %}
+                                                    {{ req.mentee.profile.first_name }}
+                                                    {% if req.mentee.profile.last_name %}
+                                                        {{ req.mentee.profile.last_name }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ req.mentee.profile.last_name }}
+                                                {% endif %}
+                                            {% else %}
+                                                No name
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td>{{ req.created_at|date:"F j, Y" }}</td>
+                                    <td>
+                                        {% if req.accept == None %}
+                                            <span class="status-pending">Pending</span>
+                                        {% elif req.accept == True %}
+                                            <span class="status-accepted">Accepted</span>
+                                        {% elif req.accept == False %}
+                                            <span class="status-declined">Declined</span>
+                                        {% else %}
+                                            <span class="status-unknown">Unknown</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if req.accept == None %}
+                                            <a href="{% url 'accept_mentor' req.id req.mentor.user.id %}" class="text-success me-3">Accept</a>
+                                            <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="text-danger">Decline</a>
+                                        {% elif req.accept == True %}
+                                            <span class="text-muted">Already Accepted</span>
+                                        {% elif req.accept == False %}
+                                            <span class="text-muted">Already Declined</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
 
-            {% endfor %}
-        {% else %}
-            <p class="no-requests">No mentorship requests at the moment.</p>
-        {% endif %}
-    </div>
+                    <!-- Accepted Requests -->
+                    <div class="tab-pane fade" id="accepted" role="tabpanel">
+                        <table class="table table-hover mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Mentee Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in accepted_requests %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'view_profile' req.mentee.id %}" class="view-profile-link">
+                                                {% if req.mentee.profile.first_name or req.mentee.profile.last_name %}
+                                                    {% if req.mentee.profile.first_name %}{{ req.mentee.profile.first_name }}{% if req.mentee.profile.last_name %} {{ req.mentee.profile.last_name }}{% endif %}{% endif %}
+                                                {% else %}
+                                                    No name
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>{{ req.created_at|date:"F j, Y" }}</td>
+                                        <td><span class="status-accepted">Accepted</span></td>
+                                        <td>
+                                            <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="text-danger">Decline</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
-
-    <div class="accepted-requests" data-aos="fade-up" data-aos-delay="300">
-    {% if requests_true %}
-    <div style="text-align: center;">
-        <h4 class="accepted-requests-title">Accepted Requests</h4>
-    </div>
-    {% endif %}
-    <div class="requests-grid">
-        {% if requests_true %}
-            {% for req in requests_true %}
-
-            <div class="alumni-card" data-aos="fade-up" data-aos-delay="300">
-    <div class="request-card">
-        <div class="flex-container">
-            <img src="{{ alumni.profile_url|default:'/static/images/profile_image.jpg' }}" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
-            <div class="mentor-details">
-                <h4>{{ req.mentee.profile.first_name|default:"" }} {{ req.mentee.profile.last_name|default:"" }}</h4>
-                <p class="mentor-class">Class of {{ req.profile.graduation_year|default:"" }}</p>
-                <span class="mentor-position">
-                    {% if req.profile.major_uni and req.profile.university %}
-                        {{ req.profile.major_uni }} at {{ req.profile.university }}
-                    {% endif %}
-                </span>
-                {% if req.profile.role and req.profile.employer %}
-                    <span class="mentor-position"> | {{ req.profile.role }} at {{ req.profile.employer }}</span>
-                {% endif %}
-                <div class="card-actions">
-                    <a href="{% url 'view_profile' req.mentee.id %}" class="view-btn">View</a>
-                    <a href="{% url 'decline_mentor' req.id req.mentor.user.id %}" class="decline-btn">Decline</a>
+                    <!-- Declined Requests -->
+                    <div class="tab-pane fade" id="declined" role="tabpanel">
+                        <table class="table table-hover mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Mentee Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in declined_requests %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'view_profile' req.mentee.id %}" class="view-profile-link">
+                                                {% if req.mentee.profile.first_name or req.mentee.profile.last_name %}
+                                                    {% if req.mentee.profile.first_name %}{{ req.mentee.profile.first_name }}{% if req.mentee.profile.last_name %} {{ req.mentee.profile.last_name }}{% endif %}{% endif %}
+                                                {% else %}
+                                                    No name
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>{{ req.created_at|date:"F j, Y" }}</td>
+                                        <td><span class="status-declined">Declined</span></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+                </div>
+            </div>
+        </main>
     </div>
 </div>
-
-
-            {% endfor %}
-        {% endif %}
-    </div>
-    </div>
-
-
-
-
-
-
-</div>
-
-
 
 {% endblock %} 

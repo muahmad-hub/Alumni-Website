@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-    <link href="{% static 'directory/css/directory.css' %}" rel="stylesheet">
+    <link href="{% static 'directory/css/mentor_directory.css' %}" rel="stylesheet">
     <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
 {% endblock %}
 
@@ -13,19 +13,41 @@
 
 {% block main %}
 
-
-<div class="container alumni-section">
-  <h2 class="mb-4 text-center alumni-heading">Our Alumni</h2>
-
-
-    <div class="search-container text-center mb-5">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search alumni by name, year, or field...">
-        <button class="search-btn">Search</button>
+<div class="mentors"> 
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4 section-header" data-aos="fade-up" data-aos-delay="200">
+      <h3>Our Alumni</h3>
+      <p class="lead">Connect with our distinguished alumni making a difference around the world</p>
     </div>
 
+    <div class="search-container text-center mb-5" data-aos="fade-up" data-aos-delay="300">
+      
+      <div class="search-flex-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name">
+
+          <select class="form-control select-filter batch-year" id="batch_year">
+          <option default>Batch Year</option>
+          {% for year in years %}
+              <option>{{ year.graduation_year }}</option>
+          {% endfor %}
+          </select>
+
+          <select class="form-control select-filter uni" id="university">
+              <option default>University</option>
+              {% for uni in university %}
+                  <option>{{ uni.university }}</option>
+              {% endfor %}
+          </select>
+
+
+      </div>
+    </div>
     <div id="alumni-container" class="row g-4"></div>
+  </div>
 </div>
 
-
+<script>
+  alumniSearchURL = "{% url 'search_directory' %}"
+</script>
 <script src="{% static 'directory/javascript/directory.js' %}"></script>
 {% endblock %}

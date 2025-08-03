@@ -111,49 +111,4 @@
         </div>
       </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-{% if pending_requests %}
-
-<div class="pending-requests-container">
-  <h2 class="title">Accepted Requests for Mentorship</h2>
-
-<div class="requests-grid">
-  {% for request in pending_requests %}
-    <div class="request-card">
-        <div class="mentor-info">
-        <h3>{{ request.mentor.user.profile.name }}</h3>
-        {% if request.mentor.skills.all %}
-            <p><strong>Skill:</strong> 
-            {% for skill in request.mentor.skills.all %}
-                <span>{{ skill.skill }}, </span>
-            {% endfor %}
-            </p> 
-        {% endif %}
-        <p><strong>Status:</strong> Pending</p>
-        </div>
-        <form class="action-note" action="{% url 'get_or_create_chat_room' request.mentor.user.id %}">
-        <button class="btn accept-btn">Accepted</p>
-        </form>
-    </div>
-  {% endfor %}
-</div>
-</div>
-
-{% else %}
-<div class="pending-requests-container">
-    <h2 class="title">No updates yet :)</h2>
-</div>
-{% endif %}
-
 {% endblock %}

@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var connect_message = document.getElementById("connect_message")
     var mentor_message = document.getElementById("mentor_message")
 
+    if (connectButton){
     connectButton.addEventListener("click", function(event){
         event.preventDefault()
         fetch(connect, {
@@ -35,7 +36,9 @@ document.addEventListener("DOMContentLoaded", function(){
             console.error("Error:", error)
         })
     })
+    }
 
+    if (requestMentorButton){
     requestMentorButton.addEventListener("click", function(event){
         event.preventDefault()
         fetch(mentor_match, {
@@ -67,5 +70,5 @@ document.addEventListener("DOMContentLoaded", function(){
             console.error("Error:", error)
         })
     })
-
+    }
 })

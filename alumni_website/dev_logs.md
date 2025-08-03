@@ -385,10 +385,10 @@ return page_rank
 - Each card is a link that loads the page with the corresponding messages.
 - A search bar is integrated into the contact list, enabling users to filter and search for contacts by name dynamically.
 - The search queries are handled client-side, improving performance and responsiveness.
-## Bug 1: Validation error messages were not shown
+### Bug 1: Validation error messages were not shown
 - While implementing form validation for the user profile page, I attempted to display error messages by passing a query string when  redirected 
 - However, eventhough invalid data was submitted, no error message appeared on the redirected page.
-## Solution:
+### Solution:
 - The issue was with how I attempted to include the error message in the redirect() call in Django
 - I was incorrectly assuming that keyword arguments in redirect() would be for the query parameters in the resulting URL
 - Incorrect syntax:
@@ -399,17 +399,17 @@ return page_rank
     ```python 
     redirect("profile") + "?message=Graduation%20year%20must%20be%20a%20valid%20number"
     ```
-## Bug 2: AJAX request was not working
+### Bug 2: AJAX request was not working
 - While implementing profile updates via AJAX, I encountered a persistent Uncaught TypeError in the browser console whenever a fetch request was made to update user data. The error indicated that the response object was being accessed incorrectly or prematurely.
-## Solution:
+### Solution:
 - My `.then` was inside the fetch request. Since it is synchronous it didnt work
 - The issue came from improper chaining of the .then() method
 - I had nested .then() inside the fetch() call itself, which led to incorrect promise handling. 
 - Specifically, I was attempting to handle the response synchronously, without awaiting the resolution of the initial fetch promise.
 - Once the .then() chain was moved outside the fetch() call, the promise resolved as expected and the AJAX request executed without errors
-## Bug 3: Messaging Page Returned 404 Error
+### Bug 3: Messaging Page Returned 404 Error
 - Accessing the messaging page at /messaging/messages/ consistently returned a 404 Not Found error
-## Solution:
+### Solution:
 - I was attempting to visit the URL path /messaging/messages/, but I had not actually defined this path in urls.py
 ```python
 path("messages", views.messages, name="messages")
@@ -418,6 +418,41 @@ path("messages", views.messages, name="messages")
 - I implemented the correct url and I also double-checked the URL patterns in urls.py and used Django's {% url %} template tag where appropriate to avoid hardcoding paths incorrectly.
 - Lesson learnt:
     - The Network tab in browser DevTools is incredibly helpful for debugging broken links or unexpected 404s by showing exactly what request is being made
-## Next steps:
+### Next steps:
 - Add another section on the messageing app where users can see any requests, hwen users request to connect.
 - One section can toggle between showing teh connection requests and showing messages
+
+## Date: August 3
+### What I did
+- Created a seperate alumni directory where users can search for alumni by their name and filter them batch year and university. 
+- Clicking on a profile:
+    - In the Mentor Directory: shows a Request Mentor button.
+    - In the Alumni Directory: shows a Connect button to send connection requests.
+- Revamped the Mentor Dashboard:
+    - I redesigned the mentor dashboard to better support request managment
+    - I add kety metrics at the top that show the total requests made, accepted requests and pending requests
+    - I added an interactive table with tabbed views:
+        - All, Accepted and Declined requests
+    - Each row contains the date when the request was made, shows the current status and allows actions.
+    - When `Accept` is clicked from the actions, it marks the `accepted` value as True in teh backend and also runs the `create_chat_room` function from `messaging.utils` which now creates a Group model for the two users. This group can now be accessed in both the mentor and mentees Messaging app.
+- I made the chat app responsive for mobile use too. I added an additional value to the context, `current_chat`, which informs whether the message section should be open or not. I used this with Jinja to conditionally not show the sidebar on smaller screens. This makes it so that users don't need to scroll down to view the messages when they are using the website on mobile. I additionally also added a back button on the
+- I also grouped similar pages together in the navigation bar to reduce clutter by using dropdowns
+    - Dashboard: contains Home page, Profile, and the Activity Hub(messaging app)
+    - Mentorship: contains Mentor directory and Mentor dashboard/mentor sign up
+    - Explore: contains both the alumni and mentor directory
+### Bug 1: Messages were not being loaded
+- When I clicked on a newly added contact in the message app, the message section on the right would show the default "Select a conversation message", eventhough the WebSocket Handshake was intitiated and the connection was made
+- Clicking on older contacts loaded the correct messages
+### Solution:
+- I had previously made a condition to only load the chat section if the Backend successfully retrived the messages and user details
+- However, this meant that for new contacts, who didnt have any messages, the app was not loading the message section as it didn't meet the condition
+- I removed the condition
+### Bug 2: Message app was not working on mobile screens
+- I initially used Javascript to toggle between the visibility of teh `.chat-wrapper` and the `.sidebar-wrapper` based on screen width and when a contact was clicked
+- However, clicking a contact perfomed a full page reload, so the chat section flashed in but went back to the side bar
+### Solution:
+- Instead of toggling the two views with Javscript, I used Django to determine which sections should be visible.
+- I added a `current_chat` field which was passed to both `message.html` and `messages.html` and helped them determine what to show.
+### Next Steps:
+- I now need to refine and finish my AI and find how exaclty I am going to suggest users other contacts (for example is it going to be on a weekly bases or am I going to store information about the last time the user was recommended someone and accordingly recommend them)
+- I also need to create a way users can accept or decline requests for Connection. I am thinking of maybe integrating this feature on the "Acitivity Hub"

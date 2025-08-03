@@ -72,20 +72,6 @@ def profile(request):
         "goals": goals,
     })
 
-# @login_required
-# def get_profile_info(request):
-#     profile = Profile.objects.get(user = request.user)
-#     data = model_to_dict(profile)
-#     return JsonResponse(data)
-
-# @login_required
-# def edit_profile(request):
-#     profile = Profile.objects.get(user=request.user)
-
-#     return render(request, "profiles/edit_profile.html", {
-#         "profile": profile,
-#     })
-
 def redirect_to_profile_with_message(message):
     query_params = urlencode({"message": message})
     profile_url = reverse("profile")
@@ -93,6 +79,8 @@ def redirect_to_profile_with_message(message):
 
 @login_required
 def view_profile(request, id):
+    view_type = request.GET.get('view')
+
     profile = Profile.objects.get(user = Users.objects.get(id = id))
     skills = Skill.objects.filter(profile = profile)
 
@@ -114,6 +102,7 @@ def view_profile(request, id):
         "connection": connection,
         "mentor_match": mentor_match,
         "mentor_exists": mentor_exists,
+        "view_type": view_type
     })
 
 @login_required

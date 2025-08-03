@@ -4,39 +4,47 @@
 {% block extra_css %}
   <link href="{% static 'messaging/css/messages.css' %}" rel="stylesheet">
   <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
-  <script src="https://unpkg.com/htmx.org@1.7.0"></script>
 {% endblock %}
 
 {% block main %}
+<div class="container-fluid mt-4" data-aos="fade-up" data-aos-delay="100">
+  <div class="row main-chat-wrapper" id="chat-wrapper">
 
-<div class="main-chat-wrapper" data-aos="fade-up" data-aos-delay="100">
-  <div class="sidebar">
-    <div class="sidebar-search">
-      <input type="text" placeholder="Search..." id="search-messages"/>
-    </div>
-    <div class="contact-list">
-    </div>
-  </div>
-
-
-{% if messages and user and group_name %}
-    {% include 'messaging/message.html' with messages=messages user=user group_name=group_name other_user=other_user has_mentor=has_mentor %}
-{% else %}
-    <div class="chat-container">
-      <div class="chat-header">Select A conversation</div>
-      <div class="chat-messages">
-        <p></p>
+    <!-- Sidebar -->
+    <div class="col-12 col-md-4 col-lg-3 sidebar-wrapper {% if current_chat %}d-none d-md-block{% endif %}">
+      <div class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" placeholder="Search..." id="search-messages" class="form-control"/>
+        </div>
+        <div class="contact-list">
+          <!-- Contact items inserted dynamically -->
+        </div>
       </div>
     </div>
-{% endif %}
 
+    <!-- Chat -->
+  <div class="col-12 col-md-8 col-lg-9 chat-wrapper {% if not current_chat %}d-none d-md-block{% endif %}">
+      {% if user and group_name %}
+        {% include 'messaging/message.html' with messages=messages user=user group_name=group_name other_user=other_user has_mentor=has_mentor %}
+      {% else %}
+        <div class="chat-container">
+          <div class="chat-header">Select A conversation</div>
+          <div class="chat-messages">
+            <p></p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
-  <script>
-    var groupName = "{{ group_name }}";
-    var csrfToken = "{{ csrf_token }}";
-    var currentUserId = "{{ user.id }}";
-  </script>
-  <script src="{% static 'messaging/javascript/open_chats.js' %}"></script>
+<script>
+  var groupName = "{{ group_name }}";
+  var csrfToken = "{{ csrf_token }}";
+  var currentUserId = "{{ user.id }}";
+</script>
+<script src="{% static 'messaging/javascript/open_chats.js' %}"></script>
 {% endblock %}

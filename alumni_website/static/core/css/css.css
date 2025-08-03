@@ -23,9 +23,43 @@ body {
   color: #2c2c2c;
 }
 
-.nav {
-  background-color: var(--nav-background-color) !important;
+.main-nav{
+  padding: 0;
+  margin: 0;
+}
+
+.main-nav .nav {
+  background-color: var(--accent-color) !important;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-nav .navbar .dropdown-menu {
+  background-color: var(--accent-color) !important;
+}
+
+.main-nav .navbar .dropdown-menu .dropdown-item {
+  color: white;
+}
+
+.main-nav .navbar .dropdown-menu {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  visibility: hidden;
+  pointer-events: none;
+  display: none;
+}
+
+.main-nav .navbar .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  display: block;
+}
+
+.dropdown-item:hover {
+  background-color: #4e1002;
 }
 
 .bg-maroon-light {
@@ -63,19 +97,6 @@ h3 {
   font-family: 'Playfair Display', serif;
   font-size: 2rem;
 }
-
-.card {
-  background-color: #fffaf0;
-  border-left: 4px solid #b8860b;
-}
-
-.card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: #4e1002;
-}
-
-
 
 
 
