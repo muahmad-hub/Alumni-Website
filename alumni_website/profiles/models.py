@@ -42,9 +42,15 @@ class Goal(models.Model):
 class Connection(models.Model):
     profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_initiated", null=True)
     profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="connection_received", null=True)
-    accepted = models.BooleanField(default=False)
+    accepted = models.BooleanField(null=True, default=None)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.profile1} and {self.profile2}"
+
+class UserAlumniRecommendation(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    recommended_profile = models.ForeignKey(Profile, related_name='recommended_to', on_delete=models.SET_NULL, null=True)
+    compatibility_score = models.FloatField(null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)

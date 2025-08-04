@@ -1,5 +1,27 @@
-window.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function() {
     get_alumni("", "", "")
+
+    fetch(alumniRecommendURL)
+    .then(response => response.json())
+    .then(data => {
+        if (data.show_modal) {
+            const fullName = [data.first_name, data.last_name].filter(Boolean).join(" ") || "Unknown"
+            const percentage = (data.percentage || 0).toFixed(1)
+
+            document.getElementById('recommended-user-name').textContent = fullName
+            document.getElementById('compatibility-score').textContent = `${percentage}%`
+            document.getElementById('view-recommended-user-profile').href = `/profile/view_profile/${data.id}`
+
+            const modalEl = document.getElementById('recommendationModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl)
+                modal.show()
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Failed to fetch recommendation:", error)
+    })
 })
 
 document.getElementById("searchInput").addEventListener("input", function() {

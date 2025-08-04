@@ -13,6 +13,10 @@
 
 {% block main %}
 
+
+
+
+
 <div class="mentors"> 
   <div class="row mb-5">
     <div class="col-12 text-center mb-4 section-header" data-aos="fade-up" data-aos-delay="200">
@@ -46,8 +50,46 @@
   </div>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+  <div class="modal fade" id="recommendationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title">New Match Found!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Our AI think You are <span id="compatibility-score"><strong></strong></span> compatible with
+            <span id="recommended-user-name"><strong></strong></span>.
+          </p>
+          <a href="#" id="view-recommended-user-profile" class="btn btn-primary">View Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
 <script>
   alumniSearchURL = "{% url 'search_directory' %}"
+  alumniRecommendURL = "{% url 'alumni_directory_recommend' %}"
 </script>
 <script src="{% static 'directory/javascript/directory.js' %}"></script>
 {% endblock %}

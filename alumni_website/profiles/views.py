@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 from mentorship.utils import get_mentor_match
 from mentorship.models import Mentor
 from .utils import get_connection
+from messaging.utils import create_chat_room
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -66,10 +67,13 @@ def profile(request):
     profile = get_object_or_404(Profile, user=request.user)
     skills = Skill.objects.filter(profile = profile)
     goals = Goal.objects.filter(profile = profile)
+    connection_requests = Connection.objects.filter(profile2 = profile, accepted=None)
+
     return render(request, "profiles/profile.html", {
         "profile": profile,
         "skills": skills,
         "goals": goals,
+        "connection_requests": connection_requests,
     })
 
 def redirect_to_profile_with_message(message):
@@ -85,15 +89,15 @@ def view_profile(request, id):
     skills = Skill.objects.filter(profile = profile)
 
     connection = get_connection(request.user.profile.id, profile.id)
-    mentor_match = get_mentor_match(request.user.id, profile.user.id)
-
-    mentors = Mentor.objects.filter(user = Users.objects.get(id = profile.user.id))
-
-    if mentors:
-        mentor_match = get_mentor_match(request.user.id, profile.user.id)
+    
+    try:
+        mentors = Mentor.objects.get(user=profile.user)
         mentor_exists = True
-    else:
+        mentor_match = get_mentor_match(request.user.id, profile.user.id)
+    except Mentor.DoesNotExist:
+        mentors = None
         mentor_exists = False
+        mentor_match = None
 
 
     return render(request, "profiles/view_profile.html", {
@@ -276,4 +280,42 @@ def connect(request):
         else:
             new_connection = Connection.objects.create(profile1=request.user.profile, profile2=profile)
             accepted = new_connection.accepted
-            return JsonResponse({"status": "success", "message": "Connected", "accepted": str(accepted)})
+            if accepted is None:
+                accepted_str = "Pending"
+            elif accepted is True:
+                accepted_str = "True"
+            else:
+                accepted_str = "False"
+
+            return JsonResponse({"status": "success", "message": "Connected", "accepted": accepted_str})
+
+@login_required
+def accept_connection(request, user_id, action):
+    if request.method == "POST":
+        try:
+            profile2 = get_object_or_404(Profile, user = request.user)
+            print(profile2)
+            user1 = get_object_or_404(Users, id = user_id)
+            print(user1)
+            profile1 = get_object_or_404(Profile, user = user1)
+            print(profile1)
+
+            connection = get_object_or_404(Connection, profile1=profile1, profile2=profile2)
+            print(connection)
+
+            if action == "accept":
+                connection.accepted = True
+                connection.save()
+                print(connection)
+
+                create_chat_room(request.user, user1)
+                print("chat room created")
+
+                return JsonResponse({'status': 'success', 'message': 'Connection accepted.'})
+            else:
+                connection.accepted = False
+                connection.save()
+                return JsonResponse({'status': 'success', 'message': 'Connection declined.'})
+
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': str(Exception)})

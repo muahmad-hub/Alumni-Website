@@ -17,7 +17,7 @@
           <input type="text" placeholder="Search..." id="search-messages" class="form-control"/>
         </div>
         <div class="contact-list">
-          <!-- Contact items inserted dynamically -->
+          <!-- Contact items are inserted here dynamically -->
         </div>
       </div>
     </div>
@@ -27,12 +27,7 @@
       {% if user and group_name %}
         {% include 'messaging/message.html' with messages=messages user=user group_name=group_name other_user=other_user has_mentor=has_mentor %}
       {% else %}
-        <div class="chat-container">
-          <div class="chat-header">Select A conversation</div>
-          <div class="chat-messages">
-            <p></p>
-          </div>
-        </div>
+      <span class="pick-convo">Pick a conversation</span>
       {% endif %}
     </div>
 

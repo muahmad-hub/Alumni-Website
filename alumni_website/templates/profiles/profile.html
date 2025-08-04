@@ -13,7 +13,57 @@
 
 {% block main %}
 
-<div class="profile-container" data-aos="fade-up">
+
+<div class="main-wrapper container-fluid">
+
+<div class="row">
+
+
+
+<div class="col-12 col-md-4 col-lg-3 sidebar-wrapper">
+  <div class="sidebar">
+    <h2>Connection Requests</h2>
+    <div class="contact-list">
+      
+
+
+      {% for req in connection_requests %}
+      <div class="contact-item">
+        <img src="{{ req.profile_url|default:'/static/images/profile_image.jpg' }}" alt="profile image" class="profile_image" />
+        <div class="connect-details" data-user-id="{{ req.profile1.user.id }}" data-url-accept="{% url 'accept_connection' req.profile1.user.id 'accept' %}" data-url-decline="{% url 'accept_connection' req.profile1.user.id 'decline' %}">
+          <div class="contact-name">
+            {% if req.profile1.first_name or req.rofile1.last_name %}
+                {% if req.profile1.first_name %}{{ req.profile1.first_name }}{% if req.profile1.last_name %} {{ req.profile1.last_name }}{% endif %}{% endif %}
+            {% else %}
+                No name
+            {% endif %}
+          </div>
+          <div class="connection_buttons mt-2">
+            {% csrf_token %}
+            <a href="{% url 'view_profile' req.profile1.user.id %}"><button class="btn view">View</button></a>
+            <button class="btn connect">Accept</button>
+            <button class="btn decline">Decline</button>
+          </div>
+          
+        </div>
+      </div>
+        {% endfor %}
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="col-12 col-md-8 col-lg-9 profile-container" data-aos="fade-up">
 
   {% if request.GET.message %}
     <div class="alert alert-danger">{{ request.GET.message }}</div>
@@ -244,7 +294,7 @@
     </div>
     <div class="row g-3">
       <div class="alert alert-info small">
-        These goals and skills will not appear on your public profile. They help us match you with similar alumni.
+        These goals will not appear on your public profile. They help us match you with similar alumni.
       </div>
       {% for goal in profile.goals.all %}
       <div class="col-md-12">
@@ -324,6 +374,46 @@
   </div>
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
 
 <!--Modals for entering Profile info-->
 

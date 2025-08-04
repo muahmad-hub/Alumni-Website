@@ -123,6 +123,19 @@ body {
   height: 100%; 
 }
 
+.pick-convo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  color: var(--heading-color);
+  padding: 1rem;
+  text-align: center; 
+  font-size: 2rem;
+  font-weight: bold;
+
+  height: 100%; 
+}
 
 .chat-messages {
   flex-grow: 1;

@@ -456,3 +456,35 @@ path("messages", views.messages, name="messages")
 ### Next Steps:
 - I now need to refine and finish my AI and find how exaclty I am going to suggest users other contacts (for example is it going to be on a weekly bases or am I going to store information about the last time the user was recommended someone and accordingly recommend them)
 - I also need to create a way users can accept or decline requests for Connection. I am thinking of maybe integrating this feature on the "Acitivity Hub"
+
+## Date: August 4
+### What I did
+- Implemented a sidebar on the profile page displaying all pending connection requests for the user.
+- Each request is presented as a card with three action buttons:
+    - View: to view the profile 
+    - Accept & Decline: triggers an AJAX request to update the connection status in the database. Once done, the corresponding card is dynamically removed from the UI
+- Refined the A* modified search heurisitic to include the personalized page rank algorithm
+    - ```python
+        def h_n(profile1, profile2, normalized_page_ranks, alpha=ALPHA, beta=BETA):
+        similarity_score = calculate_score(profile1, profile2)
+        ppr_value = normalized_page_ranks[profile2]
+
+        heuristic = ALPHA * (1-similarity_score) + BETA * (1-ppr_value)
+        ```
+    - This new heuristic takes into account both the similarity score and the personalized page rank. `ALPHA` and `BETA` are used to determine which rank/score should be valued more
+    - Currently, I've set both values to 0.5 so local similarity and global connectivity are both valued the same
+- Added a modal on the directory page that shows the recommended user and the compatibility score. The directory view calls the `recommend` function.
+### Bug: AI module was constantly raising key errors
+- When the code tried to access a user in the neighbors dictionary, a key error was raised
+### Solution:
+- All three of the files (`personalized_page_rank.py`, `a_star_search.py`, and `utils.py`) had conflicting use of `Profile` and `Users` instance
+- Therefore, I ensured that all of the functions use the `Profile` instance. Only the `recommend` function in `recommender.py` takes a `Users` instance which it then uses its `Profile` instance and passes it on to the other functions.
+### Reflection
+- Initially, I rendered teh AI recommendation modal directly in the Django view during the directory page load. However, this meant that every time a user visited the page, the recommendation engine was triggered too, causing a noticable delay, especially when I tried by adding many users in the database. It took noticeable time even with just 12 Users
+- I tried to optimize the code by storing the results of `get_neigbors` function in a variable instead of calling it everytime in the loop. This did reduce the number of queries made to the database, but the delay was still noticeable
+- I then switched to a different approach. I loaded the directory first and used Javascript to send an AJAX request so that the users dont notice the delay as the directory is loaded and once the recommendation engine outputs a result, it is displayed on the modal.
+- This approach does seem to work for the time being but will only work if users stay on the directory long enough. If they click on a profile, it may cancel the request
+- I then switched to a different approach: instead of blocking the page load, I rendered the directory first and used JavaScript to send an AJAX request in the background. This way the directory loads instantly and the recommendation modal appears only once the AI engine finishes processing, making the experience feel seamless
+- While it does improve the responsiveness, it has a tradeoff: it only works if the ysers stay on the page long enough. If they, for example click a profile, the modal may not appear
+- I am considering moving the modal and related Javascript to the base template. This way, recommendations can be triggered regardless of which page the user is on
+

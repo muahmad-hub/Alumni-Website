@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var notEmployed = document.getElementById("not_employed");
 
     var jobSection = document.getElementById("job_section");
+
     if (employed.checked) {
         jobSection.style.display = "block";
     } else {
@@ -26,6 +27,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     })
 })
+
+document.addEventListener("click", function(event){
+    if (event.target.classList.contains("connect") || event.target.classList.contains("decline")){
+        var contactDetailsDiv = event.target.closest(".connect-details")
+        var isAcceptButton = event.target.classList.contains("connect")
+        var container = event.target.closest(".contact-item")
+        if (isAcceptButton){
+            sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-accept"), container)
+        }
+        else{
+            sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-decline"), container)
+        }
+    }
+})
+
+function sendConnectionDetails(url, container){
+    fetch(url, {
+        method: "POST",
+        headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrfToken,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            container.remove()
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+}
 
 function change_employed_status(value){
     fetch(edit_employment_status, {

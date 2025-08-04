@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from .models import *
-from profiles.models import Profile
+from profiles.models import Profile, UserAlumniRecommendation
 from mentorship.models import Mentor
 from django.templatetags.static import static
 from django.db.models import Q
 from .utils import get_directory_filters
+from django.utils import timezone
+from datetime import timedelta
+from ai.recommender import recommend
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -16,6 +19,64 @@ def directory(request):
     context["view_type"] = "alumni"
 
     return render(request, "directory/directory.html", context)
+
+@login_required
+def alumni_directory_recommend(request):
+    profile = request.user.profile
+    session_key = "last_seen_recommendation_id"
+
+    context = {}
+
+    try:
+        user_recommendation = UserAlumniRecommendation.objects.get(profile=profile)
+    except UserAlumniRecommendation.DoesNotExist:
+        return JsonResponse({"show_modal": False})
+
+    time_difference = timezone.now() - user_recommendation.timestamp
+
+    if time_difference > timedelta(days=7) or not user_recommendation.recommended_profile:
+        recommend_data = recommend(request.user)
+        if recommend_data:
+            recommended_profile = Profile.objects.get(id = recommend_data["user"])
+
+            user_recommendation.recommended_profile = recommended_profile
+            user_recommendation.compatibility_score = recommend_data["f_n_score"]
+            user_recommendation.timestamp = timezone.now()
+            user_recommendation.save()
+
+            percentage = recommend_data["f_n_score"] * 100
+
+            context["first_name"] = recommended_profile.first_name
+            context["last_name"] = recommended_profile.last_name
+            context["id"] = recommended_profile.user.id
+            context["percentage"] = percentage
+        
+
+            if request.session.get(session_key) != recommended_profile.id:
+                context["show_modal"] = True
+                request.session[session_key] = recommended_profile.id
+            else:
+                context["show_modal"] = False
+        else:
+            context["first_name"] = None
+            context["last_name"] = None
+            context["id"] = None
+            context["show_modal"] = False
+
+    else:
+        recommended_profile = user_recommendation.recommended_profile
+        context["first_name"] = recommended_profile.first_name
+        context["last_name"] = recommended_profile.last_name
+        context["id"] = recommended_profile.user.id
+        context["percentage"] = user_recommendation.compatibility_score * 100
+
+        if request.session.get(session_key) != recommended_profile.id:
+            context["show_modal"] = True
+            request.session[session_key] = recommended_profile.id
+        else:
+            context["show_modal"] = False
+
+    return JsonResponse(context)
     
 @login_required
 def search_directory(request):

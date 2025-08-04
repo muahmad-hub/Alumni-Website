@@ -1,0 +1,150 @@
+.profile-container {
+  margin-top: 2rem !important;
+}
+
+.profile-container #connect_message, #mentor_message{
+  display: none;
+}
+
+
+.admin {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff9800, #ffc107);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.4);
+}
+
+.connection_buttons .connect, .request_mentor {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  background: var(--accent-color);
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.connection_buttons .connect:hover, .request_mentor:hover {
+  transform: scale(1.02);
+  background: #843342;
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.connection_buttons .connect:active, .request_mentor:active{
+    background: white;
+    color: #843342;
+}
+
+.profile-info h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+.section .section-header h3{
+  color: var(--heading-color);
+}
+
+.profile-info p {
+  font-size: 14px;
+  color: #666;
+}
+
+.bg-light {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.bg-light:hover {
+  background-color: #efefef !important;  
+  transform: scale(1.01);
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  color: #333;
+}
+
+.section-header button {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  background: var(--accent-color);
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.section-header button:hover {
+  transform: scale(1.02);
+  background: #843342;
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.save-changes {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  background: var(--accent-color);
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.save-changes:hover {
+  transform: scale(1.02);
+  background: #843342;
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 20px;
+  }
+}

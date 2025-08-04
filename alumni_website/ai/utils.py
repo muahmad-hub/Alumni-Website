@@ -45,24 +45,21 @@ def save_model(model, path):
 def load_model(path):
     return joblib.load(path)
 
-def get_neighbors(user):
-    user_profile = get_object_or_404(Profile, user = user)
-    profiles = Profile.objects.all()
+def get_neighbors(profile):
+    profiles = Profile.objects.exclude(id=profile.id)
 
     neighbors = set()
 
-    for profile in profiles:
-        if profile == user_profile:
-            continue
+    for other_profile in profiles:
 
-        has_shared_location = 1 if profile.location == user_profile.location else 0
-        has_shared_university = 1 if profile.university == user_profile.university else 0 
-        has_shared_job = 1 if profile.has_job == user_profile.has_job else 0
-        has_shared_education = 1 if profile.education_level == user_profile.education_level else 0
-        has_shared_grad_year = 1 if profile.graduation_year == user_profile.graduation_year else 0
+        has_shared_location = 1 if other_profile.location == profile.location else 0
+        has_shared_university = 1 if other_profile.university == profile.university else 0 
+        has_shared_job = 1 if other_profile.has_job == profile.has_job else 0
+        has_shared_education = 1 if other_profile.education_level == profile.education_level else 0
+        has_shared_grad_year = 1 if other_profile.graduation_year == profile.graduation_year else 0
 
-        user_skills = set(user_profile.skills.all())
-        profile_skills = set(profile.skills.all())
+        user_skills = set(profile.skills.all())
+        profile_skills = set(other_profile.skills.all())
         has_shared_skills = bool(user_skills & profile_skills)
 
         if (
@@ -73,50 +70,57 @@ def get_neighbors(user):
             has_shared_grad_year or
             has_shared_skills
             ):
-            neighbors.add(profile.user)
+            neighbors.add(other_profile)
 
     return neighbors
 
 def get_all_connections():
+
     all_connections = {}
+
+    for profile in Profile.objects.all():
+        all_connections[profile.id] = set()
 
     for connection in Connection.objects.all():
         if connection.profile1.id == connection.profile2.id:
             continue
-
-        if connection.profile1.id not in all_connections:
-            all_connections[connection.profile1.id] = set()
-        if connection.profile2.id not in all_connections:
-            all_connections[connection.profile2.id] = set()
 
         all_connections[connection.profile1.id].add(connection.profile2.id)
         all_connections[connection.profile2.id].add(connection.profile1.id)
 
     return all_connections
 
-def calculate_score(user1, user2):
-    profile1 = get_object_or_404(Profile, user = user1)
-    profile2 = get_object_or_404(Profile, user = user2)
+def calculate_score(profile1, profile2):
 
-    skills_overlap = len(set(profile1.skills) & set(profile2.skills)) / len(set(profile1.skills) | set(profile2.skills))
-    goals_overlap = len(set(profile1.goals) & set(profile2.goals)) / len(set(profile1.goals) | set(profile2.goals))
+    total_skill_overlap = len(set(profile1.skills.all()) | set(profile2.skills.all()))
+    skills_overlap = 0 if total_skill_overlap == 0 else len(set(profile1.skills.all()) & set(profile2.skills.all())) / total_skill_overlap
+
+    total_goal_overlap = len(set(profile1.goals.all()) | set(profile2.goals.all()))
+    goals_overlap = 0 if total_goal_overlap == 0 else len(set(profile1.goals.all()) & set(profile2.goals.all())) / total_goal_overlap
 
     university_location = 1 if profile1.university_location == profile2.university_location else 0
     location = 1 if profile1.location == profile2.location else 0
 
     education_level = 1 if profile1.education_level == profile2.education_level else 0
 
-    grad_year_diff = abs(profile1.graduation_year-profile2.graduation_year)
+    grad_year1 = profile1.graduation_year if profile1.graduation_year is not None else 9999
+    grad_year2 = profile2.graduation_year if profile2.graduation_year is not None else 9999
+
+    grad_year_diff = abs(grad_year1 - grad_year2)
     max_difference = 6
 
-    graduation_year = max(0, 1 - (grad_year_diff/max_difference))
+    graduation_year_score = max(0, 1 - (grad_year_diff / max_difference))
 
     all_connections = get_all_connections()
 
-    mutual_connections = len(set(all_connections[profile1.profile.id]) & set(all_connections[profile2.profile.id])) / len(set(all_connections[profile1.profile.id]) | set(profile2.profile.id))
+    total_mutual_connections = len(set(all_connections[profile1.id]) | set(all_connections[profile2.id]))
+    if total_mutual_connections == 0:
+        mutual_connections = 0
+    else:
+        mutual_connections = len(set(all_connections[profile1.id]) & set(all_connections[profile2.id])) / total_mutual_connections
 
-    w1, w2, w7 = 0.25
-    w3, w4, w5, w6, w8 = 0.125
+    w1 = w2 = w7 = 0.25
+    w3 = w4 = w5 = w6 = w8 = 0.125
 
 
     score = (
@@ -125,7 +129,7 @@ def calculate_score(user1, user2):
         w3 * university_location + 
         w4 * location + 
         w5 * education_level + 
-        w6 * graduation_year +
+        w6 * graduation_year_score +
         w7 * mutual_connections 
     )
 
@@ -145,8 +149,8 @@ def calculate_score(user1, user2):
     return final_score
 
 class Node:
-    def __init__(self, user, cost):
-        self.user = user
+    def __init__(self, profile, cost):
+        self.profile = profile
         self.cost = cost
 
     def __lt__(self, other):
