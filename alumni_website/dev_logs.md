@@ -487,4 +487,3 @@ path("messages", views.messages, name="messages")
 - I then switched to a different approach: instead of blocking the page load, I rendered the directory first and used JavaScript to send an AJAX request in the background. This way the directory loads instantly and the recommendation modal appears only once the AI engine finishes processing, making the experience feel seamless
 - While it does improve the responsiveness, it has a tradeoff: it only works if the ysers stay on the page long enough. If they, for example click a profile, the modal may not appear
 - I am considering moving the modal and related Javascript to the base template. This way, recommendations can be triggered regardless of which page the user is on
-

@@ -4,8 +4,8 @@ import heapq
 from .utils import get_neighbors, Node
 
 F_THRESHOLD = 1
-ALPHA = 0.5
-BETA = 0.5
+ALPHA = 0.8
+BETA = 0.2
 
 def g_n(profile1, profile2):
     return 1 - calculate_score(profile1, profile2)
@@ -14,7 +14,7 @@ def h_n(profile1, profile2, normalized_page_ranks, alpha=ALPHA, beta=BETA):
     similarity_score = calculate_score(profile1, profile2)
     ppr_value = normalized_page_ranks[profile2]
 
-    heuristic = ALPHA * (1-similarity_score) + BETA * (1-ppr_value)
+    heuristic = ALPHA * (similarity_score) + BETA * (1-ppr_value)
 
     return heuristic
 
@@ -23,7 +23,7 @@ def f(profile1, profile2, normalized_page_ranks):
     return raw_score/2
 
 # Returns user, NOT profile
-def a_star_search(profile, normalized_page_ranks):
+def a_star_search(profile, normalized_page_ranks, max_iterations=100):
     # Froniter stores nodes, NOT users
     frontier = []
     # Stores users
@@ -35,7 +35,7 @@ def a_star_search(profile, normalized_page_ranks):
     heapq.heappush(frontier, start_node)
 
 
-    while True:
+    for _ in range(max_iterations):
         if not frontier:
             break
         current_node = heapq.heappop(frontier)
