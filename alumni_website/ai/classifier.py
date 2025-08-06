@@ -3,9 +3,10 @@ from sklearn import svm
 import pandas as pd
 import torch
 import numpy as np
-
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score     
 
 SKILLS_DATA_PATH = "ai/data/Skill.csv"
 SKILL_MODEL_PATH = "ai/models/skill_svm_model.pkl"
@@ -15,7 +16,6 @@ GOAL_DATA_PATH = "ai/data/Goal.csv"
 GOAL_MODEL_PATH = "ai/models/goal_svm_model.pkl"
 GOAL_ENCODER_PATH = "ai/models/goal_encoded_labels.pkl"
 
-# Give parameter True to load GOALS and False to load SKILLS
 def train_and_save_model(is_goal):
     if is_goal:
         df = pd.read_csv(GOAL_DATA_PATH)
@@ -23,12 +23,14 @@ def train_and_save_model(is_goal):
         COL2 = "Category"
         model_path = GOAL_MODEL_PATH
         encoder_path = GOAL_ENCODER_PATH
+        clf = svm.SVC(kernel='poly', probability=True)
     else:
         df = pd.read_csv(SKILLS_DATA_PATH)
         COL1 = "Skill"
         COL2 = "Category"
         model_path = SKILL_MODEL_PATH
         encoder_path = SKILL_ENCODER_PATH
+        clf = svm.SVC(kernel='linear', probability=True)
 
     encoded_labels_dic = {}
     count = 0
@@ -50,24 +52,28 @@ def train_and_save_model(is_goal):
 
     vector_list = np.vstack(vector_list)
 
-    clf = svm.SVC(kernel='linear', probability=True)
     clf.fit(vector_list, encoded_labels)
-
 
     # Code for testing accuracy of AI
     # X_train, X_test, y_train, y_test = train_test_split(
     # vector_list, encoded_labels, test_size=0.2, random_state=42
     # )
 
-    # clf = svm.SVC(kernel='linear', probability=True)
     # clf.fit(X_train, y_train)
+    # y_pred = clf.predict(X_test)
 
-    # predictions = clf.predict(X_test)
-    # acc = accuracy_score(y_test, predictions)
-    # print(f"Model accuracy: {acc:.2%}")
+    # precision = precision_score(y_test, y_pred, average='weighted')
+    # recall = recall_score(y_test, y_pred, average='weighted')
+    # f1 = f1_score(y_test, y_pred, average='weighted')
+
+    # print(f"Precision: {precision:.2%}")
+    # print(f"Recall: {recall:.2%}")
+    # print(f"F1 Score: {f1:.2%}")
+
 
     save_model(clf, model_path)
     save_model(encoded_labels_dic, encoder_path)
+
 
 def predict_category_skill(text):
     model = load_model(SKILL_MODEL_PATH)

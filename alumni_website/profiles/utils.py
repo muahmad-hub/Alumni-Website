@@ -16,3 +16,10 @@ def get_connection(profile_id_1, profile_id_2):
         return connection
     else:
         return None
+    
+def num_connections(profile):
+    try:
+        connections = Connection.objects(profile = profile, accepted = True).count()
+        return connections
+    except:
+        return 0

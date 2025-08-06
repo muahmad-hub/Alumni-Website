@@ -45,3 +45,39 @@
 - The algorithm completes when the page rank scores converge below a given threshold or when the maximum iteration limit is reached to avoid exhausting the system
 - A damping factor is also used to ensure that the algorithm doesn't get stuck in a local loop as it adds a small probability that the random surfer will restart at the target user
 - Once completed, each user has a Personalized PageRank score, which is a probability distribution that represents the likelihood of landing on that node from the target user. Higher-ranked nodes are more relevant to the target user
+## AI Skill & Goal Classifier (BERT + SVM)
+- Instead of comparing literal skills and goals in the recommendation engine, I decided to build a supervised learning model which will classify both of them into categories using semantic embeddings from BERT with SVM for classification
+- I intially though of using an unsupervised learning model. However, using a supervised learning model would allow for better evaluation of results and allow me to define the categories
+### Why BERT and SVM
+- BERT:
+    - BERT is a transformer, which uses many self-attention heads aong with positional embeddings to get the context and semantic meaning of words in a sentence or phrase
+    - I initially did think of using Bag of Words or Word2Vec; however, bag of words would be not be as accurate and Word2Vec has lower dimensions and hence can't understand words in context
+    - Additionally, BERT also converts words into 768 dimensional vectors, which is very rich for the classification system to use
+- SVM:
+    - SVM (Support Vector Machine) is a supervised machine learning model that classifies data by drawing boundary lines
+    - SVM works well with high dimensional data like from BERT vectors
+    - I compared F1 scores between three different different machine learning algorithms:
+        - For Goal classification:
+            - SVM (using polynomial kernel): 81.09%
+            - Naive Bayes: 74.48%
+            - Logistic regression: 80.21%
+    - I decided to use SVM, with the polynomial kernel for goals classification, as it had the best balance of precision/recall
+### Training & Performance
+- I manually labbeled datasets, with ~300 fields, for both skills and goals (8 categories for skill and 5 categories for goals) 
+- For goal classification acheived (using polynomial kernel):
+    - Precision: 83.15%
+    - Recall: 82.76%
+    - F1 Score: 81.09%
+- For skill classification achieved (using linear kernel):
+    - Precision: 77.62%
+    - Recall: 69.09%
+    - F1 Score: 69.91%
+- I used an 80/20 training and testing split for these results
+- Skill classification currently has a relatively lower F1 score, its most likely due to the fact that skill-related inputs tend to have fewer words. This makes it harder for the model to capture the context. A higher-quality dataset maybe needed to counter this. I might work on the dataset at a later dataset
+- In the `calculate_score()` function, I’ve assigned a lower weight to the skill overlap component so that it contributes less to the final score compared to the goal classification.
+- During testing, the classifier did confuse the goal of "working in a big AI company" as an Educational goal, likely due to AI being used a lot in Educational goals.
+- More training data might help differentiate similar categories better
+- The model had problems linking the fact that words like **Math** and **Maths** are similar, so I lematized the word before it is tokenized to reduce it to its basic form
+### Integration in the app
+- The model is trained and stored for effeciency using the `train_and_save_model()` function [see implementation at line 19](ai/classifier.py)
+- Anytime a user updates or enter a skill or goal the `predict_category_skill()` and `predict_category_goal()` are called and the skill/goal along with the category are stored in the database. [See both function here](ai/classifier.py)

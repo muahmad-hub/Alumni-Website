@@ -7,7 +7,7 @@ from django.urls import reverse
 from urllib.parse import urlencode
 from mentorship.utils import get_mentor_match
 from mentorship.models import Mentor
-from .utils import get_connection
+from .utils import get_connection, num_connections
 from messaging.utils import create_chat_room
 
 from django.http import JsonResponse
@@ -68,12 +68,14 @@ def profile(request):
     skills = Skill.objects.filter(profile = profile)
     goals = Goal.objects.filter(profile = profile)
     connection_requests = Connection.objects.filter(profile2 = profile, accepted=None)
+    num_of_connections = num_connections(profile)
 
     return render(request, "profiles/profile.html", {
         "profile": profile,
         "skills": skills,
         "goals": goals,
         "connection_requests": connection_requests,
+        "num_of_connections": num_of_connections
     })
 
 def redirect_to_profile_with_message(message):
@@ -89,6 +91,7 @@ def view_profile(request, id):
     skills = Skill.objects.filter(profile = profile)
 
     connection = get_connection(request.user.profile.id, profile.id)
+    num_of_connections = num_connections(profile)
     
     try:
         mentors = Mentor.objects.get(user=profile.user)
@@ -106,7 +109,8 @@ def view_profile(request, id):
         "connection": connection,
         "mentor_match": mentor_match,
         "mentor_exists": mentor_exists,
-        "view_type": view_type
+        "view_type": view_type,
+        "num_of_connections": num_of_connections
     })
 
 @login_required

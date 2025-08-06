@@ -6,6 +6,15 @@
   display: none;
 }
 
+.connection-display{
+  text-align: center;
+  margin: 0 2rem 0 0;
+}
+
+.connection-title{
+  font-size: 0.8rem;
+}
+
 
 .admin {
   display: inline-block;

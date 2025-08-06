@@ -50,6 +50,7 @@
 
 
   <div class="d-flex gap-2 connection_buttons">
+    <div class="connection-display"><div class="connection-number">{{ num_of_connections }}</div><div class="connection-title text-muted">Connections</div></div>
     <form method="POST">
     {% csrf_token %}
     {% if profile.user != user %}

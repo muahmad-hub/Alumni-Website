@@ -68,7 +68,7 @@
   {% if request.GET.message %}
     <div class="alert alert-danger">{{ request.GET.message }}</div>
   {% endif %}
-
+  
   <div class="profile-header d-flex align-items-center gap-3 mb-4">
     <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
     <div class="profile-info">
@@ -84,6 +84,9 @@
             {{ profile.university }} at {{ profile.major_uni }}
         {% endif %}
         </p>
+    </div>
+    <div class="d-flex gap-2 connection_buttons" style="margin-left: 70%;">
+      <div class="connection-display"><div class="connection-number">{{ num_of_connections }}</div><div class="connection-title text-muted">Connections</div></div>
     </div>
   </div>
 

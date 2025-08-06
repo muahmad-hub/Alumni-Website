@@ -137,6 +137,14 @@
   user-select: none;
 }
 
+.connection-display{
+  text-align: center;
+}
+
+.connection-title{
+  font-size: 0.8rem;
+}
+
 .btn.view {
   background-color: #17a2b8;
   color: white;

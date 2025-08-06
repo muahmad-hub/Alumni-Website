@@ -487,3 +487,31 @@ path("messages", views.messages, name="messages")
 - I then switched to a different approach: instead of blocking the page load, I rendered the directory first and used JavaScript to send an AJAX request in the background. This way the directory loads instantly and the recommendation modal appears only once the AI engine finishes processing, making the experience feel seamless
 - While it does improve the responsiveness, it has a tradeoff: it only works if the ysers stay on the page long enough. If they, for example click a profile, the modal may not appear
 - I am considering moving the modal and related Javascript to the base template. This way, recommendations can be triggered regardless of which page the user is on
+
+## Date: August 6
+### What I did
+- Added a connections count on profile pages
+- Tested different algorithm models and calculated their F1 score to decide which is the best one
+- For Goals:
+    - SVM
+        - Using linear 80.86%
+        - Using poly 81.09%
+        - Using rbf had 77.61%
+        - Using sigmoid is 37.27%
+    - F1 score of naive bayes is 74.48%
+    - F1 score of logistic regression is 80.21%
+- For Skills:
+    - SVM:
+        - Using linear Precision: 77.62% Recall: 69.09% F1 Score: 69.91%
+        - Using ply Precision: 76.07% Recall: 56.36% F1 Score: 60.31%
+        - Using rbf Precision: 60.81% Recall: 47.27% F1 Score: 48.65%
+        - Using sigmoid Precision: 55.52% Recall: 23.64% F1 Score: 19.40%
+    - Using Naive bayes Precision: 59.78% Recall: 47.27% F1 Score: 51.04%
+    - Using Linear regression Precision: 73.85% Recall: 67.27% F1 Score: 69.30%
+### Notes;
+- Precision: how many inputs that the system classified as positive are correct
+- Recall: Of all the true positive items, how many did the system find
+- F1: it is a balanced score of precision and recall
+### Reflection:
+- The skill classifier currently has a relatively low F1 score of 69.91%, likely because skill-related inputs are typically shorter, making it more challenging for the model to capture sufficient context
+- I might work on the dataset to ensure it covers a variety of skills in each category, but for the time being I've set a lower weight for skills overlap in the `calculate_score()` function so that it doesn't contribute as much to the final score and the recommendation system is still relatively accurate

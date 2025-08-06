@@ -26,9 +26,12 @@ def vectorize(text):
     model, tokenizer = get_model_and_tokenizer()
 
     lemmatizer = WordNetLemmatizer()
-    text = lemmatizer.lemmatize(text)
 
-    tokens = tokenizer(text.lower(), return_tensors="pt")
+    tokens = text.split()
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
+    lemmatized_text = " ".join(lemmatized_tokens)
+
+    tokens = tokenizer(lemmatized_text.lower(), return_tensors="pt")
 
     with torch.no_grad():
         outputs = model(**tokens)
@@ -119,7 +122,8 @@ def calculate_score(profile1, profile2):
     else:
         mutual_connections = len(set(all_connections[profile1.id]) & set(all_connections[profile2.id])) / total_mutual_connections
 
-    w1 = w2 = w7 = 0.25
+    w1 = 0.1
+    w2 = w7 = 0.25
     w3 = w4 = w5 = w6 = w8 = 0.125
 
 
