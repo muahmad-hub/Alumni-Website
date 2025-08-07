@@ -515,3 +515,13 @@ path("messages", views.messages, name="messages")
 ### Reflection:
 - The skill classifier currently has a relatively low F1 score of 69.91%, likely because skill-related inputs are typically shorter, making it more challenging for the model to capture sufficient context
 - I might work on the dataset to ensure it covers a variety of skills in each category, but for the time being I've set a lower weight for skills overlap in the `calculate_score()` function so that it doesn't contribute as much to the final score and the recommendation system is still relatively accurate
+
+## Date: August 7
+### What I did:
+- Focused on improving the skill classifier
+- Initially I thought that my dataset for the skills calssifier might have been insufficient or of low quality and hence why the F1 score was low. I updated the dataset but the F1 score decreased
+- I considered that since BERT is better used for contexualizing, it may not be optimal for vectorizing single words, so I switched to using TF-IDF vectorization for the skills. However, that too didn't seem to imporve the F1 score (it was around 40% - 50%)
+- I removed the lemmatizer next, as BERT already pretrains the data without any lemmatization. Although not by a great amount, it did improve the accuracy of the skill classifier
+- To further improve the model, I expanded the dataset from around ~300 to ~500 fields
+- After trying different machine learning algorithms (Naive Bayes, Linear Regression and SVM with different kernels), the best one for the skill classification is SVM with the linear kernel
+- The classifier now achieves an F1 score of around 72%, which I consider satisfactory for the time being. I've already decreased the skill overlap weight in the `calculate_score()` function

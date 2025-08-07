@@ -1,5 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.shortcuts import get_object_or_404
+from .models import Groups, Members, Messages
 
 import json
 from django.template.loader import render_to_string
@@ -9,7 +10,7 @@ from datetime import datetime
 class MessageConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        from .models import Groups, Members, Messages
+
         self.user = self.scope['user']
         self.group_name = self.scope['url_route']['kwargs']['group_name']
         self.group = await database_sync_to_async(get_object_or_404)(
@@ -55,13 +56,13 @@ class MessageConsumer(AsyncWebsocketConsumer):
             message=message
         )
 
-        data = await database_sync_to_async(render_to_string)(
-            'messaging/partials/chat_message.html', {
-                'message': new_message,
-                'user': self.user,
-                'sender': new_message.sender,
-            }
-        )
+        # data = await database_sync_to_async(render_to_string)(
+        #     'messaging/partials/chat_message.html', {
+        #         'message': new_message,
+        #         'user': self.user,
+        #         'sender': new_message.sender,
+        #     }
+        # )
 
         await self.channel_layer.group_send(
             self.group_name,

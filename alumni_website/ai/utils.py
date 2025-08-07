@@ -25,13 +25,13 @@ def get_model_and_tokenizer():
 def vectorize(text):
     model, tokenizer = get_model_and_tokenizer()
 
-    lemmatizer = WordNetLemmatizer()
+    # lemmatizer = WordNetLemmatizer()
 
-    tokens = text.split()
-    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
-    lemmatized_text = " ".join(lemmatized_tokens)
+    # tokens = text.split()
+    # lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
+    # lemmatized_text = " ".join(lemmatized_tokens)
 
-    tokens = tokenizer(lemmatized_text.lower(), return_tensors="pt")
+    tokens = tokenizer(text.lower(), return_tensors="pt")
 
     with torch.no_grad():
         outputs = model(**tokens)

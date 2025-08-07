@@ -18,7 +18,7 @@
 - The goal is to recommend the most relevant alumn to the user, while also keeping the recommendations diverse
 - This was modeled as a personalized graph traversal and ranking problem, with nodes being represented as a user's profile and weighted edges representing compatibility
 ### A*-like search
-[See A* implementation](ai/a_star_search.py)
+[See A* implementation](alumni_website/ai/a_star_search.py)
 - This isn't truly an A* search as the goal node is not known beforehand, and there is also no need for path reconstruction. However, the algorithm does use A*-like heuristics and search patterns to find the most similar alumn to the user
 - A* search formula:
     - *f(n) = g(n) + h(n)*
@@ -26,7 +26,7 @@
         - *g(n)* -> path cost calculated as 1 - similarity_score
         - *h(n)* -> this is used as a penalty for lack of diversity, calculated as ALPHA * (similarity_score) + BETA * (1-personalized_page_rank_value)
 - *g(n)* This calculates a score based on how similar the users are. The more similar the a user is the lower the value of *g(n)* 
-    - Similarity is calculated using the `calculate_score()` function ([see implementation at line 93](ai/utils.py)) that I created which takes into account the following:
+    - Similarity is calculated using the `calculate_score()` function ([see implementation at line 93](alumni_website/ai/utils.py)) that I created which takes into account the following:
         - Skills and goals
         - University, batch year and education level
         - Geographical location
@@ -37,7 +37,7 @@
 - The algorithm starts with the target user and explores their neighbors in the graph. The neighbors are calculated using the `get_neighbors()` function, which returns the graph as an adjacency list. This process repeats as the algorithm moves through neighboring nodes, expanding the search until the frontier is empty or a maximum iteration limit is reached. The search doesn't stop when it finds a single recommendation that meets the threshold, as other alumni may be more compatible. Therefore, the algorithm continues exploring to ensure it finds the best possible matches. Once the search is complete, the algorithm evaluates all the visited alumni and returns the one with the lowest *f(n)* value.
 - Overall, the algorithm uses a weighted graph and a priority queue-based frontier
 ### Personalized PageRank
-[See Personalized PageRank implementation here](ai/personalized_page_rank.py)
+[See Personalized PageRank implementation here](alumni_website/ai/personalized_page_rank.py)
 - I've also implemented a personalized page rank algorithm, which serves as a sort of counter to the local nature of the A* search as it rewards nodes with higher global relevance. This allows it to suggest alumni who aren't directly related to the target user but are relevant
 - The graph used has users' profiles defined as nodes and has weighted edge if users share a similar trait
 - The algorithm starts off at the target user and performs a random walk throughout the graph with a bias towards the target user
@@ -53,6 +53,7 @@
     - BERT is a transformer, which uses many self-attention heads aong with positional embeddings to get the context and semantic meaning of words in a sentence or phrase
     - I initially did think of using Bag of Words or Word2Vec; however, bag of words would be not be as accurate and Word2Vec has lower dimensions and hence can't understand words in context
     - Additionally, BERT also converts words into 768 dimensional vectors, which is very rich for the classification system to use
+    - I did try using TF-IDF, expecially for skill vectorization as they are usually smaller inputs. However, the performance of the system was not up to the standard when compared with BERT
 - SVM:
     - SVM (Support Vector Machine) is a supervised machine learning model that classifies data by drawing boundary lines
     - SVM works well with high dimensional data like from BERT vectors
@@ -69,15 +70,36 @@
     - Recall: 82.76%
     - F1 Score: 81.09%
 - For skill classification achieved (using linear kernel):
-    - Precision: 77.62%
-    - Recall: 69.09%
-    - F1 Score: 69.91%
+    - Precision: 84.35%
+    - Recall: 69.61%
+    - F1 Score: 72.14%
 - I used an 80/20 training and testing split for these results
-- Skill classification currently has a relatively lower F1 score, its most likely due to the fact that skill-related inputs tend to have fewer words. This makes it harder for the model to capture the context. A higher-quality dataset maybe needed to counter this. I might work on the dataset at a later dataset
+- Skill classification used to a relatively low F1 score. It was most likely due to the fact that skill-related inputs tend to have fewer words. This makes it harder for the model to capture the context. A higher-quality dataset was needed to counter this and so I extended the dataset for skills from ~300 fields to around ~500 fields.
 - In the `calculate_score()` function, I’ve assigned a lower weight to the skill overlap component so that it contributes less to the final score compared to the goal classification.
 - During testing, the classifier did confuse the goal of "working in a big AI company" as an Educational goal, likely due to AI being used a lot in Educational goals.
 - More training data might help differentiate similar categories better
-- The model had problems linking the fact that words like **Math** and **Maths** are similar, so I lematized the word before it is tokenized to reduce it to its basic form
 ### Integration in the app
-- The model is trained and stored for effeciency using the `train_and_save_model()` function [see implementation at line 19](ai/classifier.py)
-- Anytime a user updates or enter a skill or goal the `predict_category_skill()` and `predict_category_goal()` are called and the skill/goal along with the category are stored in the database. [See both function here](ai/classifier.py)
+- The model is trained and stored for effeciency using the `train_and_save_model()` function [see implementation at line 19](alumni_website/ai/classifier.py)
+- Anytime a user updates or enter a skill or goal the `predict_category_skill()` and `predict_category_goal()` are called and the skill/goal along with the category are stored in the database. [See both function here](alumni_website/ai/classifier.py)
+## Real-time Messaging 
+- To allow for real-time communication between alumni, I implemented a full-duplex WebSocket-ased chat system using Django channels and currently using in-memory layer. This allows for instantaneuous and low-latency message delievery without repeated HTTP requests
+### WebSockets
+- HTTP is a request-response based model and so is unsuitable for real-time and bidirectional messaging as it would require the client to constantly poll the server to check if any messages have been deleivered. This would be ineffecient and cause latency
+- WebSockets, however, are protocols that allow bidirectional communication between the client and server through use of a TCP connection.
+- This allows for:
+    - Live chat
+    - Future extensibility (like live notifications)
+### Consumer Logic
+[See consumers.py](alumni_website/messaging/consumers.py)
+### System Architecture
+<img src="docs/SA_message_app.PNG" width="700">
+
+- As soon as the DOM is loaded, the browser's Javascript connects to a WebSocket provided by Django Channels
+- This creates a bidirectional communication channel between the browser and Django channels
+- When the user sends a message:
+    - Javascript sends the message via the open WebSocket connection ([See implementation here](alumni_website/static/messaging/javascript/messaging.js))
+    - The message is received by user's `MessageConsumer.receive()` method on the server
+    - Inside [receive()](alumni_website/messaging/consumers.py):
+        - The message is saved to the Database (PostgreSQL)
+        - Send the data using memory channel to other connected Consumers
+    - The `MessageConsumer.chat_message()` delivers the message. This method sends a message to Javascript through the WebSocket connection to display the message on the UI

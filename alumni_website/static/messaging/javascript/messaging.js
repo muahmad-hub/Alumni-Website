@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const chatBox = document.getElementById('chat-box');
   const onlineCount = document.getElementById('online_count')
 
-  const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsScheme = "ws";
   const chatSocket = new WebSocket(
     `${wsScheme}://${window.location.host}/ws/message/${groupName}/`
   )
