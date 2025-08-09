@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    get_alumni("", "", "")
-
     fetch(alumniRecommendURL)
     .then(response => response.json())
     .then(data => {
@@ -22,6 +20,8 @@ document.addEventListener("DOMContentLoaded", function() {
     .catch(error => {
         console.error("Failed to fetch recommendation:", error)
     })
+
+    get_alumni("", "", "")
 })
 
 document.getElementById("searchInput").addEventListener("input", function() {

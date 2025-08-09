@@ -480,7 +480,7 @@ path("messages", views.messages, name="messages")
 - All three of the files (`personalized_page_rank.py`, `a_star_search.py`, and `utils.py`) had conflicting use of `Profile` and `Users` instance
 - Therefore, I ensured that all of the functions use the `Profile` instance. Only the `recommend` function in `recommender.py` takes a `Users` instance which it then uses its `Profile` instance and passes it on to the other functions.
 ### Reflection
-- Initially, I rendered teh AI recommendation modal directly in the Django view during the directory page load. However, this meant that every time a user visited the page, the recommendation engine was triggered too, causing a noticable delay, especially when I tried by adding many users in the database. It took noticeable time even with just 12 Users
+- Initially, I rendered the AI recommendation modal directly in the Django view during the directory page load. However, this meant that every time a user visited the page, the recommendation engine was triggered too, causing a noticable delay, especially when I tried by adding many users in the database. It took noticeable time even with just 12 Users
 - I tried to optimize the code by storing the results of `get_neigbors` function in a variable instead of calling it everytime in the loop. This did reduce the number of queries made to the database, but the delay was still noticeable
 - I then switched to a different approach. I loaded the directory first and used Javascript to send an AJAX request so that the users dont notice the delay as the directory is loaded and once the recommendation engine outputs a result, it is displayed on the modal.
 - This approach does seem to work for the time being but will only work if users stay on the directory long enough. If they click on a profile, it may cancel the request
@@ -525,3 +525,107 @@ path("messages", views.messages, name="messages")
 - To further improve the model, I expanded the dataset from around ~300 to ~500 fields
 - After trying different machine learning algorithms (Naive Bayes, Linear Regression and SVM with different kernels), the best one for the skill classification is SVM with the linear kernel
 - The classifier now achieves an F1 score of around 72%, which I consider satisfactory for the time being. I've already decreased the skill overlap weight in the `calculate_score()` function
+
+## Date: August 8 & 9
+### Problem: Recommendation system was too slow
+- I had tried to solve this problem earlier on [August 4th](#reflection-3). However, it still took quite a considerable time to load the recommended users, anywhere between 15 to 60 seconds.
+- The algorithm does work as a prototype but isn't ready for production due to its inefficiency
+- My current version has a lot of redundant database queries, no caching, and no pruning. All of these accumulate to a very slow recommendation system
+### What I did
+- I researched different ways algorithms are made efficient for production and made a list of methods to improve my algorithm
+- After implementing all these new methods and strategies, the computational efficiency did improve. The system went from taking 15 to 60 seconds to recommending in a few seconds.
+#### Learning + Changes I made
+- I was constantly calling the `calculate_score()` multiple times in the A* search through the `h_n` and `g_n` functions. Similarly, `get_neighbors` was calling `Profile.objects.exclude(id=profile.id)` every time.
+    - Learn't about Django ORM methods such as `select_related()` and `prefetch_related()` which carry out multiple queries at once and implemented them
+    - ```python
+        profiles = Profile.objects.prefetch_related('skills', 'goals').all()
+        ```
+    - This carries out the JOIN operation like in SQL
+- Rewrote all the major parts of the algorithm using object-oriented programming with classes (All the code is mostly the same but with slight optimizations). Organised the code as follows:
+    - [utils.py](../alumni_website/ai/utils.py)
+        - `OptimisedNode` class
+        - `CachedProfileData` class
+            - `get_all_profile_data` method
+            - `get_connections_graph` method
+        - `OptimisedCompatibilityScore` class
+            - `calculate_score` method
+            - `calculate_score_batch` method
+        - `OptimisedNeighborFinding` class
+            - `get_neighbors` method
+
+    - [optimised_personalized_page_rank.py](../alumni_website/ai/optimised_personalized_page_rank.py)
+        - `OptimisedPersonalizedPageRank` class
+            - `ppr` method
+            - `normalize_ppr` method
+
+    - [optimised_a_start_search.py](../alumni_website/ai/optimised_a_star_search.py)
+        - `OptimisedAStarSearch` class
+            - `g_n` method
+            - `h_n` method
+            - `f_n` method
+            - `a_star_search` method
+
+    - [recommender.py](../alumni_website/ai/recommender.py)
+        - `save_recommendation` function
+        - `optimised_recommendation` function
+        - `populate_cache` function
+- I also used `__slots__` when defining classes
+    - ```python
+        class OptimizedNode:
+            __slots__ = ['profile_id', 'cost']
+        ```
+    - This specifies that the only attributes that should be stored are `profile_id` and `cost`
+- I had a lot of nested loops in the Personalized PageRank algorithm which was quite expensive in terms of performance
+    - Discovered that in Personalized PageRank, the graph can be represented as a transition matrix and calculations can be done using NumPy
+    - ```python 
+        # Original code had a lot of nested loops
+        for _ in range(max_iterations):
+            new_rank = {}
+            for profile in page_rank.keys():
+                neighbors = get_neighbors(profile)
+
+                if not neighbors:
+                    continue
+
+                neighbor_sum = 0
+                for neighbor in neighbors:
+
+        # Optimised code using transition matrix and numpy
+        transition_matrix = np.zeros((n, n))
+        ...
+        for _ in range(max_iterations):
+            new_rank = (1 - D) * personalization + D * transition_matrix.dot(page_rank)
+        ```
+    - The transition matrix replaced all the nested loops and is computed once and reused 
+    - Originally, I had stored the PageRank in a dictionary where the keys were the profile objects. Using NumPy array and not storing the profile object and rather using `self.id_to_index` in the `OptimisedPersonalizedPageRank` to distinguish which value in the array corresponds to which user improved the memory usage greatly. This method of using the index is also faster than using dictionary lookup through `page_rank[profile]`
+- Cached data wherever possible so that it can be reused 
+    - ```python
+        cache_key = "all_profile_data"
+        cached_data = cache.get(cache_key)
+        
+        if cached_data:
+            return cached_data 
+        ```
+    - I also implemented a `populate_cache()` that uses the `get_all_profile_data()` and `get_connections_graph` methods from the `CachedProfileData`
+        - `@staticmethod` allows the methods to be called without creating the object
+- I also implemented Beam Search Pruning which limits the frontier to a set number of users
+    - ```python
+        if len(frontier) > beam_width:
+            frontier = heapq.nsmallest(beam_width, frontier)
+            heapq.heapify(frontier)
+       ```
+    - Beam width is currently set to 100
+- Early termination for A* search
+    - ```python
+        if len(good_connections) >= 10:
+            break
+        ```
+    - This terminates the A* search when 10 good connections are found
+    - Although this doesn't guarantee the best match, it does balance the result and performance speed
+- I also switched to using built-in functions such as `min` and `max` as they are implemented in C and are highly optimised compared to manually checking the minimum and maximum values like I did previously.
+### Reflection
+- The journey of optimising my algorithm taught me how important it is to consider the 'cost' of each step in the code and ask yourself whether there is a better way to do this, such as asking if you can combine multiple queries into one to reduce the requests to database
+- I also learned a lot of new concepts and strategies. 
+    - I had heard and used NumPy before, but got to know its true computational power once I used it in the transition matrix
+    - The transition matrix is also really helpful when working with graphs or adjacency lists
+    - I had also heard of pruning in CS50 AI but truly implemented and saw its importance first hand 

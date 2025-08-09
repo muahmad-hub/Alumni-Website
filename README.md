@@ -4,6 +4,19 @@
 - Leaving behind friends and schoolmates after graduation is a bittersweet moment. At my first school, I lost touch with many people I considered close friends once I moved countries. Everyone moved in different directions. It left me with this feeling of disconnectedness and I didn't want to experience the same thing again at my new school
 - Therefore, this platform contains real-time messaging, a mentor program, and an AI-powered recommender system built using BERT embeddings, SVM classification and a custom heuristic with Personalized PageRank to not only help professional growth but also to stay connected and support one another
 - I built this project independently  after completing 3 Harvard CS50 courses (CS50x, CS50 Web, CS50 AI), combining the knowledge I learnt from each course
+
+> See my [Dev Log and Learning Journal](docs/dev_logs.md) for detailed progress, decisions, and problem-solving along the way.
+
+## Table of Contents
+- [Key Features](#key-features)
+- [Recommendation Engine](#recommendation-engine-a-personalized-pagerank)
+    - [A* Search](#a-like-search)
+    - [Personalized PageRank](#personalized-pagerank)
+    - [Optimising the Algorithm](#optimising-the-algorithm)
+- [AI-based Classifier](#ai-skill--goal-classifier-bert--svm)
+- [Real-time messaging](#real-time-messaging)
+
+
 ## Key features
 - **User profiles:** Searchable alumni and mentor database with editable user info
 - **Mentorship program:** Request, accept, & allow mentors to manage requests seamlessly through their personalized dashboard
@@ -45,6 +58,15 @@
 - The algorithm completes when the page rank scores converge below a given threshold or when the maximum iteration limit is reached to avoid exhausting the system
 - A damping factor is also used to ensure that the algorithm doesn't get stuck in a local loop as it adds a small probability that the random surfer will restart at the target user
 - Once completed, each user has a Personalized PageRank score, which is a probability distribution that represents the likelihood of landing on that node from the target user. Higher-ranked nodes are more relevant to the target user
+### Optimising the Algorithm
+- Though the implementation of the algorithm was correct. It was computaionally naive, in the sense that there were too many redundant databse queries and no memeory optimization.
+- After researching for different ways algorithms are made efficient for production and made a list of methods to improve my algorithm:
+    - **Batch processing:** instead of constantly calling and looping over users and calling a specific function, I could process all the data at once
+    - **Cache the data:** Instead of querying the database every time specific data is needed, it is more efficient to query the database once and then cache the data. This significantly reduces the number of queries made
+    - **Memory Optimization:** Instead of storing full objects in variables, it is better to store integers or strings like IDs. Additionally, using `__slots__` when defining classes also reduces memory usage as it limits storing the data to only those attributes specified.
+    - **Algorithm Pruning:** Instead of allowing the algorithm to run infinitely and exhaust the system, I should have used pruning to set a limit to how deep the algorithm goes. Furthermore, in A* search I could limit the number of users in the frontier and exit once a set number of top users below the threshold are found.
+    - **Vectorization:** Using numpy for mathematical operations is highly effective as it is done under the hood in C. Numpy arrays are also contiguous (they are stored in a continuous sequence without any gaps)
+> For a more detailed walkthrough of the optimization, see my [Dev Log and Learning Journal](docs/dev_logs.md#date-august-8--9) for August 8 & 9.
 ## AI Skill & Goal Classifier (BERT + SVM)
 - Instead of comparing literal skills and goals in the recommendation engine, I decided to build a supervised learning model which will classify both of them into categories using semantic embeddings from BERT with SVM for classification
 - I intially though of using an unsupervised learning model. However, using a supervised learning model would allow for better evaluation of results and allow me to define the categories

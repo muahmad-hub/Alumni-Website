@@ -7,7 +7,7 @@ from django.db.models import Q
 from .utils import get_directory_filters
 from django.utils import timezone
 from datetime import timedelta
-from ai.recommender import recommend
+from ai.recommender import optimised_recommend, populate_cache
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -22,6 +22,11 @@ def directory(request):
 
 @login_required
 def alumni_directory_recommend(request):
+
+    print("Populating cache...")
+    populate_cache()
+    print("Chache is populated")
+
     profile = request.user.profile
     session_key = "last_seen_recommendation_id"
 
@@ -35,7 +40,7 @@ def alumni_directory_recommend(request):
     time_difference = timezone.now() - user_recommendation.timestamp
 
     if time_difference > timedelta(days=7) or not user_recommendation.recommended_profile:
-        recommend_data = recommend(request.user)
+        recommend_data = optimised_recommend(request.user.profile.id)
         if recommend_data:
             recommended_profile = Profile.objects.get(id = recommend_data["user"])
 
