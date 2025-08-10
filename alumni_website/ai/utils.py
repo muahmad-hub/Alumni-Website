@@ -219,6 +219,8 @@ class CachedProfileData:
         
         # .prefetch_related() fetches the skills and goals alongside the profile, reduces database queries from 3 to 1
         profiles = Profile.objects.prefetch_related('skills', 'goals').all()
+
+        print(f"PROFILES FROM CACHED PROFILES: {profiles}")
         
         profile_data = {}
         for profile in profiles:
@@ -237,6 +239,10 @@ class CachedProfileData:
             }
         
         cache.set(cache_key, profile_data, CACHE_TIMEOUT)
+
+        print(f"PROFILE_DATA FROM CACHE: {profile_data}")
+
+
         return profile_data
     
     @staticmethod

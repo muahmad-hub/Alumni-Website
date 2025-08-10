@@ -25,53 +25,44 @@
 <h2>Become a Mentor</h2>
 <form method="POST" action="{% url 'mentor_signup' %}">
     {% csrf_token %}
+    <div class="alert form-info">
+        Fill the form and start guiding your Mentees. You'll be automatically added to the <a href="{% url 'mentor_directory' %}" class="mentor_directory_link">Mentor Directory</a>.
+    </div>
+
     <label>Full Name</label>
-    <input type="text" id="full_name" name="full_name" required value="{{ profile.name }}">
+    <input type="text" id="full_name" name="full_name" required value="{% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}">
 
     <label>Email</label>
-    <input type="email" id="email" name="email" required value="{{ user.email }}">
+    <input type="email" id="email" name="email" required value="{{ user.email }}" disabled>
 
     <label>Industry / Field</label>
     <input type="text" id="industry" name="industry" required value="{{ profile.major_uni }}">
 
-    <label>Years of Experience</label>
-    <input type="number" id="experience" name="experience" min="0" required>
-
     <label>Pick your top 3 skills</label>
-    <input name="skill1" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <input name="skill1" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill" autocomplete="off" value="{{ user_skills.0.skill }}">
     <datalist id="skills">
         {% for skill in skills %}
         <option value="{{ skill.skill }}">
         {% endfor %}
     </datalist><br>
 
-    <input name="skill2" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <input name="skill2" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill" autocomplete="off" value="{{ user_skills.1.skill }}">
     <datalist id="skills">
         {% for skill in skills %}
         <option value="{{ skill.skill }}">
         {% endfor %}
     </datalist><br>
 
-    <input name="skill3" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill">
+    <input name="skill3" list="skills" id="browsersInput" class="form-control" placeholder="Choose a skill" autocomplete="off" value="{{ user_skills.2.skill }}">
     <datalist id="skills">
         {% for skill in skills %}
         <option value="{{ skill.skill }}">
         {% endfor %}
     </datalist>
-
-    <label>Availability</label>
-    <select id="availability" name="availability" class="form-control">
-        <option value="weekends">Weekends</option>
-        <option value="evenings">Evenings</option>
-        <option value="mornings">Mornings</option>
-        <option value="any">Any</option>
-    </select>
     
-
     <button type="submit">Submit</button>
 </form>
 {% endif %}
-
 
 <script src="{% static 'directory/javascript/mentor_directory.js' %}"></script>
 {% endblock %}

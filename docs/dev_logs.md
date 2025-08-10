@@ -629,3 +629,54 @@ path("messages", views.messages, name="messages")
     - I had heard and used NumPy before, but got to know its true computational power once I used it in the transition matrix
     - The transition matrix is also really helpful when working with graphs or adjacency lists
     - I had also heard of pruning in CS50 AI but truly implemented and saw its importance first hand 
+
+## Date: August 10
+### Feature: Implemented notification email & tweaked UI
+- Users are now sent a personalized notification email when one of the following actions happen:
+    - A connection request
+    - A request is accepted
+    - A mentor request
+    - A menotor request is accepted
+    - Once a mentor signs up
+- I implemented a new [notification](../alumni_website/notifications/notifications.py) module.
+- Learning from the optimised algorithm, I created a base `Notification` class and then created 5 different subclasses each having different email subjects, templates, context and text content
+- For each type of email, I created a list of catching subjects with emojis which are selected at random
+    - For example:
+    - ```python
+        subjects = [
+            "Look who wants to connect with you! 🤝",
+            "New connection request – ready to grow your network? 🌱",
+            "Someone’s eager to connect – are you in? 🚀",
+            "A fresh connection is waiting for you! Let’s link up! 🔗",
+            "Your next connection is just a click away! 📲",
+            "Ready to expand your network? New request inside! 🌍",
+            "Somebody wants to connect with YOU! 🙌",
+            "New connection request alert – let’s make it official! 🔥",
+        ]
+        return random.choice(subjects)
+        ```
+    - Changing the subjects and making them catchy will prompt users to visit the website
+- For sending the email, I used `django.core.mail`'s `EmailMultiAlternatives` to send emails with HTML embededd in it along with button to visit the website
+- Incase the HTML are not rendered, I've also added alternative text content
+- I also made the UI fully mobile responsive with tweaks on directory cards and profile page
+- I also removed redundant models in mentorship and linked it to `Skill` models in Mentor sign up instead of `MentorSkills`
+### Problem: There was a latency in the JavaScript execution
+- When the button that trigers the notification email was clicked, the button didn't change state dynamically immediatly. This is because the backend sent the email first and then sent the JSON response with success (or error) message so that Javascript dynamically changes the button state
+### Solution:
+- I used python threading so that the JSON response and the notifying email is done asynchronously
+- ```python
+    def send_notification(notification):
+    threading.Thread(target=notification.send).start()
+    ```
+- Therefore, insteading of calling the `.send()`, which is synchornous, I am calling `send_notification()` for the asynchronous process
+### Bug: Cache was not being updated properly
+- For development, I had set the cache to update everytime a user is supposed to be recommended an alumni
+- However, the cache didn't seem to update correctly everytime
+### Solution
+- I added `cache.delete("all_profile_data")` before the cache `populate_cache()` is called. This seemed to solve the issue. 
+- I think it could be possible that the cache would store data for sometime and wouldn't completely update. Deleting the cache and repopulating it forced it to change the data
+### Reflection
+- Since optimising the algorithm, I really got a major insight into how to effectively write orgnaised and effecient code through Object Oriented Programming and more concise code.
+- Originally I would have thought to create the notification module as a series of functions, which would have caused a lot of redundant and overcomplex code. Instead, I switched to using a main base class and then creating subclasses for each type of email
+- Also, I had completely a Javascript code to send the emails asynchronously and change teh button state. However, I soon realised that the code was going to be too long and messy and hence resulted into using a more effecient approach of threading 
+- The `Recommendation system` works without any latency, but I believe it is stil quite computationally expensive for a very small user data set. A similar result could be achieved using a much simpler algorithm that could calculate similarity score and ranks users. I might implement this approach and use a field in the model to switch between the two systems as necessary

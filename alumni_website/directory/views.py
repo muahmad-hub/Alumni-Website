@@ -8,6 +8,8 @@ from .utils import get_directory_filters
 from django.utils import timezone
 from datetime import timedelta
 from ai.recommender import optimised_recommend, populate_cache
+from django.core.cache import cache
+
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -23,6 +25,8 @@ def directory(request):
 @login_required
 def alumni_directory_recommend(request):
 
+    cache.delete("all_profile_data")
+
     print("Populating cache...")
     populate_cache()
     print("Chache is populated")
@@ -34,15 +38,21 @@ def alumni_directory_recommend(request):
 
     try:
         user_recommendation = UserAlumniRecommendation.objects.get(profile=profile)
+        print("User has recommendation model instance")
     except UserAlumniRecommendation.DoesNotExist:
+        print("ERROR: no recommendation instance, so show modal is False")
         return JsonResponse({"show_modal": False})
 
     time_difference = timezone.now() - user_recommendation.timestamp
 
     if time_difference > timedelta(days=7) or not user_recommendation.recommended_profile:
         recommend_data = optimised_recommend(request.user.profile.id)
+        print(f"Request profile id: {request.user.profile.id}")
+        print(f"Recommended data: {recommend_data}")
         if recommend_data:
             recommended_profile = Profile.objects.get(id = recommend_data["user"])
+            print("Got recommendation profile")
+            print(recommended_profile)
 
             user_recommendation.recommended_profile = recommended_profile
             user_recommendation.compatibility_score = recommend_data["f_n_score"]
@@ -50,6 +60,9 @@ def alumni_directory_recommend(request):
             user_recommendation.save()
 
             percentage = recommend_data["f_n_score"] * 100
+
+            print("Compatibility Score")
+            print(percentage)
 
             context["first_name"] = recommended_profile.first_name
             context["last_name"] = recommended_profile.last_name
@@ -59,13 +72,16 @@ def alumni_directory_recommend(request):
 
             if request.session.get(session_key) != recommended_profile.id:
                 context["show_modal"] = True
+                print("Show modal is true")
                 request.session[session_key] = recommended_profile.id
             else:
                 context["show_modal"] = False
+                print("ERROR: Show modal is false, not in session key")
         else:
             context["first_name"] = None
             context["last_name"] = None
             context["id"] = None
+            print("ERROR: Show modal is false, no recommended data")
             context["show_modal"] = False
 
     else:

@@ -5,6 +5,15 @@ body {
   color: #3b0a0f;
 }
 
+.mentor_directory_link{
+  text-decoration: none;
+}
+
+.form-info{
+  background-color: #efe4e7;
+  color: var(--accent-color) !important;
+}
+
 .mentor-form-container {
   max-width: 600px;
   margin: 60px auto;

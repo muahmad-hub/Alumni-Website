@@ -52,6 +52,24 @@
     color: #843342;
 }
 
+.profile-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  flex-wrap: wrap !important;
+}
+
+.profile-header .profile-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.profile-header .d-flex.gap-2.connection_buttons {
+  flex: 0 0 auto;
+  margin-left: 0 !important;
+}
+
 .profile-info h2 {
   font-size: 24px;
   font-weight: 600;
@@ -155,5 +173,46 @@
 @media (max-width: 600px) {
   .profile-container {
     padding: 20px;
+    margin: 2rem 1rem 0 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  
+  .profile-header.d-flex.justify-content-between.align-items-center {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2rem !important;
+  }
+  
+  .profile-header > div:first-child {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1rem !important;
+  }
+  
+  .profile-info {
+    text-align: center !important;
+  }
+  
+  .profile-info h2 {
+    text-align: center !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .profile-info p {
+    text-align: center !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .admin {
+    display: inline-block !important;
+    margin: 0.25rem auto !important;
+  }
+  
+  .avatar {
+    display: block !important;
+    margin: 0 auto !important;
   }
 }

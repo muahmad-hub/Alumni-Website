@@ -6,8 +6,9 @@ import json
 from django.http import JsonResponse, Http404
 from .utils import get_mentor_match
 from messaging.utils import create_chat_room
-
-
+from notifications.notifications import MentorAcceptedNotification, MentorActivationNotification, MentorRequestNotification, send_notification
+from profiles.models import Skill
+from ai.classifier import predict_category_skill
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -37,16 +38,26 @@ def mentor_signup(request):
 
         mentor = Mentor(user = request.user, availability = availability, industry = industry, experience = experience, created_at = datetime.datetime.now(), updated_at = datetime.datetime.now())
         mentor.save()
+
+        # for i in range(3):
+        #     skill = MentorSkills(mentor = mentor, skill = skills[i])
+        #     skill.save()
+
+        skill_objs = list(request.user.profile.skills.all())
         for i in range(3):
-            skill = MentorSkills(mentor = mentor, skill = skills[i])
-            skill.save()
+            skill_objs[0].skill = skills[i]
+            skill_objs[0].category = list(predict_category_skill(skills[i]))[0]
+            skill_objs[0].save()
+            skill_objs.remove(skill_objs[0])
+
+        notification = MentorActivationNotification(receiver=request.user)
+        send_notification(notification)
 
         return render(request, 'mentorship/mentor_signup.html', {
             "message": "You are now a Mentor :)"
         })
 
     mentors = Mentor.objects.all()
-    print(mentors)
     is_mentor = False
     for mentor in mentors:
         if request.user == mentor.user:
@@ -54,7 +65,12 @@ def mentor_signup(request):
             is_mentor = True
             break
 
-    skills = MentorSkills.objects.distinct("skill")[:10]
+    mentor_obj = Mentor.objects.filter(user = request.user).exists()
+    is_mentor = True if mentor_obj else False
+
+    skills = Skill.objects.distinct("skill")[:10]
+
+    user_skills = list(request.user.profile.skills.all())
 
     profile = Profile.objects.get(user = request.user)
 
@@ -62,6 +78,7 @@ def mentor_signup(request):
         "skills": skills,
         "profile": profile,
         "is_mentor": is_mentor,
+        "user_skills": user_skills,
     })
 
 @login_required
@@ -93,6 +110,10 @@ def mentor_match(request):
             match = MentorMatch(mentor = Mentor.objects.get(user = Users.objects.get(id=id)), mentee = request.user)
             match.save()
             accepted = match.accept
+
+            notification = MentorRequestNotification(receiver=match.mentor.user, sender=request.user)
+            send_notification(notification)
+
             return JsonResponse({"status": "success", "message": "Connected", "accepted": accepted})
         
     else:
@@ -147,6 +168,10 @@ def accept_mentor(request, match_id, mentor_id):
         match.accept = True
         match.save()
         create_chat_room(request.user, match.mentee)
+
+        notification = MentorAcceptedNotification(receiver=match.mentee, sender=request.user)
+        send_notification(notification)
+
         return redirect("mentor_dashboard")
     else:
         raise Http404

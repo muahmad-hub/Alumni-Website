@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             document.getElementById('recommended-user-name').textContent = fullName
             document.getElementById('compatibility-score').textContent = `${percentage}%`
-            document.getElementById('view-recommended-user-profile').href = `/profile/view_profile/${data.id}`
+            document.getElementById('view-recommended-user-profile').href = `/profile/view_profile/${data.id}?view=alumni`
 
             const modalEl = document.getElementById('recommendationModal');
             if (modalEl) {

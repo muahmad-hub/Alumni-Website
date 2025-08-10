@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .card {
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            max-width: 420px;
+            margin: auto;
+            color: #333333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            margin: 0.5rem 0 1rem;
+            line-height: 1.4;
+            color: #666666;
+            font-size: 0.95rem;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #913244;
+            color: white !important;
+            text-decoration: none !important;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            text-align: center;
+        }
+
+        a:hover {
+            background-color: #9e3f50;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Connection Accepted!</h2>
+        <p>{{ sender_name }} has accepted your connection request. You can now chat with them in messages</p>
+        <a href="{{ website_link }}" class="btn">See More</a>
+    </div>
+</body>
+</html>

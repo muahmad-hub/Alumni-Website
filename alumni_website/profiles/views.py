@@ -9,6 +9,7 @@ from mentorship.utils import get_mentor_match
 from mentorship.models import Mentor
 from .utils import get_connection, num_connections
 from messaging.utils import create_chat_room
+from notifications.notifications import ConnectRequestNotification, ConnectAcceptedNotification, send_notification
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -273,6 +274,7 @@ def connect(request):
 
         profile_id = data.get("profile_id")
         profile = get_object_or_404(Profile, id=profile_id)
+
         if not profile_id:
             return JsonResponse({"status": "error", "message": "Profile ID is required"})
         
@@ -291,21 +293,21 @@ def connect(request):
             else:
                 accepted_str = "False"
 
+            notification = ConnectRequestNotification(receiver=profile.user, sender=request.user)
+            send_notification(notification)
+
             return JsonResponse({"status": "success", "message": "Connected", "accepted": accepted_str})
+    return JsonResponse({"status": "error", "message": "Method is not POST"})
 
 @login_required
 def accept_connection(request, user_id, action):
     if request.method == "POST":
         try:
             profile2 = get_object_or_404(Profile, user = request.user)
-            print(profile2)
             user1 = get_object_or_404(Users, id = user_id)
-            print(user1)
             profile1 = get_object_or_404(Profile, user = user1)
-            print(profile1)
 
             connection = get_object_or_404(Connection, profile1=profile1, profile2=profile2)
-            print(connection)
 
             if action == "accept":
                 connection.accepted = True
@@ -315,6 +317,9 @@ def accept_connection(request, user_id, action):
                 create_chat_room(request.user, user1)
                 print("chat room created")
 
+                notification = ConnectAcceptedNotification(receiver=user1, sender=request.user)
+                send_notification(notification)
+
                 return JsonResponse({'status': 'success', 'message': 'Connection accepted.'})
             else:
                 connection.accepted = False
@@ -323,3 +328,5 @@ def accept_connection(request, user_id, action):
 
         except Exception:
             return JsonResponse({'status': 'error', 'message': str(Exception)})
+
+
