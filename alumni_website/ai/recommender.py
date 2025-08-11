@@ -1,13 +1,14 @@
 from .personalized_page_rank import ppr, normalize_ppr
 from core.models import Users
 from .a_star_search import a_star_search
+from .simple_algorithm import SimpleAlgorithm
 
 from profiles.models import Profile, UserAlumniRecommendation
 from .optimised_a_star_search import OptimisedAStarSearch
 from django.core.cache import cache
 from .utils import CACHE_TIMEOUT, CachedProfileData
 
-
+# Unoptimised version
 def recommend(user):
     profile = user.profile
 
@@ -59,3 +60,8 @@ def optimised_recommend(profile_id, use_cache=True, save_to_db=True):
 def populate_cache():
     CachedProfileData.get_all_profile_data()
     CachedProfileData.get_connections_graph()
+
+def simple_recommend(profile_id):
+    recommender = SimpleAlgorithm()
+    result = recommender.recommendation_algorithm(profile_id)
+    return result

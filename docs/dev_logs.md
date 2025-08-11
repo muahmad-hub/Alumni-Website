@@ -680,3 +680,49 @@ path("messages", views.messages, name="messages")
 - Originally I would have thought to create the notification module as a series of functions, which would have caused a lot of redundant and overcomplex code. Instead, I switched to using a main base class and then creating subclasses for each type of email
 - Also, I had completely a Javascript code to send the emails asynchronously and change teh button state. However, I soon realised that the code was going to be too long and messy and hence resulted into using a more effecient approach of threading 
 - The `Recommendation system` works without any latency, but I believe it is stil quite computationally expensive for a very small user data set. A similar result could be achieved using a much simpler algorithm that could calculate similarity score and ranks users. I might implement this approach and use a field in the model to switch between the two systems as necessary
+
+## Date: August 11
+### Feature: Added a simplified recommendation algorithm
+- Even after optimising the algorithm, the algorithm is more complex than required to achieve the result for a small subset of ~100 to ~200 users. The current algorithm would be more suitable for a much larger dataset
+- Therefore, I implemented a much [simpler version](../alumni_website/ai/simple_algorithm.py) of the previous algorithm that uses a lot of the same class methods but has a different ranking system
+    - ```python
+        class SimpleAlgorithm:
+            def __init__(self):
+                self.scorer = OptimisedCompatibilityScore()
+                self.neighbor_finder = OptimisedNeighborFinding()
+                self.profile_data = CachedProfileData.get_all_profile_data() 
+        ```
+- This new system simply calculates similarity between the target user and all the other users and sorts and finds the user with highest similarity at the end
+- The new system does have slighly less performance than the previous one but is much more suitable for a lower data set
+- I added a `RecommendationSystem` model, which stores information about which system to use. The admin can change this through admin view and hence changing which algorithm is used to recommend
+    - ```python
+        class RecommendationSystem(models.Model):
+
+        UNOPTIMISED = "UnoptimisedAlgorithm"
+        OPTIMIZED = "OptimisedAlgorithm"
+        SIMPLE = "SimpleAlgorithm"
+        ALGORITHM_CHOICES = [
+            (OPTIMIZED, "OptimisedAlgorithm"),
+            (SIMPLE, "SimpleAlgorithm"),
+            (UNOPTIMISED, "UnoptimisedAlgorithm")
+        ]
+
+
+        recommendation_system = models.CharField(
+            max_length=200,
+            choices=ALGORITHM_CHOICES,
+            default=SIMPLE,
+        )
+        ```
+### Other Additions
+- Whenever the recommendation system is called, the cache is checked. If it exists then the data is used, else the `populate_cache()` function is called. This prevents manually updating the cache and prevents the function being called everytime a user is recommended, defeating the purpose of the cache
+- Additionally, I also added a function in [signals.py](../alumni_website/profiles/signals.py) to update the cache everytime the profile is updated
+    - ```python
+        @receiver([post_save], sender=Profile)
+        def clear_profile_cache(sender, **kwargs):
+            from django.core.cache import cache
+            cache.delete("all_profile_data")
+            cache.delete("connections_graph")
+        ```
+### TODO: NEED TO FIX BUG
+- Mentor directory is not loading mentors even though the database shows the mentors

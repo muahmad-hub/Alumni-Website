@@ -7,8 +7,9 @@ from django.db.models import Q
 from .utils import get_directory_filters
 from django.utils import timezone
 from datetime import timedelta
-from ai.recommender import optimised_recommend, populate_cache
+from ai.recommender import optimised_recommend, populate_cache, simple_recommend, recommend
 from django.core.cache import cache
+from core.models import RecommendationSystem
 
 
 from django.http import JsonResponse
@@ -25,12 +26,6 @@ def directory(request):
 @login_required
 def alumni_directory_recommend(request):
 
-    cache.delete("all_profile_data")
-
-    print("Populating cache...")
-    populate_cache()
-    print("Chache is populated")
-
     profile = request.user.profile
     session_key = "last_seen_recommendation_id"
 
@@ -46,7 +41,18 @@ def alumni_directory_recommend(request):
     time_difference = timezone.now() - user_recommendation.timestamp
 
     if time_difference > timedelta(days=7) or not user_recommendation.recommended_profile:
-        recommend_data = optimised_recommend(request.user.profile.id)
+        if not cache.get("all_profile_data"):
+            populate_cache()
+
+        system_choice = RecommendationSystem.objects.all().first().recommendation_system
+        if system_choice == "OptimisedAlgorithm":
+            recommend_data = optimised_recommend(request.user.profile.id)
+        elif system_choice == "SimpleAlgorithm":
+            recommend_data = simple_recommend(request.user.profile.id)
+        else:
+            recommend_data = recommend(request.user.profile.id)
+
+        # recommend_data = optimised_recommend(request.user.profile.id)
         print(f"Request profile id: {request.user.profile.id}")
         print(f"Recommended data: {recommend_data}")
         if recommend_data:

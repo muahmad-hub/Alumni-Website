@@ -5,7 +5,7 @@
 .mentors .alumni-card {
   background-color: var(--background-color);
   border-radius: 4rem;
-  height: 12.5rem;
+  height: auto;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -216,6 +216,11 @@ option {
 }
 
 @media (max-width: 576px) {
+  .alumni-card{
+    border-radius: 3rem !important;
+    margin: 0 0.1rem 0 1rem !important;
+    padding: 0 !important;
+  }
   .search-input {
     width: 65%;
     font-size: 0.9rem;

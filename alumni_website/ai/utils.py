@@ -7,11 +7,17 @@ from django.shortcuts import get_object_or_404
 from profiles.models import Profile
 from profiles.models import Connection, Profile
 from django.shortcuts import get_object_or_404
+from django.core.cache import cache
+from collections import defaultdict
 
+# Classifier variables
 huggingface_model = "bert-base-uncased"
-
 tokenizer = None
 model = None
+
+    
+# Currently set to 1 hour
+CACHE_TIMEOUT = 3600
 
 def get_model_and_tokenizer():
     global tokenizer, model
@@ -159,37 +165,6 @@ class Node:
 
     def __lt__(self, other):
         return self.cost < other.cost
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from django.core.cache import cache
-from collections import defaultdict
-
-# Currently set to 1 hour
-CACHE_TIMEOUT = 3600
 
 class OptimisedNode:
     # __slots__ specifies the class to only have these attributes, making it use less memory
@@ -300,7 +275,7 @@ class OptimisedCompatibilityScore:
         if len(total_mutual_connections) == 0:
             mutual_connections = 0
         else:
-            mutual_connections = set(self.connections_graph.get(profile1['id'], [])) & set(self.connections_graph.get(profile2['id'], [])) / len(total_mutual_connections)
+            mutual_connections = len(set(self.connections_graph.get(profile1['id'], [])) & set(self.connections_graph.get(profile2['id'], []))) / len(total_mutual_connections)
 
         w1 = 0.1
         w2 = w7 = 0.25

@@ -1,5 +1,7 @@
 from .models import *
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+
 
 
 
@@ -19,7 +21,14 @@ def get_connection(profile_id_1, profile_id_2):
     
 def num_connections(profile):
     try:
-        connections = Connection.objects(profile = profile, accepted = True).count()
+        print("I am about to check the connections")
+        connections = Connection.objects.filter(
+            accepted=True
+        ).filter(
+            Q(profile1=profile) | Q(profile2=profile)
+        ).count()
+        print(f"Connections {connections}")
         return connections
     except:
+        print("An exception has occured")
         return 0

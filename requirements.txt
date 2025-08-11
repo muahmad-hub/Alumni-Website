@@ -16,6 +16,10 @@ shortuuid==1.0.1
 psycopg2-binary==2.9.9 # Use psycopg2 for production/deployment
 whitenoise==6.6.0
 
+python-dotenv
+
+# NEED TO ISNTALL FRO ENIVRONMENT VARIABLES
+
 
 # django-htmx
 # django-daphne #(python -m pip install -U 'channels[daphne]')
