@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9f9f9;
+  color: #3b0a0f;
+}
+
+.mentor_directory_link{
+  text-decoration: none;
+}
+
+.form-info{
+  background-color: #efe4e7;
+  color: var(--accent-color) !important;
+}
+
+.mentor-form-container {
+  max-width: 600px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  border-top: 8px solid #8A1538;
+  border-radius: 10px;
+}
+
+h2 {
+  text-align: center;
+  color: #8A1538;
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #3b0a0f;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 12px;
+  background-color: #8A1538;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #6e102b;
+}

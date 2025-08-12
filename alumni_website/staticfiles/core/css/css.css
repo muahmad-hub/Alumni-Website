@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@600&display=swap');
+
+
+
+:root {
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Raleway", sans-serif;
+  --nav-font: "Poppins", sans-serif;
+}
+
+:root {
+  --background-color: #ffffff;
+  --secondary-background-color: #f1f5f7;
+  --heading-color: #2d465e;
+  --accent-color: #761728;
+  --subtitle: #666;
+}
+
+
+body {
+  background-color: var(--secondary-background-color);
+  font-family: 'Open Sans', sans-serif;
+  color: #2c2c2c;
+}
+
+.main-nav{
+  padding: 0;
+  margin: 0;
+}
+
+.main-nav .nav {
+  background-color: var(--accent-color) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-nav .navbar .dropdown-menu {
+  background-color: var(--accent-color) !important;
+}
+
+.main-nav .navbar .dropdown-menu .dropdown-item {
+  color: white;
+}
+
+.main-nav .navbar .dropdown-menu {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  visibility: hidden;
+  pointer-events: none;
+  display: none;
+}
+
+.main-nav .navbar .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  display: block;
+}
+
+.dropdown-item:hover {
+  background-color: #4e1002;
+}
+
+.bg-maroon-light {
+  background-color: #c69393 !important;
+}
+
+.text-maroon {
+  color: #4e1002;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+  border-radius: 50%;
+}
+
+.profile-img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+  background: linear-gradient(to right, #c69393, #f7e4d4);
+}
+
+.profilePic {
+  border: 5px solid #4e1002;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+}
+
+@media (max-width: 767px) {
+  .main-nav .navbar-nav {
+    text-align: center !important;
+  }
+  
+  .logo {
+    height: 40px !important; 
+  }
+}
+@media (max-width: 767px) {
+  .profile-img-container {
+    height: 250px !important; 
+  }
+  
+  .profilePic {
+    width: 150px !important;
+    height: 150px !important;
+    border-width: 3px !important;
+  }
+}
+
+
+
+
