@@ -22,3 +22,4 @@ def clear_profile_cache(sender, **kwargs):
     from django.core.cache import cache
     cache.delete("all_profile_data")
     cache.delete("connections_graph")
+    cache.delete("simple_algo_profiles")

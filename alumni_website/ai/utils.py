@@ -1,17 +1,13 @@
 from transformers import BertTokenizer, BertModel
-import numpy
 import joblib
 import torch
-from nltk.stem import WordNetLemmatizer
-from django.shortcuts import get_object_or_404
 from profiles.models import Profile
 from profiles.models import Connection, Profile
-from django.shortcuts import get_object_or_404
 from django.core.cache import cache
 from collections import defaultdict
 
 # Classifier variables
-huggingface_model = "bert-base-uncased"
+huggingface_model = "distilbert-base-uncased"
 tokenizer = None
 model = None
 
@@ -21,12 +17,18 @@ CACHE_TIMEOUT = 3600
 
 def get_model_and_tokenizer():
     global tokenizer, model
-    if tokenizer is None:
-        tokenizer = BertTokenizer.from_pretrained(huggingface_model)
-    if model is None:
-        model = BertModel.from_pretrained(huggingface_model)
+    try:
+        from sentence_transformers import SentenceTransformer
+        if model is None:
+            model = SentenceTransformer("all-MiniLM-L6-v2")
+        return model, None
+    except ImportError:
+        if tokenizer is None:
+            tokenizer = BertTokenizer.from_pretrained(huggingface_model)
+        if model is None:
+            model = BertModel.from_pretrained(huggingface_model)
 
-    return model, tokenizer
+        return model, tokenizer
 
 def vectorize(text):
     model, tokenizer = get_model_and_tokenizer()
@@ -37,16 +39,18 @@ def vectorize(text):
     # lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
     # lemmatized_text = " ".join(lemmatized_tokens)
 
-    tokens = tokenizer(text.lower(), return_tensors="pt")
+    if tokenizer is None:
+        vector = model.encode([text])[0]
+    else:
+        tokens = tokenizer(text.lower(), return_tensors="pt")
 
-    with torch.no_grad():
-        outputs = model(**tokens)
+        with torch.no_grad():
+            outputs = model(**tokens)
 
-    cls_embedding = outputs.last_hidden_state[:, 0, :]
+        vector = outputs.last_hidden_state[:, 0, :]
+        vector = vector.numpy()
 
-    cleaned_cls_embedding = cls_embedding.numpy()
-
-    return cleaned_cls_embedding
+    return vector
 
 def save_model(model, path):
     joblib.dump(model, path)
@@ -213,7 +217,7 @@ class CachedProfileData:
                 'goals': set(goal.goal_category for goal in profile.goals.all()),
             }
         
-        cache.set(cache_key, profile_data, CACHE_TIMEOUT)
+        cache.set(cache_key, profile_data, 900)
 
         print(f"PROFILE_DATA FROM CACHE: {profile_data}")
 

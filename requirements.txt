@@ -4,8 +4,6 @@ channels[daphne]==4.2.2
 nltk==3.8.1
 transformers==4.41.2
 torch==2.3.0
-hf_xet  #for better performance 
-
 
 scikit-learn==1.4.2
 numpy==1.26.4
@@ -13,16 +11,12 @@ pandas==2.2.2
 joblib==1.4.2
 shortuuid==1.0.1
 
-psycopg2-binary==2.9.9 # Use psycopg2 for production/deployment
+psycopg2-binary==2.9.9 
 whitenoise==6.6.0
 
 python-dotenv
+dj_database_url
 
-# NEED TO ISNTALL FRO ENIVRONMENT VARIABLES
+sentence-transformers
 
 
-# django-htmx
-# django-daphne #(python -m pip install -U 'channels[daphne]')
-# shortuuid
-# nltk
-# #punkt #downloaded through nltk downloader. May need to see how to add in production

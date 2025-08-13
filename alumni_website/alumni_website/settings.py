@@ -17,6 +17,7 @@ load_dotenv()
 
 
 from pathlib import Path
+import dj_database_url
 
 
 
@@ -28,12 +29,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tmidoz*7t(rb20btb1*9733=8b-eh%09l(^n$%@v8kxxwky(-%'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+if ENVIRONMENT == "PRODUCTION":
+    DEBUG = False
+elif ENVIRONMENT == "DEVELOPMENT":
+    DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', os.environ.get("HOST")]
+
 
 
 INSTALLED_APPS = [
@@ -61,14 +67,15 @@ AUTH_USER_MODEL = 'core.Users'
 # Setting the login path
 LOGIN_URL = '/authentication/login/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Channel layers configuration
 CHANNEL_LAYERS = {
     "default": {
@@ -79,6 +86,7 @@ CHANNEL_LAYERS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,6 +97,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'alumni_website.urls'
+
+CSRF_TRUSTED_ORIGINS = [
+    os.environ.get("CSRF_ORIGIN"),
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+
 
 
 TEMPLATES = [
@@ -123,16 +139,21 @@ ASGI_APPLICATION = 'alumni_website.asgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alumniWebsite',
-        'USER': 'postgres',
-        'PASSWORD': 'ahmad.artist08@gmail.com&Ibrahim',
-        'HOST': 'localhost',
-        'PORT': '5432',
+if ENVIRONMENT == "DEVELOPMENT":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'alumniWebsite',
+            'USER': 'postgres',
+            'PASSWORD': 'ahmad.artist08@gmail.com&Ibrahim',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
+elif ENVIRONMENT == "PRODUCTION":
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    }
 
 #Adding bootsraps for messages
 

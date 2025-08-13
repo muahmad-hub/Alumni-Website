@@ -15,7 +15,7 @@ class Notification:
             self.sender_name = f"{sender.profile.first_name} {sender.profile.last_name}"
         else:
             self.sender_name = None 
-        self.receiver_email = "mu.ahmad.pro@gmail.com" # receiver.email
+        self.receiver_email = receiver.email
         self.from_email = "oryxalumni@gmail.com"
 
     def get_subject(self):

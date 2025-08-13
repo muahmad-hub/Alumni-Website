@@ -9,13 +9,13 @@ class Users(AbstractUser):
     
 class RecommendationSystem(models.Model):
 
-    UNOPTIMISED = "UnoptimisedAlgorithm"
     OPTIMIZED = "OptimisedAlgorithm"
     SIMPLE = "SimpleAlgorithm"
+    NONE = "None"
     ALGORITHM_CHOICES = [
         (OPTIMIZED, "OptimisedAlgorithm"),
         (SIMPLE, "SimpleAlgorithm"),
-        (UNOPTIMISED, "UnoptimisedAlgorithm")
+        (NONE, "None")
     ]
 
 

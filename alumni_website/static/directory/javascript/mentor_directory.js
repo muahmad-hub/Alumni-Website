@@ -47,7 +47,7 @@ function display_data(data){
     alumni_container.innerHTML  = ""
 
     if (!data.results || data.results.length === 0){
-        alumni_container.innerHTML += "<h1>No Results</h1>"
+        alumni_container.innerHTML += "<h1  data-aos='fade-up' data-aos-delay='300'>No Results</h1>"
     }
     else{
     data.results.forEach(alumni => {
