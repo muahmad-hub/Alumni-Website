@@ -1,56 +1,213 @@
-from transformers import BertTokenizer, BertModel
+# from transformers import BertTokenizer, BertModel
 import joblib
-import torch
-from profiles.models import Profile
+# import torch
 from profiles.models import Connection, Profile
 from django.core.cache import cache
 from collections import defaultdict
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+import os
+from django.conf import settings
 
 # Classifier variables
 huggingface_model = "distilbert-base-uncased"
 tokenizer = None
-model = None
-
-    
+model = None    
 # Currently set to 1 hour
 CACHE_TIMEOUT = 3600
 
-def get_model_and_tokenizer():
-    global tokenizer, model
-    try:
-        from sentence_transformers import SentenceTransformer
-        if model is None:
-            model = SentenceTransformer("all-MiniLM-L6-v2")
-        return model, None
-    except ImportError:
-        if tokenizer is None:
-            tokenizer = BertTokenizer.from_pretrained(huggingface_model)
-        if model is None:
-            model = BertModel.from_pretrained(huggingface_model)
+# def get_model_and_tokenizer():
+#     global tokenizer, model
+#     try:
+#         from sentence_transformers import SentenceTransformer
+#         if model is None:
+#             model = SentenceTransformer("all-MiniLM-L6-v2")
+#         return model, None
+#     except ImportError:
+#         if tokenizer is None:
+#             tokenizer = BertTokenizer.from_pretrained(huggingface_model)
+#         if model is None:
+#             model = BertModel.from_pretrained(huggingface_model)
 
-        return model, tokenizer
+#         return model, tokenizer
+
+
+# def vectorize(text):
+#     model, tokenizer = get_model_and_tokenizer()
+
+#     # lemmatizer = WordNetLemmatizer()
+
+#     # tokens = text.split()
+#     # lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
+#     # lemmatized_text = " ".join(lemmatized_tokens)
+
+#     if tokenizer is None:
+#         vector = model.encode([text])[0]
+#     else:
+#         tokens = tokenizer(text.lower(), return_tensors="pt")
+
+#         with torch.no_grad():
+#             outputs = model(**tokens)
+
+#         vector = outputs.last_hidden_state[:, 0, :]
+#         vector = vector.numpy()
+
+#     return vector
+
+
+vectorizer = None
+is_fitted = False
+
+def get_vectorizer(corpus=None):
+    global vectorizer, is_fitted
+    
+    if vectorizer is None:
+        vectorizer = TfidfVectorizer(
+            stop_words='english', 
+            max_features=1000,
+            ngram_range=(1, 2),
+            lowercase=True,
+            strip_accents='ascii'
+        )
+        
+        if corpus is not None:
+            vectorizer.fit(corpus)
+            is_fitted = True
+        else:
+            default_corpus = get_default_corpus()
+            vectorizer.fit(default_corpus)
+            is_fitted = True
+    
+    return vectorizer
+
+def get_default_corpus():
+    return [
+        # Technical skills
+        "python programming software development coding",
+        "java object oriented programming enterprise applications",
+        "javascript web development frontend backend",
+        "react angular vue frontend frameworks",
+        "node express backend server development",
+        "sql database mysql postgresql data management",
+        "machine learning artificial intelligence data science",
+        "data analysis statistics python r analytics",
+        "cloud computing aws azure google cloud",
+        "devops docker kubernetes ci cd deployment",
+        
+        # Soft skills
+        "project management agile scrum team leadership",
+        "communication presentation public speaking",
+        "problem solving critical thinking analytical",
+        "teamwork collaboration cross functional teams",
+        "leadership management people skills mentoring",
+        "time management organization prioritization",
+        "customer service client relations support",
+        "sales business development revenue growth",
+        "marketing digital social media campaigns",
+        "finance accounting budgeting financial analysis",
+        
+        # Career goals
+        "career advancement professional growth promotion",
+        "skill development learning new technologies",
+        "networking professional relationships industry connections",
+        "entrepreneurship startup business venture",
+        "work life balance flexible remote work",
+        "mentorship teaching knowledge sharing",
+        "industry expertise domain knowledge specialization",
+        "management executive leadership roles",
+        "consulting advisory strategic planning",
+        "innovation research development cutting edge"
+    ]
 
 def vectorize(text):
-    model, tokenizer = get_model_and_tokenizer()
+    global vectorizer, is_fitted
+    
+    if vectorizer is None or not is_fitted:
+        get_vectorizer()
+    
+    if not text or text.strip() == "":
+        return np.zeros(vectorizer.max_features or 1000)
+    
+    try:
+        sparse_vector = vectorizer.transform([str(text)])
+        
+        dense_vector = sparse_vector.toarray()[0]
+        
+        return dense_vector
+        
+    except Exception as e:
+        return np.zeros(vectorizer.max_features or 1000)
 
-    # lemmatizer = WordNetLemmatizer()
+def initialize_vectorizer_with_data():
+    try:        
+        corpus = []
+        
+        profiles = Profile.objects.prefetch_related('skills', 'goals').all()
+        
+        for profile in profiles:
+            for skill in profile.skills.all():
+                if hasattr(skill, 'skill_category') and skill.skill_category:
+                    corpus.append(skill.skill_category)
+                elif hasattr(skill, 'name') and skill.name:
+                    corpus.append(skill.name)
+            
+            for goal in profile.goals.all():
+                if hasattr(goal, 'goal_category') and goal.goal_category:
+                    corpus.append(goal.goal_category)
+                elif hasattr(goal, 'name') and goal.name:
+                    corpus.append(goal.name)
+        
+        corpus = list(set([text.strip() for text in corpus if text and text.strip()]))
+        
+        if corpus:
+            get_vectorizer(corpus)
+        else:
+            get_vectorizer()
+            
+    except Exception as e:
+        get_vectorizer()
 
-    # tokens = text.split()
-    # lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]    
-    # lemmatized_text = " ".join(lemmatized_tokens)
+def save_vectorizer():
+    global vectorizer, is_fitted
+    
+    if vectorizer is None or not is_fitted:
+        return
+    
+    try:
+        model_dir = os.path.join(settings.BASE_DIR, 'ai', 'models')
+        os.makedirs(model_dir, exist_ok=True)
+        
+        vectorizer_path = os.path.join(model_dir, 'tfidf_vectorizer.pkl')
+        joblib.dump(vectorizer, vectorizer_path)
+        
+    except Exception as e:
+        print(f"Error saving vectorizer: {e}")
 
-    if tokenizer is None:
-        vector = model.encode([text])[0]
-    else:
-        tokens = tokenizer(text.lower(), return_tensors="pt")
+def load_vectorizer():
+    global vectorizer, is_fitted
+    
+    try:
+        vectorizer_path = os.path.join(settings.BASE_DIR, 'ai', 'models', 'tfidf_vectorizer.pkl')
+        
+        if os.path.exists(vectorizer_path):
+            vectorizer = joblib.load(vectorizer_path)
+            is_fitted = True
+            return True
+        else:
+            return False
+            
+    except Exception as e:
+        return False
 
-        with torch.no_grad():
-            outputs = model(**tokens)
+def auto_initialize():
+    global vectorizer, is_fitted
+    
+    if vectorizer is None:
+        if not load_vectorizer():
+            get_vectorizer()
 
-        vector = outputs.last_hidden_state[:, 0, :]
-        vector = vector.numpy()
+auto_initialize()
 
-    return vector
 
 def save_model(model, path):
     joblib.dump(model, path)

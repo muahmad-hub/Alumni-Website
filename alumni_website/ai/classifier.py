@@ -3,10 +3,6 @@ from sklearn import svm
 import pandas as pd
 import torch
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_score, recall_score, f1_score
-from sklearn.model_selection import train_test_split
 
 SKILLS_DATA_PATH = "ai/data/Skill.csv"
 SKILL_MODEL_PATH = "ai/models/skill_svm_model.pkl"

@@ -1,6 +1,5 @@
-from .utils import calculate_score, Node, get_neighbors
+from .utils import get_neighbors
 from profiles.models import Profile
-import random
 
 # Damping factor
 d = 0.85
