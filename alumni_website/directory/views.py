@@ -175,7 +175,7 @@ def mentor_search_directory(request):
     if university and university != "University":
         filter_conditions &= Q(user__profile__university__icontains=university)
         
-    alumni = Mentor.objects.filter(filter_conditions).exclude(skills__isnull=True).distinct()
+    alumni = Mentor.objects.filter(filter_conditions).exclude(user__profile__skills__isnull=True).distinct()
 
     results = []
 
