@@ -38,7 +38,7 @@ if ENVIRONMENT == "PRODUCTION":
 elif ENVIRONMENT == "DEVELOPMENT":
     DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', os.environ.get("HOST")]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', os.environ.get("HOST"), os.environ.get("HOST1"), os.environ.get("HOST2")]
 
 
 
@@ -100,6 +100,7 @@ ROOT_URLCONF = 'alumni_website.urls'
 
 CSRF_TRUSTED_ORIGINS = [
     os.environ.get("CSRF_ORIGIN"),
+    os.environ.get("CSRF_ORIGIN1"),
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
