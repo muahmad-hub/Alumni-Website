@@ -167,7 +167,7 @@ def mentor_search_directory(request):
     filter_conditions = Q()
 
     if query:
-        filter_conditions &= Q(skills__skill__icontains=query)
+        filter_conditions &= Q(user__profile__skills__skill__icontains=query)
 
     if batch_year and batch_year != "Batch Year":
         filter_conditions &= Q(user__profile__graduation_year=batch_year)
@@ -182,7 +182,7 @@ def mentor_search_directory(request):
     for alum in alumni:
 
         skills_list = []
-        for skill in alum.user.mentor.skills.all():
+        for skill in alum.user.profile.skills.all():
             skills_list.append(skill.skill)
 
         if all([alum.user.profile.graduation_year, alum.user.profile.major_uni, alum.user.profile.university]):
