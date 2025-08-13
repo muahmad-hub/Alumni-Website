@@ -1,7 +1,7 @@
 from .utils import vectorize, save_model, load_model
 from sklearn import svm
 import pandas as pd
-import torch
+# import torch
 import numpy as np
 
 SKILLS_DATA_PATH = "ai/data/Skill.csv"
@@ -40,9 +40,9 @@ def train_and_save_model(is_goal):
     vector_list = []
     encoded_labels = []
     for i, value in enumerate(df[COL1]):
-        with torch.no_grad():
-            vector = vectorize(value)
-            vector_list.append(vector)
+        # with torch.no_grad():
+        vector = vectorize(value)
+        vector_list.append(vector)
         label = encoded_labels_dic[df[COL2][i]]
         encoded_labels.append(label)
 
@@ -76,8 +76,8 @@ def predict_category_skill(text):
     model = load_model(SKILL_MODEL_PATH)
     encoded_labels_dic = load_model(SKILL_ENCODER_PATH)
 
-    with torch.no_grad():
-        tokens = vectorize(text)
+    # with torch.no_grad():
+    tokens = vectorize(text)
 
     probabilities = model.predict_proba(tokens)[0]
 
@@ -108,8 +108,8 @@ def predict_category_goal(text):
     model = load_model(GOAL_MODEL_PATH)
     encoded_labels_dic = load_model(GOAL_ENCODER_PATH)
 
-    with torch.no_grad():
-        tokens = vectorize(text)
+    # with torch.no_grad():
+    tokens = vectorize(text)
 
     probabilities = model.predict_proba(tokens)[0]
 
