@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'admin_honeypot',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -228,3 +229,5 @@ CACHES = {
         'TIMEOUT': 3600,
     }
 }
+
+ACCOUNT_USERNAME_BLACKLIST = ['cp']

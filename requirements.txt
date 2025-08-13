@@ -19,4 +19,4 @@ dj_database_url
 
 sentence-transformers
 
-
+django-admin-honeypot
