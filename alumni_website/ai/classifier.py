@@ -111,7 +111,7 @@ def predict_category_goal(text):
     # with torch.no_grad():
     tokens = vectorize(text)
 
-    probabilities = model.predict_proba(tokens)[0]
+    probabilities = model.predict_proba(np.array(tokens).reshape(1, -1))[0]
 
     encoded_label = int(np.argmax(probabilities))
 

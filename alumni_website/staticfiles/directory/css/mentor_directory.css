@@ -132,29 +132,13 @@
   margin-top: 1.5rem;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+h1{
+  font-size: 2.2rem;
+  font-family: var(--header-font);
+  color: var(--heading-color);
+  font-weight: 300;
+  text-align: center;
+}
 
 .search-container {
   max-width: 600px;
@@ -166,6 +150,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 0.4rem;
 }
 
 .search-input {
