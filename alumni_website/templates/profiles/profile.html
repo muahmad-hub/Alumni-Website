@@ -409,23 +409,23 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fw-semibold">First Name</label>
-              <input type="text" name="first_name" value="{{ profile.first_name }}" class="form-control rounded-3">
+              <input type="text" name="first_name" value="{{ profile.first_name }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">Last Name</label>
-              <input type="text" name="last_name" value="{{ profile.last_name }}" class="form-control rounded-3">
+              <input type="text" name="last_name" value="{{ profile.last_name }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">Email</label>
-              <input type="email" name="email" value="{{ profile.user.email }}" class="form-control rounded-3">
+              <input type="email" name="email" value="{{ profile.user.email }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">Date of birth</label>
-              <input type="date" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}" class="form-control rounded-3">
+              <input type="date" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-12">
               <label class="form-label fw-semibold">Location</label>
-              <select name="location" class="form-control rounded-3">
+              <select name="location" class="form-control rounded-3" required>
                   {% for country in countries %}
                       <option value="{{ country }}" {% if profile.location == country %}selected{% endif %}>
                           {{ country }}
@@ -463,7 +463,7 @@
           <div class="row g-3">
             <div class="col-md-12">
               <label class="form-label fw-semibold">About Me</label>
-              <textarea rows="10" type="text" name="about_me" class="form-control rounded-3">{{ profile.about_me }}</textarea>
+              <textarea rows="10" type="text" name="about_me" class="form-control rounded-3" required>{{ profile.about_me }}</textarea>
             </div>
           </div>
         </div>
@@ -494,11 +494,11 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fw-semibold">Graduation Year</label>
-              <input type="text" name="graduation_year" value="{{ profile.graduation_year }}" class="form-control rounded-3">
+              <input type="text" name="graduation_year" value="{{ profile.graduation_year }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Education Level</label>
-                <select class="form-control" id="exampleFormControlSelect1" name="education_level">
+                <select class="form-control" id="exampleFormControlSelect1" name="education_level" required>
                 <option {% if profile.education_level == "Sixth Form" %}selected{% endif %}>Sixth Form</option>
                 <option {% if profile.education_level == "Bachelor's" %}selected{% endif %}>Bachelor's</option>
                 <option {% if profile.education_level == "Master's" %}selected{% endif %}>Master's</option>
@@ -506,11 +506,11 @@
                 </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-semibold">University</label>
+              <label class="form-label fw-semibold" required>University</label>
               <input type="text" name="university" value="{{ profile.university }}" class="form-control rounded-3">
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-semibold">University Location</label>
+              <label class="form-label fw-semibold" required>University Location</label>
               <select name="university_location" class="form-control rounded-3">
                   {% for country in countries %}
                       <option value="{{ country }}" {% if profile.university_location == country %}selected{% endif %}>
@@ -520,7 +520,7 @@
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-semibold">Major</label>
+              <label class="form-label fw-semibold" required>Major</label>
               <input type="text" name="major_uni" value="{{ profile.major_uni }}" class="form-control rounded-3">
             </div>
           </div>
@@ -551,15 +551,15 @@
           <div class="row g-3">
           <div class="col-4">
             <label class="form-label fw-semibold">Skill 1</label>
-            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.0 %}{{ profile.skills.all.0.skill }}{% endif %}">
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.0 %}{{ profile.skills.all.0.skill }}{% endif %}" required>
           </div>
           <div class="col-4">
             <label class="form-label fw-semibold">Skill 2</label>
-            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.1 %}{{ profile.skills.all.1.skill }}{% endif %}">
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.1 %}{{ profile.skills.all.1.skill }}{% endif %}" required>
           </div>
           <div class="col-4">
             <label class="form-label fw-semibold">Skill 3</label>
-            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.2 %}{{ profile.skills.all.2.skill }}{% endif %}">
+            <input type="text" class="form-control" name="skills" value="{% if profile.skills.all.2 %}{{ profile.skills.all.2.skill }}{% endif %}" required>
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -589,11 +589,11 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fw-semibold">Role</label>
-              <input type="text" name="role" value="{{ profile.role }}" class="form-control rounded-3">
+              <input type="text" name="role" value="{{ profile.role }}" class="form-control rounded-3" required>
             </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">Employer</label>
-              <input type="text" name="employer" value="{{ profile.employer }}" class="form-control rounded-3">
+              <input type="text" name="employer" value="{{ profile.employer }}" class="form-control rounded-3" required>
             </div>
           </div>
         <div class="modal-footer border-0">
@@ -622,20 +622,20 @@
           {% endif %}
 
           <div class="alert alert-info small">
-            These goals and skills will not appear on your public profile. They help us match you with similar alumni.
+            These goals and skills will not appear on your public profile. They help our AI match you with the most compatible alumni.
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Goal 1</label>
-            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.0 %}{{ profile.goals.all.0.goal }}{% endif %}">
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.0 %}{{ profile.goals.all.0.goal }}{% endif %}" required>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Goal 2</label>
-            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.1 %}{{ profile.goals.all.1.goal }}{% endif %}">
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.1 %}{{ profile.goals.all.1.goal }}{% endif %}" required>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Goal 3</label>
-            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.2 %}{{ profile.goals.all.2.goal }}{% endif %}">
+            <input type="text" class="form-control" name="goals" value="{% if profile.goals.all.2 %}{{ profile.goals.all.2.goal }}{% endif %}" required>
           </div>
         </div>
         <div class="modal-footer border-0">

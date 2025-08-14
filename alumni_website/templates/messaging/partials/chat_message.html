@@ -1,5 +1,13 @@
+{% load static %}
+
 {% if sender == message.sender %}
-    <div class="message sent">{{ message.message }}</div>
+    <div class="message-wrapper sent">
+        <div class="message sent">{{ message.message }}</div>
+        <div class="message-timestamp sent">{{ message.sent_time|date:"H:i" }}</div>
+    </div>
 {% else %}
-    <div class="message received">{{ message.message }}</div>
+    <div class="message-wrapper received">
+        <div class="message received">{{ message.message }}</div>
+        <div class="message-timestamp received">{{ message.sent_time|date:"H:i" }}</div>
+    </div>
 {% endif %}
