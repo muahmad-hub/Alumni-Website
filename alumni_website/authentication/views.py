@@ -8,16 +8,101 @@ from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
+from django.core.cache import cache
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.crypto import get_random_string
+from django.urls import reverse
+
+# Function used to get users IP address to log login attempts
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+# Setting limit of sign up attempts to 3
+def is_rate_limited(request, action='signup', limit=3, window=3600):
+    ip = get_client_ip(request)
+    cache_key = f"rate_limit_{action}_{ip}"
+    
+    # Getting number of attempts and comparing with limit
+    attempts = cache.get(cache_key, 0)
+    if attempts >= limit:
+        return True
+    
+    cache.set(cache_key, attempts + 1, window)
+    return False
+
+def send_activation_email(user, request):
+    token = get_random_string(32)
+    cache.set(f"activation_{token}", user.id, 86400)
+    
+    # Building activation account
+    activation_link = request.build_absolute_uri(
+        reverse('activate_account', args=[token])
+    )
+    
+    # Sends activation email
+    subject = "Activate Your Account"
+    message = f"""
+    Hi {user.email},
+    
+    Please click the link below to activate your account:
+    {activation_link}
+    
+    This link will expire in 24 hours.
+    """
+    
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
+
+def activate_account(request, token):
+    user_id = cache.get(f"activation_{token}")
+    
+    if not user_id:
+        messages.error(request, "Invalid or expired activation link.")
+        return redirect("login_view")
+    
+    try:
+        user = Users.objects.get(id=user_id)
+        user.is_active = True
+        user.save()
+        
+        cache.delete(f"activation_{token}")
+        
+        messages.success(request, "Account activated successfully! You can now log in.")
+        return redirect("login_view")
+    except Users.DoesNotExist:
+        messages.error(request, "Invalid activation link.")
+        return redirect("login_view")
+
+
 def login_view(request):
     if request.method == "POST":
+        # 5 logins in 15 minutes allowed
+        if is_rate_limited(request, 'login', limit=5, window=900):
+            messages.error(request, "Too many login attempts. Please try again later.")
+            return render(request, "authentication/login.html")
 
         email = request.POST["email"]
         password = request.POST["password"]
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
+            if not user.is_active:
+                messages.error(request, "Please check your email to activate your account (Maybe in Spam)")
+                return render(request, "authentication/login.html")
+            
             login(request, user)
-            return redirect('home')
+            return redirect("home")
         else:
             messages.error(request, "Invalid credentials")
             return render(request, "authentication/login.html")
@@ -25,31 +110,44 @@ def login_view(request):
         return render(request, "authentication/login.html")
 
 def sign_up(request):
-        if request.method == "POST":
-            email = request.POST["email"]
-            password = request.POST["password"]
-            confirmation = request.POST["confirmation"]
-            if password != confirmation:
-                messages.error(request, "Passwords must match")
-                return render(request, "authentication/sign_up.html")
-
-            try:
-                user = Users.objects.create_user(email = email, username = email, password = password)
-                user.save()
-            except IntegrityError:
-                messages.error(request, "Email is already registered")
-                return render(request, "authentication/sign_up.html")
-            
-            profile = Profile.objects.create(
-            user=user,
-            )
-
-            profile.save()
-
-            login(request, user)
-            return redirect('home')
-        else:
+    if request.method == "POST":
+        # Limits to 2 signups per hour
+        if is_rate_limited(request, 'signup', limit=2, window=3600):
+            messages.error(request, "Too many signup attempts. Please try again later.")
             return render(request, "authentication/sign_up.html")
+
+        email = request.POST["email"]
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        
+        if password != confirmation:
+            messages.error(request, "Passwords must match")
+            return render(request, "authentication/sign_up.html")
+
+        try:
+            user = Users.objects.create_user(
+                email=email, 
+                username=email, 
+                password=password,
+                is_active=False
+            )
+            user.save()
+        except IntegrityError:
+            messages.error(request, "Email is already registered")
+            return render(request, "authentication/sign_up.html")
+        
+        profile = Profile.objects.create(user=user)
+        profile.save()
+
+        try:
+            send_activation_email(user, request)
+            messages.success(request, "Account created! Please check your email to activate your account (Check spam too)")
+        except Exception as e:
+            messages.error(request, "Account created but couldn't send activation email. Please contact support.")
+        
+        return render(request, "authentication/login.html")
+    else:
+        return render(request, "authentication/sign_up.html")
 
 @login_required
 def logout_view(request):

@@ -72,8 +72,7 @@
     - I initially did think of using Bag of Words or Word2Vec; however, bag of words would be not be as accurate and Word2Vec has lower dimensions and hence can't understand words in context
     - Additionally, BERT also converts words into 768 dimensional vectors, which is very rich for the classification system to use
     - I did try using TF-IDF, expecially for skill vectorization as they are usually smaller inputs. However, the performance of the system was not up to the standard when compared with BERT
-    - However, for deployment I had to chose TF-IDF. It is much ligther weight than BERT and fits well in my RAM limit for deployment. Although this does reduce the accuracy of the classifier, I had to make a trade-off.
-        - 
+    - However, do to memory constraints in deployment (512MB for RAM) using BERT is unsuitable due to its memory usage. Instead I switched to using . More information about the integration can be found [here](dev_logs.md#tf-idf-integration-for-deployment)
 - SVM:
     - SVM (Support Vector Machine) is a supervised machine learning model that classifies data by drawing boundary lines
     - SVM works well with high dimensional data like from BERT vectors

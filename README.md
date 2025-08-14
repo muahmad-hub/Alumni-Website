@@ -40,8 +40,9 @@
     - Personalized PageRank surfaces globally relevant but non-obvious matches.
     - Optimizations: caching, vectorization, pruning, and batch processing.
 - AI Classifier:
-    - Supervised ML with BERT embeddings + SVM (Using TF-IDF instead of BERT for deployment due to RAM constraints, this does lower classifier accuracy but had to make trade-off)
-    - Goal classifier: 81% F1 score; Skill classifier: 72% F1 score (500-sample dataset).
+    - Supervised ML with BERT embeddings + SVM
+    - Directly using BERT exceeded memory limits (512 MB RAM), so I switched to using TF-IDF to approximate BERT embeddings.
+    - Goal classifier: 81% F1 score; Skill classifier: 69% F1 score (500-sample dataset).
     - Integrated into user profile updates.
 - Messaging System:
     - Full-duplex WebSocket channels for low-latency communication.

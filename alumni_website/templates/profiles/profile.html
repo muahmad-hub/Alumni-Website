@@ -377,36 +377,6 @@
   </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </div>
 </div>
 
@@ -455,7 +425,13 @@
             </div>
             <div class="col-md-12">
               <label class="form-label fw-semibold">Location</label>
-              <input type="text" name="location" value="{{ profile.location }}" class="form-control rounded-3">
+              <select name="location" class="form-control rounded-3">
+                  {% for country in countries %}
+                      <option value="{{ country }}" {% if profile.location == country %}selected{% endif %}>
+                          {{ country }}
+                      </option>
+                  {% endfor %}
+              </select>
             </div>
           </div>
         </div>
@@ -535,7 +511,13 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">University Location</label>
-              <input type="text" name="university_location" value="{{ profile.university_location }}" class="form-control rounded-3">
+              <select name="university_location" class="form-control rounded-3">
+                  {% for country in countries %}
+                      <option value="{{ country }}" {% if profile.university_location == country %}selected{% endif %}>
+                          {{ country }}
+                      </option>
+                  {% endfor %}
+              </select>
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">Major</label>

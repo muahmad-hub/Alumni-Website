@@ -48,27 +48,27 @@ def train_and_save_model(is_goal):
 
     vector_list = np.vstack(vector_list)
 
-    # clf.fit(vector_list, encoded_labels)
+    clf.fit(vector_list, encoded_labels)
 
     # Code for testing accuracy of AI
 
-    from sklearn.model_selection import train_test_split
-    from sklearn.metrics import f1_score, precision_score, recall_score
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.metrics import f1_score, precision_score, recall_score
 
-    X_train, X_test, y_train, y_test = train_test_split(
-    vector_list, encoded_labels, test_size=0.2, random_state=42
-    )
+    # X_train, X_test, y_train, y_test = train_test_split(
+    # vector_list, encoded_labels, test_size=0.2, random_state=42
+    # )
 
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
+    # clf.fit(X_train, y_train)
+    # y_pred = clf.predict(X_test)
 
-    precision = precision_score(y_test, y_pred, average='weighted')
-    recall = recall_score(y_test, y_pred, average='weighted')
-    f1 = f1_score(y_test, y_pred, average='weighted')
+    # precision = precision_score(y_test, y_pred, average='weighted')
+    # recall = recall_score(y_test, y_pred, average='weighted')
+    # f1 = f1_score(y_test, y_pred, average='weighted')
 
-    print(f"Precision: {precision:.2%}")
-    print(f"Recall: {recall:.2%}")
-    print(f"F1 Score: {f1:.2%}")
+    # print(f"Precision: {precision:.2%}")
+    # print(f"Recall: {recall:.2%}")
+    # print(f"F1 Score: {f1:.2%}")
 
 
     save_model(clf, model_path)

@@ -733,3 +733,58 @@ path("messages", views.messages, name="messages")
 - Fixed mentor directory bug. The code was still using the previous `MentorSkills` table instead of the new skills table in `Profile`
 - Switched to using TF-IDF for deployment as it is light-weigth and consumes less memory than BERT embeddings. This is curcial for staying within the RAM limits when the website is deployed
 - I deployed a test version of the website online and it seems to work. The signup process and messages are also in order
+### TF-IDF Integration for deployment
+- Using direct BERT embeddings was too heavy on the small 512 MB RAM limit
+- I tried switching to just TF-IDF, but the F1 scores were extremely low and would not be suitable for deployment use
+- So I collected all texts in `Goals.csv` and `Skill.csv` in a combined text and trained a TF-IDF vectorizer on it.
+- Then I used a Ridge regression model to map the TF-IDF vector to the BERT embeddings. This acts like a predictor of what the embedding would be.
+- I added a local `pre_training_model.py` file which isn't in the deployed code:
+    - ```python
+        import os
+        import pandas as pd
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        import joblib
+        from sklearn.linear_model import Ridge
+
+        # For loading BERT and storing models locally
+        def create_vectorizer_from_your_data():
+            from sentence_transformers import SentenceTransformer
+            
+            skills = pd.read_csv("ai/data/Skill.csv")
+            goals = pd.read_csv("ai/data/Goal.csv")
+            
+            # Merging text from both skills and goals
+            all_texts = []
+            all_texts.extend(skills["Skill"].tolist())
+            all_texts.extend(goals["Goal"].tolist())
+                
+            # Loading BERT and generating true embeddings
+            sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+            true_embeddings = sentence_model.encode(all_texts, show_progress_bar=True)
+            
+            # Training TF-IDF vectorizer
+            tfidf = TfidfVectorizer(
+                max_features=10000,
+                ngram_range=(1, 3),
+                lowercase=True,
+                stop_words='english',
+                min_df=2,
+                max_df=0.95
+            )
+            
+            tfidf_matrix = tfidf.fit_transform(all_texts)
+            
+            # Training mapping from TF-IDF to true embeddings
+            embedding_mapper = Ridge(alpha=0.1)
+            embedding_mapper.fit(tfidf_matrix, true_embeddings)
+            
+            os.makedirs("ai/models", exist_ok=True)
+            
+            # Storing components so they can be used by the Website
+            joblib.dump(tfidf, "ai/models/tfidf_vectorizer.pkl")
+            joblib.dump(embedding_mapper, "ai/models/embedding_mapper.pkl")
+            
+            return tfidf, embedding_mapper
+        ```
+    - I ran this code locally to create the `tfidf_vectorizer.pkl` and `embedding_mapper.pkl` components.
+    - These components are added to the deployment files instead of the BERT embeddings to reduce RAM usage
