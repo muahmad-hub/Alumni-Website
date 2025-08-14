@@ -10,7 +10,7 @@
 ## Quick Overview
 - **Purpose:** Intelligent alumni networking & mentorhsip platform that keeps graduates and current students connected and supports growth.
 - **Built by:** Solo project after completing CS50X, CS50 Web, and CS50 AI. Started after feeling that students can benefit grately from mentorship and connections with peers
-- **Key Tech:** Django, PostgreSQL, WebSockets, BERT + SVM, custom A* + Personalized PageRank recommendation engine.
+- **Key Tech:** Django, PostgreSQL, WebSockets, BERT/TF-IDF + SVM, custom A* + Personalized PageRank recommendation engine.
 - **Highlights:**
     - Recommendation system that uses custom A* + Personalized PageRank algorithm to recommend most compatible alumni to users.
     - AI skill & goal categorization with 72-80% accuracy, used by recommendation system
@@ -22,15 +22,16 @@
 - **Frontend:** HTML, CSS, JavaScript.
 - **Backend:** Django (Python). 
 - **Database:** PostgreSQL.
-- **AI/ML:** BERT embeddings + SVM classifiers used to create a supervised learning model built on my own database; A* + Personalized PageRank recommendation engine.
+- **AI/ML:** TF-IDF/BERT embeddings + SVM classifiers used to create a supervised learning model built on my own database; A* + Personalized PageRank recommendation engine.
 - **Messaging:** Django Channels with WebSockets & in-memory layer.
 ## Key Features
 - **User profiles:** Searchable alumni and mentor database with editable user info
 - **Mentorship program:** Request, accept, & allow mentors to manage requests seamlessly through their personalized dashboard
 - **Dynamic Directory Search:** Name/skill + filters by university & batch year
 - **Real-time chat:** WebScoket-powered messaging
-- **AI Categorization:** BERT + SVM model to classify skills and goals
+- **AI Categorization:** BERT/TF-IDF + SVM model to classify skills and goals
 - **Recommendation Engine:** A*-like heuristics + Personalized PageRank
+- **Notification email:** Users are sent notifications through email upon actions like mentor request or a connection being accepted
 ## Technical Highlights
 >See [Technical details](docs/technical_details.md)
 - Recommendation Engine:
@@ -39,7 +40,7 @@
     - Personalized PageRank surfaces globally relevant but non-obvious matches.
     - Optimizations: caching, vectorization, pruning, and batch processing.
 - AI Classifier:
-    - Supervised ML with BERT embeddings + SVM.
+    - Supervised ML with BERT embeddings + SVM (Using TF-IDF instead of BERT for deployment due to RAM constraints, this does lower classifier accuracy but had to make trade-off)
     - Goal classifier: 81% F1 score; Skill classifier: 72% F1 score (500-sample dataset).
     - Integrated into user profile updates.
 - Messaging System:

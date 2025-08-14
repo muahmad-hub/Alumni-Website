@@ -727,3 +727,9 @@ path("messages", views.messages, name="messages")
 ### TODO: NEED TO FIX BUG
 - Mentor directory is not loading mentors even though the database shows the mentors
 
+## Date: August 12 - 14:
+### What I did
+- Mainly worked on getting the website ready for deployment along with buying a domain for the website.
+- Fixed mentor directory bug. The code was still using the previous `MentorSkills` table instead of the new skills table in `Profile`
+- Switched to using TF-IDF for deployment as it is light-weigth and consumes less memory than BERT embeddings. This is curcial for staying within the RAM limits when the website is deployed
+- I deployed a test version of the website online and it seems to work. The signup process and messages are also in order

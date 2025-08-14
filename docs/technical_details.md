@@ -63,31 +63,33 @@
     - **Algorithm Pruning:** Instead of allowing the algorithm to run infinitely and exhaust the system, I should have used pruning to set a limit to how deep the algorithm goes. Furthermore, in A* search I could limit the number of users in the frontier and exit once a set number of top users below the threshold are found.
     - **Vectorization:** Using numpy for mathematical operations is highly effective as it is done under the hood in C. Numpy arrays are also contiguous (they are stored in a continuous sequence without any gaps)
 > For a more detailed walkthrough of the optimization, see my [Dev Log and Learning Journal](dev_logs.md#date-august-8--9) for August 8 & 9.
-## AI Skill & Goal Classifier (BERT + SVM)
+## AI Skill & Goal Classifier (BERT/TF-IDF + SVM)
 - Instead of comparing literal skills and goals in the recommendation engine, I decided to build a supervised learning model which will classify both of them into categories using semantic embeddings from BERT with SVM for classification
 - I intially though of using an unsupervised learning model. However, using a supervised learning model would allow for better evaluation of results and allow me to define the categories
-### Why BERT and SVM
+### Why BERT/TF-IDF and SVM
 - BERT:
     - BERT is a transformer, which uses many self-attention heads aong with positional embeddings to get the context and semantic meaning of words in a sentence or phrase
     - I initially did think of using Bag of Words or Word2Vec; however, bag of words would be not be as accurate and Word2Vec has lower dimensions and hence can't understand words in context
     - Additionally, BERT also converts words into 768 dimensional vectors, which is very rich for the classification system to use
     - I did try using TF-IDF, expecially for skill vectorization as they are usually smaller inputs. However, the performance of the system was not up to the standard when compared with BERT
+    - However, for deployment I had to chose TF-IDF. It is much ligther weight than BERT and fits well in my RAM limit for deployment. Although this does reduce the accuracy of the classifier, I had to make a trade-off.
+        - 
 - SVM:
     - SVM (Support Vector Machine) is a supervised machine learning model that classifies data by drawing boundary lines
     - SVM works well with high dimensional data like from BERT vectors
     - I compared F1 scores between three different different machine learning algorithms:
-        - For Goal classification:
+        - For Goal classification (BERT embeddings):
             - SVM (using polynomial kernel): 81.09%
             - Naive Bayes: 74.48%
             - Logistic regression: 80.21%
     - I decided to use SVM, with the polynomial kernel for goals classification, as it had the best balance of precision/recall
 ### Training & Performance
 - I manually labbeled datasets, with ~300 fields, for both skills and goals (8 categories for skill and 5 categories for goals) 
-- For goal classification acheived (using polynomial kernel):
+- For goal classification acheived (using polynomial kernel and BERT embeddings):
     - Precision: 83.15%
     - Recall: 82.76%
     - F1 Score: 81.09%
-- For skill classification achieved (using linear kernel):
+- For skill classification achieved (using linear kernel and BERT embeddings):
     - Precision: 84.35%
     - Recall: 69.61%
     - F1 Score: 72.14%
