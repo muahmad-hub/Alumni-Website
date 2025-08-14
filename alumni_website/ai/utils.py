@@ -8,7 +8,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import os
 from django.conf import settings
-from sentence_transformers import SentenceTransformer
 
 ENVIRONMENT = "DEVELOPMENT"
 
