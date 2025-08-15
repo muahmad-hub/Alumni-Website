@@ -117,7 +117,7 @@ body {
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;
-  height: 100%; 
+  height: 100%;
 }
 
 .pick-convo {
@@ -126,10 +126,10 @@ body {
   align-items: center;
   color: var(--heading-color);
   padding: 1rem;
-  text-align: center; 
+  text-align: center;
   font-size: 2rem;
   font-weight: bold;
-  height: 100%; 
+  height: 100%;
 }
 
 .chat-messages {
@@ -141,6 +141,23 @@ body {
   flex-direction: column;
 }
 
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  max-width: 75%;
+  width: fit-content;
+}
+
+.message-wrapper.sent {
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.message-wrapper.received {
+  align-items: flex-start;
+}
+
 .message {
   padding: 0.75rem;
   margin-bottom: 0.3rem;
@@ -148,29 +165,25 @@ body {
   font-size: 0.95rem;
   line-height: 1.4;
   word-wrap: break-word;
-  max-width: 70%;
-  min-width: 50px;
-  width: fit-content;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: block;
+  white-space: pre-wrap;
+  text-align: left;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.5s ease-out forwards;
-  overflow-wrap: break-word; 
-  hyphens: none;
 }
 
 .message.received {
   background-color: #ececec;
   color: #333;
-  align-self: flex-start;
-  margin-right: auto;
 }
 
 .message.sent {
   background-color: var(--accent-color);
   color: white;
-  align-self: flex-end;
-  margin-left: auto;
-  text-align: right;
+  text-align: left;
 }
 
 .chat-input {
@@ -216,23 +229,6 @@ body {
   }
 }
 
-.message-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-  max-width: 300px;
-  width: fit-content;
-}
-
-.message-wrapper.sent {
-  margin-left: auto;
-  align-items: flex-end;
-}
-
-.message-wrapper.received {
-  align-items: flex-start;
-}
-
 .message-timestamp {
   font-size: 0.7rem;
   color: #888;
@@ -247,5 +243,3 @@ body {
 .message-timestamp.received {
   text-align: left;
 }
-
-
