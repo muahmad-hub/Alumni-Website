@@ -82,7 +82,8 @@ def predict_category_skill(text):
     # with torch.no_grad():
     tokens = vectorize(text)
 
-    probabilities = model.predict_proba(tokens)[0]
+    probabilities = model.predict_proba(tokens.reshape(1, -1))[0]
+
 
     # Alternative manual implementation of argmax
     # highest = 0
