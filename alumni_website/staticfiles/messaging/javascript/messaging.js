@@ -25,10 +25,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
     if(data.message){
-      if (data.sender_id == currentUserId) {
-          html = `<div class="message sent">${data.message}</div>`;
-      } else {
-          html = `<div class="message received">${data.message}</div>`;
+      if (data.sender_id == currentUserId){
+          const timestamp = new Date().toLocaleTimeString('en-US', { 
+              hour12: false, 
+              hour: '2-digit', 
+              minute: '2-digit' 
+          });
+          
+          html = `
+              <div class="message-wrapper sent">
+                  <div class="message sent">${data.message}</div>
+                  <div class="message-timestamp sent">${timestamp}</div>
+              </div>
+          `;
+      }
+      else {
+          const timestamp = new Date().toLocaleTimeString('en-US', { 
+              hour12: false, 
+              hour: '2-digit', 
+              minute: '2-digit' 
+          });
+          
+          html = `
+              <div class="message-wrapper received">
+                  <div class="message received">${data.message}</div>
+                  <div class="message-timestamp received">${timestamp}</div>
+              </div>
+          `;
       }
       chatBox.insertAdjacentHTML('beforeend', html);
       scroll_to_bottom();
