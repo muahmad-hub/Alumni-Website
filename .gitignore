@@ -2,4 +2,4 @@ myenv
 .vscode
 .env
 pre_training_model.py
-alumni
+alumni/
