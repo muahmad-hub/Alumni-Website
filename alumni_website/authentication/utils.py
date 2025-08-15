@@ -1,5 +1,6 @@
 import threading
 from django.core.mail import send_mail
+from django.core.mail.backends.smtp import EmailBackend
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.core.cache import cache
@@ -24,7 +25,7 @@ def send_activation_email_asynchronous(user, request):
         This link will expire in 24 hours.
         """
         
-        # Send email in thread for asynchronous process
+        # Sending email in thread for asynchronous process
         email_thread = threading.Thread(
             target=_send_email_thread,
             args=(subject, message, user.email)
@@ -34,16 +35,28 @@ def send_activation_email_asynchronous(user, request):
         
         return True
     except Exception as e:
+        print(f"Error in send_activation_email_asynchronous: {e}") 
         return False
 
 def _send_email_thread(subject, message, recipient_email):
     try:
+        sendgrid_backend = EmailBackend(
+            host=settings.SENDGRID_SMTP_HOST,
+            port=settings.SENDGRID_SMTP_PORT,
+            username=settings.SENDGRID_SMTP_USER,
+            password=settings.SENDGRID_SMTP_PASSWORD,
+            use_tls=True,
+            timeout=settings.SENDGRID_EMAIL_TIMEOUT
+        )
+        
         send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,
+            settings.SENDGRID_FROM_EMAIL,
             [recipient_email],
             fail_silently=False,
+            connection=sendgrid_backend,
         )
+        print(f"Email sent successfully to {recipient_email}")
     except Exception as e:
-        pass
+        print(f"Error sending email: {e}") 
