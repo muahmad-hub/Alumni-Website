@@ -13,9 +13,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.urls import reverse
-import logging
+from .utils import send_activation_email_asynchronous
 
-logger = logging.getLogger(__name__)
 
 # Function used to get users IP address to log login attempts
 def get_client_ip(request):
@@ -65,7 +64,6 @@ def send_activation_email(user, request):
         )
         return True
     except Exception as e:
-        logger.error(f"Failed to send activation email to {user.email}: {str(e)}")
         return False
 
 def activate_account(request, token):
@@ -143,7 +141,8 @@ def sign_up(request):
             profile = Profile.objects.create(user=user)
             profile.save()
 
-            if send_activation_email(user, request):
+            # Use asynchrnous email sending
+            if send_activation_email_asynchronous(user, request):
                 messages.success(request, "Account created! Please check your email to activate your account (Check spam too)")
             else:
                 messages.warning(request, "Account created but couldn't send activation email. Please contact oryxalumni@gmail.com for manual activation.")
@@ -154,7 +153,6 @@ def sign_up(request):
             messages.error(request, "Email is already registered")
             return render(request, "authentication/sign_up.html")
         except Exception as e:
-            logger.error(f"Signup error: {str(e)}")
             messages.error(request, "An error occurred during signup. Please try again.")
             return render(request, "authentication/sign_up.html")
     else:
