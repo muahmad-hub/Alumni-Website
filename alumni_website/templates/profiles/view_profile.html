@@ -42,7 +42,7 @@
         {% if profile.has_job %}
           {{ profile.role }} at {{ profile.employer }}
         {% else %}
-          {{ profile.major_uni }} at{{ profile.university }} 
+          {{ profile.major_uni }} at {{ profile.university }} 
         {% endif %}
       </p>
     </div>
@@ -184,7 +184,7 @@
       <div class="col-md-6">
         <div class="profile-information">
           <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Graduation Year</div>
+            <div class="text-muted small fw-semibold">School Graduation Year</div>
             <div class="fs-6">
                 {% if profile.graduation_year %}
                     {{ profile.graduation_year }}

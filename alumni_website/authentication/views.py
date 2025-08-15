@@ -104,7 +104,11 @@ def login_view(request):
 
         if user is not None:
             if not user.is_active:
-                messages.error(request, "Please check your email to activate your account (Maybe in Spam)")
+                messages.success(
+                    request,
+                    "Please check your email to activate your account. "
+                    "⚠️ Important: It may be in your SPAM/Junk folder."
+                )
                 return render(request, "authentication/login.html")
             
             login(request, user)
@@ -124,6 +128,8 @@ def sign_up(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
+        first_name = request.POST["first-name"]
+        last_name = request.POST["first-name"]
         
         if password != confirmation:
             messages.error(request, "Passwords must match")
@@ -139,11 +145,17 @@ def sign_up(request):
             user.save()
             
             profile = Profile.objects.create(user=user)
+            profile.first_name = first_name
+            profile.last_name = last_name
             profile.save()
 
             # Use asynchrnous email sending
             if send_activation_email_asynchronous(user, request):
-                messages.success(request, "Account created! Please check your email to activate your account (Check spam too)")
+                messages.success(
+                    request,
+                    "Please check your email to activate your account. "
+                    "⚠️ Important: It may be in your SPAM/Junk folder."
+                )
             else:
                 messages.warning(request, "Account created but couldn't send activation email. Please contact oryxalumni@gmail.com for manual activation.")
             

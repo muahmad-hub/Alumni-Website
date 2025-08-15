@@ -33,13 +33,19 @@
             {% csrf_token %}
             <div class="input-group">   
             <div class="input-field">
-                <input type="email" placeholder="Email" id="emailInput" required name="email"/>
+                <input type="text" placeholder="First name" id="first-name" required name="first-name" required/>
             </div>
             <div class="input-field">
-                <input type="password" placeholder="Password" id="passwordInput" required name="password"/>
+                <input type="text" placeholder="Last name" id="last-name" required name="last-name" required/>
             </div>
             <div class="input-field">
-                <input type="password" placeholder="Confirm Password" id="confirmPassword" required name="confirmation"/>
+                <input type="email" placeholder="Email" id="emailInput" required name="email" required/>
+            </div>
+            <div class="input-field">
+                <input type="password" placeholder="Password" id="passwordInput" required name="password" required/>
+            </div>
+            <div class="input-field">
+                <input type="password" placeholder="Confirm Password" id="confirmPassword" required name="confirmation" required/>
             </div>
             <div class="btn-field">
                 <button type="submit" id="submitBtn" class="form_button">Sign Up</button>

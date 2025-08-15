@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from dotenv import load_dotenv
+from email.utils import formataddr
 
 # Loading environment variables
 load_dotenv()
@@ -238,7 +239,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_USER = formataddr((
+    os.getenv("EMAIL_FROM_NAME"),
+    os.getenv("EMAIL_FROM_ADDRESS")
+))
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
 EMAIL_TIMEOUT = 30
@@ -248,7 +252,10 @@ SENDGRID_SMTP_HOST = 'smtp.sendgrid.net'
 SENDGRID_SMTP_PORT = 587
 SENDGRID_SMTP_USER = 'apikey'
 SENDGRID_SMTP_PASSWORD = os.environ.get("API_KEY_SENDGRID")
-SENDGRID_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
+SENDGRID_FROM_EMAIL = formataddr((
+    os.environ.get("SENDGRID_FROM_EMAIL_NAME"),
+    os.environ.get("SENDGRID_FROM_EMAIL_ADDRESS")
+))
 SENDGRID_EMAIL_TIMEOUT = 60
 
 CACHES = {
