@@ -85,6 +85,7 @@ CHANNEL_LAYERS = {
 
 
 MIDDLEWARE = [
+    'alumni_website.middleware.SimpleResourceMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
