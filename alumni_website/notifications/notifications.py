@@ -64,11 +64,11 @@ class ConnectRequestNotification(Notification):
     def get_context(self):
         return {
             "sender_name": self.sender_name,
-            "website_link": "http://localhost:8000/messaging/"
+            "website_link": "https://oryxalumni.com/profile/"
         }
     
     def get_text_content(self):
-        return f"{self.sender_name} wants to connect with you. Visit: http://localhost:8000/messaging/"
+        return f"{self.sender_name} wants to connect with you. Visit: https://oryxalumni.com/profile/"
 
 class ConnectAcceptedNotification(Notification):
     def get_subject(self):
@@ -94,11 +94,11 @@ class ConnectAcceptedNotification(Notification):
     def get_context(self):
         return {
             "sender_name": self.sender_name,
-            "website_link": "http://localhost:8000/messaging/"
+            "website_link": "https://oryxalumni.com/messaging/"
         }
     
     def get_text_content(self):
-        return f"{self.sender_name} has accepted your connection request. Visit: http://localhost:8000/messaging/"
+        return f"{self.sender_name} has accepted your connection request. Visit: https://oryxalumni.com/messaging/"
     
 class MentorRequestNotification(Notification):
     def get_subject(self):
@@ -123,11 +123,11 @@ class MentorRequestNotification(Notification):
     def get_context(self):
         return {
             "sender_name": self.sender_name,
-            "website_link": "http://localhost:8000/mentorship/"
+            "website_link": "https://oryxalumni.com/mentorship/mentor_dashboard"
         }
     
     def get_text_content(self):
-        return f"{self.sender_name} has requested you as their Mentor. Visit: http://localhost:8000/mentorship/"
+        return f"{self.sender_name} has requested you as their Mentor. Visit: https://oryxalumni.com/mentorship/mentor_dashboard"
     
 class MentorAcceptedNotification(Notification):
     def get_subject(self):
@@ -153,11 +153,11 @@ class MentorAcceptedNotification(Notification):
     def get_context(self):
         return {
             "sender_name": self.sender_name,
-            "website_link": "http://localhost:8000/messaging/"
+            "website_link": "https://oryxalumni.com/messaging/"
         }
     
     def get_text_content(self):
-        return f"{self.sender_name} has accepted your connection request. Visit: http://localhost:8000/messaging/"
+        return f"{self.sender_name} has accepted your connection request. Visit: https://oryxalumni.com/messaging/"
     
 class MentorActivationNotification(Notification):
     def get_subject(self):
@@ -182,11 +182,11 @@ class MentorActivationNotification(Notification):
     
     def get_context(self):
         return {
-            "website_link": "http://localhost:8000/mentorship/"
+            "website_link": "https://oryxalumni.com/mentorship/mentor_dashboard"
         }
     
     def get_text_content(self):
-        return "Congrats! You’re officially a mentor! 🎉 Head to your Mentor Dashboard to get started – we’re excited to see you in action! Visit: http://localhost:8000/mentorship/"
+        return "Congrats! You’re officially a mentor! 🎉 Head to your Mentor Dashboard to get started – we’re excited to see you in action! Visit: https://oryxalumni.com/mentorship/mentor_dashboard"
 
 def send_notification(notification):
     threading.Thread(target=notification.send).start()

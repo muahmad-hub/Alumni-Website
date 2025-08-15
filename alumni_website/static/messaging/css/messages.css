@@ -132,7 +132,6 @@ body {
   height: 100%; 
 }
 
-/* FIXED: Make chat-messages a flex container */
 .chat-messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -142,22 +141,23 @@ body {
   flex-direction: column;
 }
 
-/* FIXED: Updated message styles for proper alignment */
 .message {
   padding: 0.75rem;
-  margin-bottom: 0.3rem; 
+  margin-bottom: 0.3rem;
   border-radius: 18px;
   font-size: 0.95rem;
   line-height: 1.4;
   word-wrap: break-word;
   max-width: 70%;
+  min-width: 50px;
   width: fit-content;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.5s ease-out forwards;
+  overflow-wrap: break-word; 
+  hyphens: none;
 }
 
-/* FIXED: Received messages align to the left */
 .message.received {
   background-color: #ececec;
   color: #333;
@@ -165,7 +165,6 @@ body {
   margin-right: auto;
 }
 
-/* FIXED: Sent messages align to the right */
 .message.sent {
   background-color: var(--accent-color);
   color: white;
@@ -221,7 +220,7 @@ body {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
-  max-width: 75%;
+  max-width: 300px;
   width: fit-content;
 }
 
