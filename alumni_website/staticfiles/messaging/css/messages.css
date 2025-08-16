@@ -65,6 +65,11 @@ body {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.contact-link{
+  text-decoration: none;
+  color: var(--heading-color);
+}
+
 .profile_image {
   width: 40px;
   height: 40px;
@@ -216,6 +221,52 @@ body {
 
 .chat-input button:hover {
   background-color: #741f3b;
+}
+
+.mentor-badge {
+    background: #bf8590;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.mentor-badge-sidebar {
+    background: #bf8590;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 8px;
+    font-size: 10px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.unread-badge {
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 5px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+}
+
+.contact-item.has-unread {
+    background-color: #f8f9fa;
+    border-left: 3px solid #ff4444;
+}
+
+.contact-item.has-unread .contact-name {
+    font-weight: bold;
 }
 
 @keyframes fadeInUp {

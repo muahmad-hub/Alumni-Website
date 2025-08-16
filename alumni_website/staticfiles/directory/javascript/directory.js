@@ -83,8 +83,18 @@ function display_data(data){
                         <div class="mentor-details">
                             <h4>${alumni.first_name || ""} ${alumni.last_name || ""}</h4>
                             <p class="mentor-class">Class of ${alumni.graduation_year || ""}</p>
-                            <span class="mentor-position">${alumni.major_uni || ""} at ${alumni.university || ""}</span>
+                            <span class="mentor-position">${alumni.major_uni || ""} 
                 `
+        if (alumni.university){
+            alumni_info += `
+             at ${alumni.university || ""}</span>
+            `
+        }
+        else{
+            alumni_info += `
+            </span>
+            `
+        }
         if (alumni.has_job){
             alumni_info +=  `
                 <span class="mentor-position"> | ${alumni.role || ""} at ${alumni.employer || ""}</span>
