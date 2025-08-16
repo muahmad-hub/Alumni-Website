@@ -26,7 +26,8 @@
 <form method="POST" action="{% url 'mentor_signup' %}">
     {% csrf_token %}
     <div class="alert form-info">
-        Fill the form and start guiding your Mentees. You'll be automatically added to the <a href="{% url 'mentor_directory' %}" class="mentor_directory_link">Mentor Directory</a>.
+        1. Fill the form and start guiding your Mentees.<br>
+        2. Please ensure you have completed your <a href="{% url 'profile' %}" class="mentor_directory_link">Profile</a> else you will NOT be added to the mentor directory
     </div>
 
     <label>Full Name</label>
