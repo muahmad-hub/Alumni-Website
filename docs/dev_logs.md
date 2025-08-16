@@ -801,6 +801,7 @@ path("messages", views.messages, name="messages")
     - Some users also didn't know they had to fill their profile. I did two things to address this: added a message on home page to alert them if their profile is incomplete and on signup I also added three additional fields for users to add (First name, Last name and graduation year). This allows for the code to generate the a card for them in the directory without having to fully fill their profile.
     - On messages, I've added an unread feature on the sidebar to notify users
     - If users are havent authentiated their email and try to signup again, a new authentication link is snet. Many users intitially had problems and hence I made this change
+    - I made it so that when the name on the contact side bar on messages is clicked, it takes you to user's profile
 - I also felt that users may not be able to use the messaging system correctly as they are never notified about any messages. So I decided to create a command that filters users who have more than 3 unread messages and sends an email notification to them. As of now, I plan to run this command locally once a week as this will remove any computational burden on the site's server.
 - I also decided to add a email preferance button on the profile page which opens a modal for users to select whether or not they would like to receive the weekly digest. I also added the following code to check if they have unread messages and want the digest email:
     - ```python 

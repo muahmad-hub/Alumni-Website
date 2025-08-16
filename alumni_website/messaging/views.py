@@ -144,6 +144,7 @@ def open_chats(request):
         results.append({
             "name": f"{profile.first_name or ''} {profile.last_name or ''}".strip(),
             "profile_url": profile.profile_url or "/static/images/profile_image.jpg",
+            "profile_id": profile.user.id,
             "group_name": member.group.group_name,
             "is_mentor": is_user_mentor,
             "unread_count": unread_count, 

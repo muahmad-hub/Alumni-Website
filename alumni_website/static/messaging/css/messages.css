@@ -65,6 +65,11 @@ body {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.contact-link{
+  text-decoration: none;
+  color: var(--heading-color);
+}
+
 .profile_image {
   width: 40px;
   height: 40px;
