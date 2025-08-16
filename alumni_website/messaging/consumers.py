@@ -56,9 +56,8 @@ class MessageConsumer(AsyncWebsocketConsumer):
             message=message
         )
         
-        local_tz = pytz.timezone('Asia/Qatar')
-        current_time = timezone.now().astimezone(local_tz)
-        timestamp = current_time.strftime('%H:%M')
+        utc_timestamp = new_message.sent_time.strftime('%Y-%m-%d %H:%M:%S')
+
         
         await self.channel_layer.group_send(
             self.group_name,
@@ -66,7 +65,8 @@ class MessageConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': new_message.message,
                 'sender_id': self.user.id,
-                'timestamp': timestamp,
+                'utc_timestamp': utc_timestamp,
+                'message_id': new_message.id,
             }
         )
 
@@ -74,7 +74,8 @@ class MessageConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': event['message'],
             'sender_id': event['sender_id'],
-            'timestamp': event.get('timestamp'),
+            'utc_timestamp': event.get('utc_timestamp'), 
+            'message_id': event.get('message_id'), 
         }))
 
     @database_sync_to_async

@@ -16,6 +16,9 @@
     - AI skill & goal categorization with 72-80% accuracy, used by recommendation system
     - Real-time chat with Django channels and WebSocket
     - Fully integrated full-stack system (frontend, backend, database, ML, networking).
+    - Authentication emails and notification emails along with weekly message digest.
+    - Alumni and mentor directory with search bar for skills/names and filter by graduation year and university.
+    - Mentor Dashboard for mentors to manage their requests.
 >For more details: [Technical Details](docs/technical_details.md) and [Dev logs](docs/dev_logs.md)
 ## Demo and Screenshots
 ## Architecture:
@@ -31,7 +34,8 @@
 - **Real-time chat:** WebScoket-powered messaging
 - **AI Categorization:** BERT/TF-IDF + SVM model to classify skills and goals
 - **Recommendation Engine:** A*-like heuristics + Personalized PageRank
-- **Notification email:** Users are sent notifications through email upon actions like mentor request or a connection being accepted
+- **Notification email:** Users are sent authentication link and notifications through email upon actions like mentor request or a connection being accepted. Weekly digest for messages are also sent.
+- **Limits on login and sign up:** For ensuirng the website is secure and to prevent Brute Force Attacks, limits fro login and signup have also been implemented
 ## Technical Highlights
 >See [Technical details](docs/technical_details.md)
 - Recommendation Engine:

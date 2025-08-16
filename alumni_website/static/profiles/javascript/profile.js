@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var notEmployed = document.getElementById("not_employed");
 
     var jobSection = document.getElementById("job_section");
+    var yesPreference = document.getElementById("yes-preference");
+    var noPreference = document.getElementById("no-preference");
 
     if (employed.checked) {
         jobSection.style.display = "block";
@@ -26,21 +28,74 @@ document.addEventListener('DOMContentLoaded', function() {
             change_employed_status("False");
         }
     })
+        
+    document.addEventListener("click", function(event){
+        if (event.target.classList.contains("connect") || event.target.classList.contains("decline")){
+            var contactDetailsDiv = event.target.closest(".connect-details")
+            var isAcceptButton = event.target.classList.contains("connect")
+            var container = event.target.closest(".contact-item")
+            if (isAcceptButton){
+                sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-accept"), container)
+            }
+            else{
+                sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-decline"), container)
+            }
+        }    
+    })
+
+    yesPreference.addEventListener("click", function() {
+        fetch(yesDigestEmailURL, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": `${csrfToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                console.log(data.message)
+                closePreferenceModal()
+            } else {
+                console.error(data.message)
+            }
+        })
+        .catch(error => {
+            console.error("Fetch failed:", error)
+        })
+    })
+
+    noPreference.addEventListener("click", function() {
+        fetch(noDigestEmailURL, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": `${csrfToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                console.log(data.message)
+                closePreferenceModal()
+            } else {
+                console.error(data.message)
+            }
+        })
+        .catch(error => {
+            console.error("Fetch failed:", error)
+        })
+    })
+
 })
 
-document.addEventListener("click", function(event){
-    if (event.target.classList.contains("connect") || event.target.classList.contains("decline")){
-        var contactDetailsDiv = event.target.closest(".connect-details")
-        var isAcceptButton = event.target.classList.contains("connect")
-        var container = event.target.closest(".contact-item")
-        if (isAcceptButton){
-            sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-accept"), container)
-        }
-        else{
-            sendConnectionDetails(contactDetailsDiv.getAttribute("data-url-decline"), container)
-        }
-    }
-})
+function closePreferenceModal(){
+    let preferenceModalElement = document.getElementById("emailPreferences")
+    let preferenceModal = bootstrap.Modal.getInstance(preferenceModalElement)
+    preferenceModal.hide()
+}
 
 function sendConnectionDetails(url, container){
     fetch(url, {

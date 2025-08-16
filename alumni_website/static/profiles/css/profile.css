@@ -357,7 +357,52 @@
   margin-left: 0 !important;
 }
 
+
+.primary_buttons {
+  background-color: var(--accent-color);
+  color: white;
+  margin: 0.5rem auto;
+  display: block;
+  width: 95%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.025em;
+  text-transform: none;
+  min-height: 44px;
+}
+.primary_buttons:hover{
+  background-color: #6b2a36;
+  color: white;
+}
+.primary_buttons:active{
+  background-color: #6b2a36;
+  color: white;
+}
+.primary_links{
+  text-decoration: none;
+  color: white
+}
+
+.primary_buttons:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(132, 51, 66, 0.25);
+}
+
+
 @media (max-width: 767px) {
+  .primary_buttons {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-height: 40px;
+    width: 90%;
+    margin: 0.3rem auto;
+  }
+  
   .modal .row.g-3 > .col-md-6,
   .modal .row.g-3 > .col-md-4 {
     margin-bottom: 10px !important;
@@ -368,17 +413,11 @@
     max-width: 100% !important;
     margin-bottom: 15px !important;
   }
-}
-
-@media (max-width: 767px) {
   .modal textarea.form-control {
     font-size: 16px !important;
     min-height: 100px !important;
     resize: vertical !important;
   }
-}
-
-@media (max-width: 767px) {
   .alert {
     margin: 10px 0 !important;
     padding: 10px 15px !important;

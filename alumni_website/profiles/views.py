@@ -367,4 +367,28 @@ def accept_connection(request, user_id, action):
         except Exception:
             return JsonResponse({'status': 'error', 'message': str(Exception)})
 
+@login_required
+def yes_digest_email(request):
+    if request.method == "POST":
+        try:
+            profile = request.user.profile
+            profile.send_digest_email = True
+            profile.save()
 
+            return JsonResponse({"status": "success", "message": "Email preference updated."})
+        except:
+            return JsonResponse({"status": "error", "message": "An error occured when trying to update"})
+    return JsonResponse({"status": "error", "message": "Invalid request. Only POST accepted"})
+
+@login_required
+def no_digest_email(request):
+    if request.method == "POST":
+        try:
+            profile = request.user.profile
+            profile.send_digest_email = False
+            profile.save()
+
+            return JsonResponse({"status": "success", "message": "Email preference updated."})
+        except:
+            return JsonResponse({"status": "error", "message": "An error occured when trying to update"})
+    return JsonResponse({"status": "error", "message": "Invalid request. Only POST accepted"})

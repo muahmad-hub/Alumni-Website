@@ -17,6 +17,7 @@ class Profile(models.Model):
     employer = models.CharField(max_length=255, null=True, blank=True)
     education_level = models.CharField(max_length=255, null=True, blank=True)
     profile_url = models.SlugField(unique=True, null=True, blank=True)
+    send_digest_email = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

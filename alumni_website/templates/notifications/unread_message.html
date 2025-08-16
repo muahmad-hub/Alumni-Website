@@ -3,27 +3,27 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activate Your Account</title>
+    <title>You Have Unread Messages</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
     <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         
         <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #333; margin-bottom: 10px;">Welcome to {{ site_name }}!</h1>
-            <p style="color: #666; font-size: 16px;">Just one more step to get started</p>
+            <h1 style="color: #333; margin-bottom: 10px;">New Messages</h1>
+            <p style="color: #666; font-size: 16px;">Don't miss out on your conversations</p>
         </div>
         
         <div style="margin-bottom: 30px;">
             <p style="color: #333; font-size: 16px; line-height: 1.5;">
-                Hi <strong>{{ user_email }}</strong>,
+                Hi <strong>{{ first_name }}</strong>,
             </p>
             <p style="color: #333; font-size: 16px; line-height: 1.5;">
-                Thank you for signing up! Please click the button below to activate your account.
+                You have <strong>{{ unread_count }}</strong> unread messages waiting for you on Oryx Alumni.
             </p>
         </div>
         
         <div style="text-align: center; margin: 40px 0;">
-            <a href="{{ activation_link }}" 
+            <a href="{{ site_url }}/messaging/" 
                style="display: inline-block; 
                       background-color: #007bff; 
                       color: white; 
@@ -32,19 +32,15 @@
                       border-radius: 5px; 
                       font-size: 16px; 
                       font-weight: bold;">
-                Activate My Account
+                View My Messages
             </a>
-        </div>
-        <p style="text-align: center;">⚠️ If email is in SPAM, remove it and then click the link</p>
-        
-        <div style="margin-top: 30px; text-align: center; color: #666; font-size: 14px;">
-            This link will expire in 24 hours.
         </div>
         
         <div style="margin-top: 30px; text-align: center; color: #666; font-size: 14px;">
             <p>This is a weekly digest. You can manage your email preferences in your account settings.</p>
             <p style="margin-top: 20px;">Best regards,<br><strong>Oryx Alumni Team</strong></p>
         </div>
+        
     </div>
 </body>
 </html>

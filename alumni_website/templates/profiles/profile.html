@@ -21,6 +21,10 @@
 
 
 <div class="col-12 col-md-4 col-lg-3 sidebar-wrapper" data-aos="fade-up" data-aos-delay="100">
+
+  <button class="btn primary_buttons"><a href="{% url 'messages' %}" class="primary_links">Messaging</a></button>
+  <button class="btn primary_buttons" data-bs-toggle="modal" data-bs-target="#emailPreferences">Preferences</button>
+
   <div class="sidebar">
     <h2>Connection Requests</h2>
     <div class="contact-list">
@@ -647,6 +651,32 @@
   </div>
 </div>
 
+<!-- Email preferences modal -->
+<div class="modal fade" id="emailPreferences" tabindex="-1" aria-labelledby="emailPreferences" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="emailPreferencesLabel">Email Preferences</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-light border" role="alert">
+                    <p class="mb-3">Would you like to receive weekly digest emails when you have unread messages?</p>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success btn-sm" id="yes-preference">
+                            Yes, keep me updated
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="no-preference">
+                            No, thanks
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
   <script>
     AOS.init({
       duration: 700,
@@ -656,6 +686,8 @@
     var csrfToken = `{{ csrf_token }}`
     var edit_employment_status = `{% url 'edit_employment_status' %}`
     var mentor_match = `{% url 'mentor_match' %}`
+    var yesDigestEmailURL = `{% url 'yes_digest_email' %}`
+    var noDigestEmailURL = `{% url 'no_digest_email' %}`
   </script>
 
  <script src="{% static 'profiles/javascript/profile.js' %}"></script>

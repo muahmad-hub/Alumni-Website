@@ -1,13 +1,17 @@
 {% load static %}
 
 {% if sender == message.sender %}
-    <div class="message-wrapper sent">
+    <div class="message-wrapper sent" data-message-id="{{ message.id }}">
         <div class="message sent">{{ message.message }}</div>
-        <div class="message-timestamp sent">{{ message.sent_time|date:"H:i" }}</div>
+        <div class="message-timestamp sent" data-utc-time="{{ message.sent_time|date:'Y-m-d H:i:s' }}">
+            {{ message.sent_time|date:"H:i" }}
+        </div>
     </div>
 {% else %}
-    <div class="message-wrapper received">
+    <div class="message-wrapper received" data-message-id="{{ message.id }}">
         <div class="message received">{{ message.message }}</div>
-        <div class="message-timestamp received">{{ message.sent_time|date:"H:i" }}</div>
+        <div class="message-timestamp received" data-utc-time="{{ message.sent_time|date:'Y-m-d H:i:s' }}">
+            {{ message.sent_time|date:"H:i" }}
+        </div>
     </div>
 {% endif %}

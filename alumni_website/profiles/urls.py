@@ -17,4 +17,7 @@ urlpatterns = [
     path("connect", views.connect, name="connect"),
 
     path("accept_connection/<int:user_id>/<str:action>/", views.accept_connection, name="accept_connection"),
+
+    path("yes_email_digest", views.yes_digest_email, name="yes_digest_email"),
+    path("no_digest_email", views.no_digest_email, name="no_digest_email")
 ]

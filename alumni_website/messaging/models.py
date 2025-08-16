@@ -16,7 +16,9 @@ class Members(models.Model):
 
     # Fields for checking User online status
     is_online = models.BooleanField(default=False)
-    last_seen = models.DateTimeField(null=True, blank=True) 
+    # last_seen = models.DateTimeField(null=True, blank=True) 
+
+    last_read_message_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.user} in {self.group}'

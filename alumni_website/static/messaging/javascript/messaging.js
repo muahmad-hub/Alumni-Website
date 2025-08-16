@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   )
 
   window.onload = function () {
+    convertTimestampsToUserTimezone();
     scroll_to_bottom();
   }
 
@@ -24,8 +25,14 @@ document.addEventListener('DOMContentLoaded', function () {
    
     if(data.message){
       let timestamp;
-      if (data.timestamp) {
-        timestamp = data.timestamp;
+      
+      if (data.utc_timestamp) {
+        const utcDate = new Date(data.utc_timestamp + ' UTC');
+        timestamp = utcDate.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
+        });
       } else {
         const now = new Date();
         timestamp = now.toLocaleTimeString('en-US', {
@@ -37,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (data.sender_id == currentUserId){
           html = `
-              <div class="message-wrapper sent">
+              <div class="message-wrapper sent" data-message-id="${data.message_id || ''}">
                   <div class="message sent">${data.message}</div>
                   <div class="message-timestamp sent">${timestamp}</div>
               </div>
@@ -45,17 +52,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       else {
           html = `
-              <div class="message-wrapper received">
+              <div class="message-wrapper received" data-message-id="${data.message_id || ''}">
                   <div class="message received">${data.message}</div>
                   <div class="message-timestamp received">${timestamp}</div>
               </div>
           `;
       }
-      
+     
       chatBox.insertAdjacentHTML('beforeend', html);
       scroll_to_bottom();
     }
-
+    
     if (data.online_count !== undefined) {
       onlineCount.innerHTML = data.online_count
     }
@@ -68,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     const message = messageInput.value.trim()
-    
+   
     if (!message) return
    
     if (chatSocket.readyState === WebSocket.OPEN) {
@@ -81,5 +88,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function scroll_to_bottom() {
     chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function convertTimestampsToUserTimezone() {
+    const timestamps = document.querySelectorAll('.message-timestamp[data-utc-time]');
+    
+    timestamps.forEach(timestamp => {
+      const utcTime = timestamp.getAttribute('data-utc-time');
+      if (utcTime) {
+        const utcDate = new Date(utcTime + ' UTC');
+        const localTime = utcDate.toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        timestamp.textContent = localTime;
+      }
+    });
   }
 });

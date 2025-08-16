@@ -32,11 +32,16 @@
         <form id="authForm" method="post" action="{% url 'sign_up' %}">
             {% csrf_token %}
             <div class="input-group">   
-            <div class="input-field">
-                <input type="text" placeholder="First name" id="first-name" required name="first-name" required/>
+            <div class="row">
+            <div class="col input-field">
+                <input type="text" class="form-control" placeholder="First name" id="first-name" name="first-name" required>
+            </div>
+            <div class="col input-field">
+                <input type="text" class="form-control" placeholder="Last name" id="last-name" name="last-name" required>
+            </div>
             </div>
             <div class="input-field">
-                <input type="text" placeholder="Last name" id="last-name" required name="last-name" required/>
+            <input type="number" class="form-control" id="graduation-year" name="graduation-year" placeholder="School Graduation Year" min="2021" max="2030" required/>
             </div>
             <div class="input-field">
                 <input type="email" placeholder="Email" id="emailInput" required name="email" required/>

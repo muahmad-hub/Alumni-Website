@@ -131,20 +131,19 @@ def search_directory(request):
     results = []
 
     for alum in alumni:
-        if all([alum.graduation_year, alum.major_uni, alum.university]):
-            result = {
-                "id": alum.user.id,
-                "first_name": alum.first_name,
-                "last_name": alum.last_name,
-                "profile_url": alum.profile_url if alum.profile_url else static("images/profile_image.jpg"),
-                "graduation_year": alum.graduation_year,
-                "major_uni": alum.major_uni,
-                "university": alum.university,
-                "has_job": alum.has_job,
-                "employer": alum.employer,
-                "role": alum.role,
-            }
-            results.append(result)
+        result = {
+            "id": alum.user.id,
+            "first_name": alum.first_name,
+            "last_name": alum.last_name,
+            "profile_url": alum.profile_url if alum.profile_url else static("images/profile_image.jpg"),
+            "graduation_year": alum.graduation_year,
+            "major_uni": alum.major_uni,
+            "university": alum.university,
+            "has_job": alum.has_job,
+            "employer": alum.employer,
+            "role": alum.role,
+        }
+        results.append(result)
     
     return JsonResponse({
         "results": results,

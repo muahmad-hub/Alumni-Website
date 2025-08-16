@@ -15,7 +15,6 @@ from django.utils.crypto import get_random_string
 from django.urls import reverse
 from .utils import send_activation_email_asynchronous
 
-
 # Function used to get users IP address to log login attempts
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -130,10 +129,33 @@ def sign_up(request):
         confirmation = request.POST["confirmation"]
         first_name = request.POST["first-name"]
         last_name = request.POST["first-name"]
+        graduation_year = request.POST["graduation-year"]
         
         if password != confirmation:
             messages.error(request, "Passwords must match")
             return render(request, "authentication/sign_up.html")
+
+        try:
+            user = Users.objects.get(email=email)
+            user_exists = True
+        except Users.DoesNotExist:
+            user = None
+            user_exists = False
+
+        if user_exists and user.is_active == False:
+            if send_activation_email_asynchronous(user, request):
+                messages.success(
+                    request,
+                    "A new activation link has been sent to your email. "
+                    "⚠️ Important: It may be in your SPAM/Junk folder."
+                )
+            else:
+                messages.warning(
+                    request, 
+                    "Couldn't send activation email. Please contact oryxalumni@gmail.com for manual activation."
+                )
+            return render(request, "authentication/login.html")
+
 
         try:
             user = Users.objects.create_user(
@@ -147,6 +169,7 @@ def sign_up(request):
             profile = Profile.objects.create(user=user)
             profile.first_name = first_name
             profile.last_name = last_name
+            profile.graduation_year = graduation_year
             profile.save()
 
             # Use asynchrnous email sending

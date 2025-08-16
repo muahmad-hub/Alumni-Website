@@ -4,7 +4,14 @@
   <div class="chat-header d-flex align-items-center justify-content-between">
     <a href="{% url 'messages' %}"><i class="bi bi-arrow-left back-button"></i></a>
     <div class="container-fluid">
-      {% if has_mentor %}Mentor: {% endif %}
+      {% if has_mentor %}
+        {% if mentor_type == "other" %}
+          <span class="mentor-badge">🎓 MENTOR</span>
+        {% elif mentor_type == "current" %}  
+          <span class="mentor-badge">🎓 YOU ARE MENTOR</span>
+        {% endif %}
+      {% endif %}
+      
       {% if other_user.user.profile.first_name or other_user.user.profile.last_name %}
         {{ other_user.user.profile.first_name }} {{ other_user.user.profile.last_name }}
       {% else %}
@@ -17,6 +24,7 @@
     {% for message in messages reversed %}
       {% include 'messaging/partials/chat_message.html' with message=message sender=user %}
     {% endfor %}
+
     {% if not messages %}
       <span class="start-convo">Start your conversation :)</span>
     {% endif %}

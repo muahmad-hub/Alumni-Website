@@ -1,7 +1,6 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import *
-from django.db.models import Count
 from django.http import Http404, JsonResponse
 from django.db.models import Q
 from mentorship.utils import is_mentor
@@ -13,25 +12,60 @@ def chat_room(request, group_name):
     other_user = Members.objects.filter(
         group=group 
     ).exclude(user=request.user).first()
-    mentor = is_mentor(request.user, other_user.user)
+
+    other_is_mentor = is_mentor(other_user.user, request.user)
+    current_is_mentor = is_mentor(request.user, other_user.user)
 
     has_mentor = False
-    if mentor["is_mentor"]:
-        has_mentor = True
+    mentor_type = None
 
+    if other_is_mentor["is_mentor"]:
+        has_mentor = True
+        mentor_type = "other"
+    elif current_is_mentor["is_mentor"]:
+        has_mentor = True 
+        mentor_type = "current"
 
     if Members.objects.filter(group=group, user=request.user).exists():
         messages = Messages.objects.filter(group=group).order_by('-sent_time')[:50]
         online_count = Members.objects.filter(group=group, is_online=True).exclude(user=request.user).count()
+
+        current_member = Members.objects.get(group=group, user=request.user)
+        latest_message = messages.first()
+        if latest_message:
+            current_member.last_read_message_id = latest_message.id
+            current_member.save()
+
+
         return render(request, "messaging/messages.html", {
-                "messages": messages,
-                "user": request.user,
-                "group_name": group_name,
-                "online_count": online_count,
-                "other_user": other_user,
-                "has_mentor": has_mentor,
-                "current_chat": True,
-            })
+        "messages": messages,
+        "user": request.user,
+        "group_name": group_name,
+        "online_count": online_count,
+        "other_user": other_user,
+        "has_mentor": has_mentor,
+        "current_chat": True,
+        "mentor_type": mentor_type,
+    })
+
+
+    # has_mentor = False
+    # if mentor["is_mentor"]:
+    #     has_mentor = True
+
+
+    # if Members.objects.filter(group=group, user=request.user).exists():
+    #     messages = Messages.objects.filter(group=group).order_by('-sent_time')[:50]
+    #     online_count = Members.objects.filter(group=group, is_online=True).exclude(user=request.user).count()
+    #     return render(request, "messaging/messages.html", {
+    #             "messages": messages,
+    #             "user": request.user,
+    #             "group_name": group_name,
+    #             "online_count": online_count,
+    #             "other_user": other_user,
+    #             "has_mentor": has_mentor,
+    #             "current_chat": True,
+    #         })
     
     raise Http404
     
@@ -84,12 +118,35 @@ def open_chats(request):
         )
 
     results = []
+
+    current_user_member = Members.objects.filter(group__in=user_groups, user=request.user)
+
+
     for member in members.select_related("user__profile", "group").distinct():
         profile = member.user.profile
+
+        other_is_mentor = is_mentor(member.user, request.user)
+        is_user_mentor = other_is_mentor["is_mentor"]
+        
+        current_member = current_user_member.filter(group=member.group).first()
+        unread_count = 0
+        if current_member and current_member.last_read_message_id:
+            unread_count = Messages.objects.filter(
+                group=member.group,
+                id__gt=current_member.last_read_message_id
+            ).exclude(sender=request.user).count()
+        else:
+            unread_count = Messages.objects.filter(
+                group=member.group
+            ).exclude(sender=request.user).count()
+
+
         results.append({
             "name": f"{profile.first_name or ''} {profile.last_name or ''}".strip(),
             "profile_url": profile.profile_url or "/static/images/profile_image.jpg",
             "group_name": member.group.group_name,
+            "is_mentor": is_user_mentor,
+            "unread_count": unread_count, 
         })
 
     return JsonResponse({"results": results})
