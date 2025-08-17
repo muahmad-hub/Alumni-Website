@@ -20,6 +20,7 @@ def recommend(user):
     else: 
         return None
 
+# Saves recommended user and compatibility score in the database
 def save_recommendation(profile_id, recommended_profile_id, compatibility_score):
     profile = Profile.objects.get(id=profile_id)
     recommended_profile = Profile.objects.get(id=recommended_profile_id)
@@ -33,6 +34,9 @@ def save_recommendation(profile_id, recommended_profile_id, compatibility_score)
     
     return recommendation
 
+# Optimised version of the A* search and PPR
+# Checks if user already has a recommendation in cache and returns it, else finds user and stores it in cache
+# NOTE: Optimised recommend is suitable for large scale users, for smaller scale use simple_recommend()
 def optimised_recommend(profile_id, use_cache=True, save_to_db=True):
     if use_cache:
         cache_key = f"recommendation_{profile_id}"
@@ -55,10 +59,13 @@ def optimised_recommend(profile_id, use_cache=True, save_to_db=True):
     
     return result
 
+# Populate cache for data used by the optimised recommender
 def populate_cache():
     CachedProfileData.get_all_profile_data()
     CachedProfileData.get_connections_graph()
 
+# Uses the simple algorithm to recommend users
+# Suitable for small scale users
 def simple_recommend(profile_id):
     recommender = SimpleAlgorithm()
     result = recommender.recommendation_algorithm(profile_id)

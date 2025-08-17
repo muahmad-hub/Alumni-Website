@@ -1,6 +1,8 @@
 from .models import Groups, Members
 from django.db.models import Count
 
+# Creates message group for first time connection
+# Adds both users to the group
 def create_chat_room(user1, user2):
     groups = Groups.objects \
         .filter(is_private=True) \

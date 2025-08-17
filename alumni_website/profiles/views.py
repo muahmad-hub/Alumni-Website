@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .models import *
 import json
-from django.forms.models import model_to_dict
 from ai.classifier import predict_category_goal, predict_category_skill
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -15,6 +14,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
+# Countries list: used in forms where users enter location
 countries = [
     "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
     "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain",
@@ -52,6 +52,9 @@ countries = [
     "Zambia", "Zimbabwe"
 ]
 
+# Opens user's own profile page
+# Allows edit to profile information
+# Stores new profile data when users update it on the webpage
 @login_required
 def profile(request):
     if request.method == "POST":
@@ -61,13 +64,13 @@ def profile(request):
 
         profile = Profile.objects.get(user=request.user)
 
+        # Validation check to ensure users don't manipulate and try to write to a new field
         ALLOWED_FIELDS = {"name", "graduation_year", "university", "about_me", "major_uni", "location", "role", "employer", "university_location", "skills", "goals", "education_level"}
 
         if field in ALLOWED_FIELDS:
             if field == "graduation_year":
                 try:
                     value = int(value)
-
                     if value < 2021 or value > 2040:
                         return JsonResponse({
                         "status": "error",
@@ -122,6 +125,7 @@ def redirect_to_profile_with_message(message):
     profile_url = reverse("profile")
     return redirect(f"{profile_url}?{query_params}")
 
+# Opens user profile when other users want to view it
 @login_required
 def view_profile(request, id):
     view_type = request.GET.get('view')
@@ -152,6 +156,9 @@ def view_profile(request, id):
         "num_of_connections": num_of_connections
     })
 
+
+# Handle user profile edits
+# One view for each modal (Each profile section has a modal, for example, Personal section, bio, education)
 @login_required
 def edit_personal_section(request):
     if request.method == "POST":
@@ -305,6 +312,9 @@ def edit_employment_status(request):
             return JsonResponse({"status": "success", "message": "Employment status updated."})
     return redirect("profile")
 
+# Handles user's request to connect or disconnect with other user
+# Creates a connection object if users are not connected
+# Deletes connection object if users are connected
 @login_required
 def connect(request):
     if request.method == "POST":
@@ -367,6 +377,7 @@ def accept_connection(request, user_id, action):
         except Exception:
             return JsonResponse({'status': 'error', 'message': str(Exception)})
 
+# Handle weekly digest email preferences
 @login_required
 def yes_digest_email(request):
     if request.method == "POST":

@@ -12,6 +12,8 @@ GOAL_DATA_PATH = "ai/data/Goal.csv"
 GOAL_MODEL_PATH = "ai/models/goal_svm_model.pkl"
 GOAL_ENCODER_PATH = "ai/models/goal_encoded_labels.pkl"
 
+# Storing model so that it doesn't have to be called everytime
+# Trains and stores the goal and skill classifiers as an SVM
 def train_and_save_model(is_goal):
     if is_goal:
         df = pd.read_csv(GOAL_DATA_PATH)
@@ -28,6 +30,7 @@ def train_and_save_model(is_goal):
         encoder_path = SKILL_ENCODER_PATH
         clf = svm.SVC(kernel='linear', probability=True)
 
+    # Manually encoding cateogry labels
     encoded_labels_dic = {}
     count = 0
     for label in df[COL2]:
@@ -37,6 +40,7 @@ def train_and_save_model(is_goal):
             encoded_labels_dic[label] = count
             count += 1
 
+    # Vectorizing each skill/goal in the dataset so that it can be fitted on the SVM
     vector_list = []
     encoded_labels = []
     for i, value in enumerate(df[COL1]):
@@ -70,11 +74,11 @@ def train_and_save_model(is_goal):
     # print(f"Recall: {recall:.2%}")
     # print(f"F1 Score: {f1:.2%}")
 
-
+    # Saving models
     save_model(clf, model_path)
     save_model(encoded_labels_dic, encoder_path)
 
-
+# Returns predicted category and probability
 def predict_category_skill(text):
     model = load_model(SKILL_MODEL_PATH)
     encoded_labels_dic = load_model(SKILL_ENCODER_PATH)
@@ -108,6 +112,7 @@ def predict_category_skill(text):
 
     return label, probability
 
+# Returns goal category and porbability
 def predict_category_goal(text):
     model = load_model(GOAL_MODEL_PATH)
     encoded_labels_dic = load_model(GOAL_ENCODER_PATH)
@@ -130,8 +135,6 @@ def predict_category_goal(text):
 
     return label, probability
 
-train_and_save_model(True)
-train_and_save_model(False)
 # want_more = True
 # x = input("Enter: ")
 # while want_more:

@@ -4,10 +4,6 @@ import joblib
 from profiles.models import Connection, Profile
 from django.core.cache import cache
 from collections import defaultdict
-from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
-import os
-from django.conf import settings
 
 ENVIRONMENT = "DEVELOPMENT"
 

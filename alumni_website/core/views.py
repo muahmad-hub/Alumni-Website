@@ -5,17 +5,19 @@ from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import render
 
+# View to handle homepage view
+# Alerts users if important information in profile hasn't been added
 def home(request):
     # messages.success(request, "Welcome to the alumni site!")
 
+    # Data calculated to be displayed as statistics on homepage
     num_alumni = Users.objects.all().count
-    num_countries = Profile.objects.exclude(location__isnull=True).exclude(location__exact='').values("location").count()
-    num_careers = Profile.objects.exclude(major_uni__isnull=True).exclude(major_uni__exact='').values("major_uni").count()
+    num_countries = Profile.objects.exclude(location__isnull=True).exclude(location__exact='').values("location").distinct().count()
+    num_careers = Profile.objects.exclude(major_uni__isnull=True).exclude(major_uni__exact='').values("major_uni").distinct().count()
 
     if request.user.is_authenticated:
         profile = Profile.objects.get(user=request.user)
         if not profile.about_me or not profile.education_level or not profile.skills:
-            profile_url = reverse("profile")
             messages.success(request, f"Hi there! Your profile seems incomplete. Please check your profile in 'Your Space'")
 
     return render(request, "core/home.html", {

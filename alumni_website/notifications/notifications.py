@@ -4,9 +4,6 @@ from django.template.loader import render_to_string
 import random
 import threading
 
-
-# TODO Need to change local website links to proper one in deployment
-
 # Main parent class for all notifications
 class Notification:
     def __init__(self, receiver, sender=None):

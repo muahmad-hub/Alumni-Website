@@ -3,10 +3,11 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from messaging.models import Members, Messages
-from core.models import Users
 import random
 import time
 
+# Command to send weeky message digest
+# Only sends to users who have atleast 3 unread message and have allowed the weekly digest in their preferences
 class Command(BaseCommand):
     help = 'Send weekly unread message notifications'
 

@@ -29,11 +29,11 @@ function get_chats(query) {
 
 contactList.innerHTML += `
     <div class="contact-item ${contact.unread_count > 0 ? 'has-unread' : ''}">
-        <a href="/messaging/${contact.group_name}/" class="contact-item-link">
+        <a href="/profile/view_profile/${contact.profile_id}" class="contact-item-link">
             <img src="${contact.profile_url || '/static/images/profile_image.jpg'}" alt="profile image" class="profile_image" />
             <div class="contact-details">
                 <div class="contact-name">
-                    <a href="/profile/view_profile/${contact.profile_id}" class="contact-link" onclick="event.stopPropagation()">${mentorBadge}${contact.name}${unreadBadge}</a>
+                    <a href="/messaging/${contact.group_name}/" class="contact-link" onclick="event.stopPropagation()">${mentorBadge}${contact.name}${unreadBadge}</a>
                 </div>
             </div>
         </a>

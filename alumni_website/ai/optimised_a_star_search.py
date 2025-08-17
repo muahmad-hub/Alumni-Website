@@ -6,11 +6,15 @@ F_THRESHOLD = 1
 ALPHA = 0.8
 BETA = 0.2
 
+# Optimised version of a_star_search in a_star_search.py
+# Using OOP for better organisation of code
 class OptimisedAStarSearch:    
+    # Defining classes
     def __init__(self):
         self.scorer = OptimisedCompatibilityScore()
         self.neighbor_finder = OptimisedNeighborFinding()
         self.ppr_computer = OptimisedPersonalizedPageRank()
+    
     
     def g_n(self, profile_id1, profile_id2):
         scores = self.scorer.calculate_score_batch(profile_id1, [profile_id2])

@@ -17,6 +17,7 @@ from .utils import send_activation_email_asynchronous
 
 # Function used to get users IP address to log login attempts
 def get_client_ip(request):
+    # Gets IP from proxy server, else retrieves it manually
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -24,6 +25,8 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+# Checks the number of attempts of the action (login/signup) to prevent Brute Force Attacks
+# Attempts are stored in cache with the users IP address
 def is_rate_limited(request, action='signup', limit=3, window=3600):
     ip = get_client_ip(request)
     cache_key = f"rate_limit_{action}_{ip}"
@@ -37,9 +40,13 @@ def is_rate_limited(request, action='signup', limit=3, window=3600):
 
 def send_activation_email(user, request):
     try:
+        # Random 32 string token is generated
         token = get_random_string(32)
+        # Sets activation token as user's id and token
+        # Cache only stores for 24 hours and so the link is also active only for 24 hours 
         cache.set(f"activation_{token}", user.id, 86400)
         
+        # Token is embedded in the url
         activation_link = request.build_absolute_uri(
             reverse('activate_account', args=[token])
         )
@@ -65,18 +72,23 @@ def send_activation_email(user, request):
     except Exception as e:
         return False
 
+# Handles user's account activation
 def activate_account(request, token):
+    # Fetches corresponding user_id of the activation token
     user_id = cache.get(f"activation_{token}")
     
+    # If it doesn't match, an error message is raised
     if not user_id:
         messages.error(request, "Invalid or expired activation link.")
         return redirect("login_view")
     
+    # Else user's is_active status is set to True
     try:
         user = Users.objects.get(id=user_id)
         user.is_active = True
         user.save()
         
+        # Cache deleted
         cache.delete(f"activation_{token}")
         
         messages.success(request, "Account activated successfully! You can now log in.")
@@ -85,9 +97,10 @@ def activate_account(request, token):
         messages.error(request, "Invalid activation link.")
         return redirect("login_view")
 
-
+# View for handling user login
 def login_view(request):
     if request.method == "POST":
+        # Login is limited to 5 attempts in 15 minutes
         if is_rate_limited(request, 'login', limit=5, window=900):
             messages.error(request, "Too many login attempts. Please try again later.")
             return render(request, "authentication/login.html")
@@ -101,6 +114,7 @@ def login_view(request):
         except Users.DoesNotExist:
             user = None
 
+        # If user didn't authenticate their email, they are asked to authenticate
         if user is not None:
             if not user.is_active:
                 messages.success(
@@ -118,8 +132,10 @@ def login_view(request):
     else:
         return render(request, "authentication/login.html")
 
+# View for handling sign up process
 def sign_up(request):
     if request.method == "POST":
+        # Attempts limited to 2 in 1 hour
         if is_rate_limited(request, 'signup', limit=2, window=3600):
             messages.error(request, "Too many signup attempts. Please try again later.")
             return render(request, "authentication/sign_up.html")
