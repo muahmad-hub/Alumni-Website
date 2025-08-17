@@ -127,7 +127,7 @@ def login_view(request):
             login(request, user)
             return redirect("home")
         else:
-            messages.error(request, "Invalid credentials")
+            messages.error(request, "Invalid credentials. Did you authenticate your email?")
             return render(request, "authentication/login.html")
     else:
         return render(request, "authentication/login.html")
