@@ -83,9 +83,11 @@
         <p class="text-muted mb-0">{% if profile.location %}{{ profile.location }}{% endif %}</p>
         <p class="text-muted mb-0">
         {% if profile.has_job %}
-            {{ profile.role }} at {{ profile.employer }}
+          {{ profile.role }} at {{ profile.employer }}
+        {% elif profile.education_level == "Still in School" %}
+          Still in School
         {% else %}
-            {{ profile.major_uni }} at {{ profile.university }}
+          {% if profile.universty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
         {% endif %}
         </p>
     </div>
@@ -223,6 +225,23 @@
         </div>
       </div>
 
+
+      {% if profile.education_level != "Still in School" %}
+        <div class="col-md-">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">University</div>
+            <div class="fs-6">
+                {% if profile.university %}
+                    {{ profile.university }}
+                {% else %}
+                    <span class="text-muted small">Please enter your university</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-4">
         <div class="profile-information">
           <div class="bg-light p-3 rounded">
@@ -267,9 +286,11 @@
           </div>
         </div>
       </div>
+      {% endif %}
 
     </div>
   </div>
+
 
   <div class="section" data-aos="fade-up" data-aos-delay="100">
     <div class="section-header d-flex justify-content-between align-items-center mb-3">
@@ -503,11 +524,15 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Education Level</label>
                 <select class="form-control" id="exampleFormControlSelect1" name="education_level" required>
-                <option {% if profile.education_level == "Sixth Form" %}selected{% endif %}>Sixth Form</option>
+                <option {% if profile.education_level == "Still in School" %}selected{% endif %}>Still in School</option>
                 <option {% if profile.education_level == "Bachelor's" %}selected{% endif %}>Bachelor's</option>
                 <option {% if profile.education_level == "Master's" %}selected{% endif %}>Master's</option>
                 <option {% if profile.education_level == "Doctorate" %}selected{% endif %}>Doctorate</option>
                 </select>
+            </div>
+            {% if profile.education_level != "Still in School" %}
+            <div class="alert alert-primary" role="alert">
+              No need to fill out University details if your still in school
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold" required>University</label>
@@ -527,6 +552,9 @@
               <label class="form-label fw-semibold" required>Major</label>
               <input type="text" name="major_uni" value="{{ profile.major_uni }}" class="form-control rounded-3">
             </div>
+            {% endif %}
+
+
           </div>
         </div>
         <div class="modal-footer border-0 pt-0">

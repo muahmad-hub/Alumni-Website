@@ -41,6 +41,8 @@
       <p class="text-muted mb-0">
         {% if profile.has_job %}
           {{ profile.role }} at {{ profile.employer }}
+        {% elif profile.education_level == "Still in School" %}
+          Still in School
         {% else %}
           {% if profile.universty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
         {% endif %}
@@ -189,7 +191,7 @@
                 {% if profile.graduation_year %}
                     {{ profile.graduation_year }}
                 {% else %}
-                    No graduation year added yet
+                    <span class="text-muted small">Please Enter your school graduation year</span>
                 {% endif %}
             </div>
           </div>
@@ -204,13 +206,30 @@
                 {% if profile.education_level %}
                     {{ profile.education_level }}
                 {% else %}
-                    No Education level added yet
+                    <span class="text-muted small">Please enter your education level. e.g: Sixth Form, Bachelor's ...</span>
                 {% endif %}
             </div>
           </div>
         </div>
       </div>
 
+
+      {% if profile.education_level != "Still in School" %}
+        <div class="col-md-">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">University</div>
+            <div class="fs-6">
+                {% if profile.university %}
+                    {{ profile.university }}
+                {% else %}
+                    <span class="text-muted small">Please enter your university</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div class="col-md-4">
         <div class="profile-information">
           <div class="bg-light p-3 rounded">
@@ -219,7 +238,7 @@
                 {% if profile.university %}
                     {{ profile.university }}
                 {% else %}
-                    No University added yet
+                    <span class="text-muted small">Please enter your university</span>
                 {% endif %}
             </div>
           </div>
@@ -234,7 +253,7 @@
                 {% if profile.university_location %}
                     {{ profile.university_location }}
                 {% else %}
-                    No university location added yet
+                    <span class="text-muted small">Please enter your university location</span>
                 {% endif %}
             </div>
           </div>
@@ -249,15 +268,17 @@
                 {% if profile.major_uni %}
                     {{ profile.major_uni }}
                 {% else %}
-                    No university major added yet
+                    <span class="text-muted small">Please enter your university major</span>
                 {% endif %}
             </div>
           </div>
         </div>
       </div>
+      {% endif %}
 
     </div>
   </div>
+
 
 
   <div class="section" data-aos="fade-up" data-aos-delay="100">

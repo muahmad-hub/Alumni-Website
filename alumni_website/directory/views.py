@@ -145,6 +145,7 @@ def search_directory(request):
             "has_job": alum.has_job,
             "employer": alum.employer,
             "role": alum.role,
+            "education_level": alum.education_level,
         }
         results.append(result)
     

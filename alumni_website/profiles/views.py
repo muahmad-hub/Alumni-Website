@@ -226,8 +226,10 @@ def edit_education_section(request):
             return redirect_to_profile_with_message("Graduation year must be a valid number")
         if not 2021 <= data["graduation_year"] < 2040:
             return redirect_to_profile_with_message("Gradutaion year must be a valid year")
-        if not data["graduation_year"] or not data["education_level"] or not data["university"] or not data["university_location"] or not data["major_uni"]:
-            return redirect_to_profile_with_message("All fields are required")
+        # if data["education_level"] == "Still in School":
+        #     pass
+        # elif not data["graduation_year"] or not data["education_level"] or not data["university"] or not data["university_location"] or not data["major_uni"]:
+        #     return redirect_to_profile_with_message("All fields are required")
         
         for field, value in data.items():
             setattr(profile, field, value)

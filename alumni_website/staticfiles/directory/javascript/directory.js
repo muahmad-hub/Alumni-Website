@@ -73,28 +73,27 @@ function display_data(data){
         alumni_container.innerHTML += "<h1  data-aos='fade-up' data-aos-delay='300'>No Results</h1>"
     }
     else{
-    data.results.forEach(alumni => {
-        alumni_info = `
+        data.results.forEach(alumni => {
+            let alumni_info = `
                 <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="alumni-card">
-                    <div class="mentor-content">
-                        <div class="flex-container">
-                        <img src="/static/images/profile_image.jpg" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
-                        <div class="mentor-details">
-                            <h4>${alumni.first_name || ""} ${alumni.last_name || ""}</h4>
-                            <p class="mentor-class">Class of ${alumni.graduation_year || ""}</p>
-                            <span class="mentor-position">${alumni.major_uni || ""} 
+                        <div class="mentor-content">
+                            <div class="flex-container">
+                                <img src="/static/images/profile_image.jpg" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
+                                <div class="mentor-details">
+                                    <h4>${alumni.first_name || ""} ${alumni.last_name || ""}</h4>
+                                    <p class="mentor-class">Class of ${alumni.graduation_year || ""}</p>
+            `
+            if (alumni.education_level !== "Still in School") {
+                alumni_info += `
+                    <span class="mentor-position">${alumni.major_uni || ""} at ${alumni.university || ""}</span>
                 `
-        if (alumni.university){
-            alumni_info += `
-             at ${alumni.university || ""}</span>
-            `
-        }
-        else{
-            alumni_info += `
-            </span>
-            `
-        }
+            } else {
+                alumni_info += `
+                    Still in School
+                `
+            }
+
         if (alumni.has_job){
             alumni_info +=  `
                 <span class="mentor-position"> | ${alumni.role || ""} at ${alumni.employer || ""}</span>
