@@ -15,7 +15,7 @@ def send_activation_email_asynchronous(user, request):
         activation_link = request.build_absolute_uri(
             reverse('activate_account', args=[token])
         )
-        
+            
         subject = "Activate Your Account"
         
         html_message = render_to_string('notifications/activation_email.html', {

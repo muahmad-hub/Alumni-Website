@@ -44,7 +44,7 @@
         {% elif profile.education_level == "Still in School" %}
           Still in School
         {% else %}
-          {% if profile.universty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
+          {% if profile.universIty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
         {% endif %}
       </p>
     </div>
@@ -214,21 +214,7 @@
       </div>
 
 
-      {% if profile.education_level != "Still in School" %}
-        <div class="col-md-">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">University</div>
-            <div class="fs-6">
-                {% if profile.university %}
-                    {{ profile.university }}
-                {% else %}
-                    <span class="text-muted small">Please enter your university</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
+      {% if profile.education_level != "Still in School" %} 
       
       <div class="col-md-4">
         <div class="profile-information">
