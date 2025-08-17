@@ -36,13 +36,13 @@
         <p class="text-muted mb-0 admin">Admin</p>
       {% endif %}
       <p class="text-muted mb-0">
-        {% if profile.location %}{{ profile.location }}{% endif %}
+        {% if profile.location %}{% if profile.location == "None" %}{% else %}{{ profile.location }}{% endif %}{% endif %}
       </p>
       <p class="text-muted mb-0">
         {% if profile.has_job %}
           {{ profile.role }} at {{ profile.employer }}
         {% else %}
-          {{ profile.major_uni }} at {{ profile.university }} 
+          {% if profile.universty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
         {% endif %}
       </p>
     </div>
