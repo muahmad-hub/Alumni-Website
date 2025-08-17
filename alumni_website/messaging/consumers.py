@@ -6,8 +6,10 @@ from django.template.loader import render_to_string
 from channels.db import database_sync_to_async
 from datetime import datetime
 from django.utils import timezone
-import pytz
 
+# Handles real-time messages
+# Connects and disconnects users 
+# Saves messages asynchronously to the database and boradcasts messages to all users in group (currently I've only implemented 1:1 chat)
 class MessageConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
@@ -44,8 +46,11 @@ class MessageConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    # Called when WebSocket receives a message
+    # Processes the JSON payload and stores message to DB
+    # Broadcasts message to all users in group
     async def receive(self, text_data):
-        from .models import Groups, Members, Messages
+        from .models import Messages
         
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
