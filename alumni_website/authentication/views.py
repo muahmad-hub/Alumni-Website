@@ -144,7 +144,7 @@ def sign_up(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         first_name = request.POST["first-name"]
-        last_name = request.POST["first-name"]
+        last_name = request.POST["last-name"]
         graduation_year = request.POST["graduation-year"]
         
         if password != confirmation:
