@@ -810,3 +810,24 @@ path("messages", views.messages, name="messages")
 ### Reflection
 - Having tested the deployment, I've realised that there are so many bugs and points that I as a developer missed initially and wouldn't have noticed if I didn't see trends in the way users are using the website. And these errors truly can't really be found till the website is tested which highlights the importance of testing.
 - Also, since I was working on this project solo and ad been working on it for a long time, I knew the code and what exactly it did which led me to not write as many comments explaining what a specific function does. However, incase I revisit the code later on or if others read it I added comments for most functions. 
+
+## Date: August 23
+### Deployment
+- Currently I was hosting my website through Render as they had a free tier for web services that provided a 512 MB RAM too.
+- This RAM however, was quite low for my project as I had to use BERT embeddings for my classifier which itself took a major part of the RAM.
+    - For more about my new implementation to counter the RAM constraint. [View here](#tf-idf-integration-for-deployment)
+- Just yesterday, I received a message that my postgre sql would expire soon. I didn't really want to pay extra for my postgre sql connection so I searched for other databse connections and came accross Supadatabase that offered a decent free tier database connection.
+- So I connected to my Render database locally and created a backup. I then created a database on supabase and connected to it and restored it using the backup. I then connected it to my website and redeployed it.
+### Reflection
+- This recent database migration really taught me how different web services can rellyu be utlisied. Supabase is much better for database connections due to its in built sql features and ability to view and edit the data easily.
+
+## Date: August 23
+### Deployment
+- Initially I hosted the project on Render's free tier (512MB RAM). This proved to be insufficient as the BERT embedding model consumed most of the available memory.
+    - To mitigate this, I implemented a lighter TF-IDF based model for deployment that mimicked the BERT embedings. [Details here](#tf-idf-integration-for-deployment)
+- Render also notified me that my PostgreSQL instance would soon expire. Rather than moving to a paid tier, I devided to look for other alternatives and chose **Supabase**, which offers a decent free tier with a managed PostgreSQL backend.
+- I then migrated the database by creating a local backup from Render, creating a new instance on Supabase, restoring the backup and updating the connection string for deployment.
+- Render only supports IPv4; whereas, Supabase supports IPv6 and needs a paid add-on for IPv4 support. However, the pooling string connection does allow IPv4
+### Reflection
+- This migration highlighted the importance of being aware of the resources for deployment: advanced models like BERT require significant memory overhead, so production systems often demand tradeoffs between model complexity and infrastructure cost
+- Supabase;s managed SQL editor and integrated tools are much better to monitor, query and manage the database compared to Render's.

@@ -3,3 +3,4 @@ myenv
 .env
 pre_training_model.py
 alumni/
+backup.sql

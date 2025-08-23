@@ -14,7 +14,7 @@
 - **Highlights:**
     - Recommendation system that uses **custom A\* + Personalized PageRank algorithm** to recommend most compatible alumni to users.
         - Switch in the database allows to switch to **simple recommendation algorithm** for low user scale
-    - **AI skill & goal categorization** with 72-80% accuracy, used by recommendation system
+    - **AI skill & goal categorization** with 72-80% accuracy built with custom dataset, used by recommendation system
     - **Real-time chat** with Django channels and WebSocket
     - Fully integrated full-stack system (frontend, backend, database, ML, networking).
     - **Authentication emails and notification** emails along with weekly message digest.

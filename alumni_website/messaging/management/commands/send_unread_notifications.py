@@ -15,7 +15,7 @@ class Command(BaseCommand):
         users_with_unread_and_email = []
         for member in Members.objects.select_related('user', 'group').all():
             unread_count = 0
-            if member.last_read_message_id and member.profile.send_digest_email == True:
+            if member.last_read_message_id and member.user.profile.send_digest_email == True:
                 unread_count = Messages.objects.filter(
                     group=member.group,
                     id__gt=member.last_read_message_id
