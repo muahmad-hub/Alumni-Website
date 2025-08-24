@@ -831,3 +831,8 @@ path("messages", views.messages, name="messages")
 ### Reflection
 - This migration highlighted the importance of being aware of the resources for deployment: advanced models like BERT require significant memory overhead, so production systems often demand tradeoffs between model complexity and infrastructure cost
 - Supabase;s managed SQL editor and integrated tools are much better to monitor, query and manage the database compared to Render's.
+
+## Date: August 24
+- After testing I noticed that the website was a bit slow and the websocket connections were not being initiated.
+- This was due to switching to the external database rather than using Render's own internal datbase
+- So am currently switching Supabase's server location closer to Render's server location and am trying Redis

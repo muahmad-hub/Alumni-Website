@@ -163,17 +163,8 @@ if ENVIRONMENT == "DEVELOPMENT":
         }
     }
 elif ENVIRONMENT == "PRODUCTION":
-    database_config = dj_database_url.parse(os.environ.get("DATABASE_URL"))
-    database_config.update({
-        'OPTIONS': {
-            'MAX_CONNS': 20,
-            'sslmode': 'require',
-        },
-        'CONN_MAX_AGE': 600,
-        'CONN_HEALTH_CHECKS': True,
-    })
     DATABASES = {
-        'default': database_config
+        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
 
 #Adding bootsraps for messages
