@@ -78,11 +78,21 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Channel layers configuration
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+if ENVIRONMENT == "DEVELOPMENT":
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
     }
-}
+elif ENVIRONMENT == "PRODUCTION":
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [os.environ.get("REDIS")],
+            },
+        },
+    }
 
 
 MIDDLEWARE = [
@@ -153,8 +163,17 @@ if ENVIRONMENT == "DEVELOPMENT":
         }
     }
 elif ENVIRONMENT == "PRODUCTION":
+    database_config = dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    database_config.update({
+        'OPTIONS': {
+            'MAX_CONNS': 20,
+            'sslmode': 'require',
+        },
+        'CONN_MAX_AGE': 600,
+        'CONN_HEALTH_CHECKS': True,
+    })
     DATABASES = {
-        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+        'default': database_config
     }
 
 #Adding bootsraps for messages
