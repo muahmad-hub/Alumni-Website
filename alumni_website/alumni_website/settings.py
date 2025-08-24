@@ -78,22 +78,11 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Channel layers configuration
-if ENVIRONMENT == "DEVELOPMENT":
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer"
-        }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
-elif ENVIRONMENT == "PRODUCTION":
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [os.environ.get("REDIS")],
-            },
-        },
-    }
-
+}
 
 MIDDLEWARE = [
     'core.middleware.SimpleResourceMiddleware',
