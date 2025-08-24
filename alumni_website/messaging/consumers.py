@@ -14,6 +14,9 @@ class MessageConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
         self.group_name = self.scope['url_route']['kwargs']['group_name']
+
+        await self.accept()
+
         
         self.group = await database_sync_to_async(get_object_or_404)(
             Groups,
@@ -34,8 +37,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         
-        await self.accept()
-
     async def disconnect(self, close_code):
         print(f"User {self.user} disconnected from group {self.group_name} with close code {close_code}")
         await self.change_online_status(False)
