@@ -38,7 +38,6 @@ def vectorize(text):
     
     return vector
 
-
 def save_model(model, path):
     joblib.dump(model, path)
 

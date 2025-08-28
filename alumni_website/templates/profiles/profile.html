@@ -87,7 +87,7 @@
         {% elif profile.education_level == "Still in School" %}
           Still in School
         {% else %}
-          {% if profile.universIty and profile.major_uni %}{{ profile.major_uni }}{% endif %}{% if profile.university %} at {{ profile.university }}{% endif %}
+          {{ profile.major_uni }}{% if profile.university %} at {{ profile.university }}{% endif %}
         {% endif %}
         </p>
     </div>

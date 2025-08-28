@@ -81,17 +81,18 @@
             - SVM (using polynomial kernel): 81.09%
             - Naive Bayes: 74.48%
             - Logistic regression: 80.21%
+            (These are scores before optimizing, the final F1 score for goals is ~88%)
     - I decided to use SVM, with the polynomial kernel for goals classification, as it had the best balance of precision/recall
 ### Training & Performance
-- I manually labbeled datasets, with ~300 fields, for both skills and goals (8 categories for skill and 5 categories for goals) 
+- I manually labbeled datasets, with ~300 fields, for both skills and goals (5 categories for skill and 5 categories for goals) 
 - For goal classification acheived (using polynomial kernel and BERT embeddings):
-    - Precision: 83.15%
-    - Recall: 82.76%
-    - F1 Score: 81.09%
+    - Precision: 88.63%
+    - Recall: 87.93%
+    - F1 Score: 87.64%
 - For skill classification achieved (using linear kernel and BERT embeddings):
-    - Precision: 84.35%
-    - Recall: 69.61%
-    - F1 Score: 72.14%
+    - Precision: 80.75%
+    - Recall: 69.23%
+    - F1 Score: 71.51%
 - I used an 80/20 training and testing split for these results
 - Skill classification used to a relatively low F1 score. It was most likely due to the fact that skill-related inputs tend to have fewer words. This makes it harder for the model to capture the context. A higher-quality dataset was needed to counter this and so I extended the dataset for skills from ~300 fields to around ~500 fields.
 - In the `calculate_score()` function, I’ve assigned a lower weight to the skill overlap component so that it contributes less to the final score compared to the goal classification.
@@ -111,7 +112,7 @@
 ### Consumer Logic
 [See consumers.py](../alumni_website/messaging/consumers.py)
 ### System Architecture
-<img src="SA_message_app.PNG" width="700">
+<img src="images/SA_message_app.PNG" width="700">
 
 - As soon as the DOM is loaded, the browser's Javascript connects to a WebSocket provided by Django Channels
 - This creates a bidirectional communication channel between the browser and Django channels

@@ -19,6 +19,10 @@
   gap: 2rem;
 }
 
+.school-image{
+  height: 80%;
+}
+
 .alumni .alumni-intro .alumni-stats .stat-item {
   display: flex;
   flex-direction: column;

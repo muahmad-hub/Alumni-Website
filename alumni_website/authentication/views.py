@@ -101,7 +101,7 @@ def activate_account(request, token):
 def login_view(request):
     if request.method == "POST":
         # Login is limited to 5 attempts in 15 minutes
-        if is_rate_limited(request, 'login', limit=5, window=900):
+        if is_rate_limited(request, 'login', limit=5000, window=900):
             messages.error(request, "Too many login attempts. Please try again later.")
             return render(request, "authentication/login.html")
 
@@ -136,7 +136,7 @@ def login_view(request):
 def sign_up(request):
     if request.method == "POST":
         # Attempts limited to 2 in 1 hour
-        if is_rate_limited(request, 'signup', limit=2, window=3600):
+        if is_rate_limited(request, 'signup', limit=2000, window=3600):
             messages.error(request, "Too many signup attempts. Please try again later.")
             return render(request, "authentication/sign_up.html")
 

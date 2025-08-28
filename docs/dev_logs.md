@@ -1,4 +1,4 @@
-# Dev Logs
+# Dev Logs & Learning Journal
 
 ## Date: July 15
 ### Moved Flask-based project to Django-based
@@ -833,6 +833,27 @@ path("messages", views.messages, name="messages")
 - Supabase;s managed SQL editor and integrated tools are much better to monitor, query and manage the database compared to Render's.
 
 ## Date: August 24
+### Problem: WebSocket's were not working & website too slow
 - After testing I noticed that the website was a bit slow and the websocket connections were not being initiated.
 - This was due to switching to the external database rather than using Render's own internal datbase
 - So am currently switching Supabase's server location closer to Render's server location and am trying Redis
+- I also switched the order of the code in `consumers.py` so that the websocket connection is accepted before making any database queries. I hypothesized that the since I'm no longer using Render's in built database, the delay in queries may be causing the WebSocket to close early.
+```python
+# Accepting the connection first
+await self.accept()
+
+# Calling to database later on
+self.group = await database_sync_to_async(get_object_or_404)(
+    Groups,
+    group_name=self.group_name
+)
+```
+- For the time being these changes have fixed the problem: the latency is similar to when I used Render's in built database and the messages do work now
+
+## Date: August 27
+### What I did
+- I tried once more to refine the and improve the F1 scores of the skill classifier
+- Using the `all-MiniLM-L6-v2` version of BERT compared to `bert-base-uncased` seems to have imporved the F1 scores from last time
+- I tried reducing the Dataset used to train the skill classifier from ~500 fields to ~300 fields by removing two categories, leaving me with 5 skill categories.
+- Surprisingly, this seemed to improve the F1 score from 66% to 71%. I think this is because categorizing skills into categories is quite complex because a single skill can overlap in many categories like "Technical Writing" could overlap with Communication, Technical, and Academic skills. Plus, adding more categories seems to confuse the system.
+- So as of now my final F1 score is 87% for goals and 71% for skills.
