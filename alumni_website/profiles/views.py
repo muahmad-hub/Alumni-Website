@@ -376,9 +376,9 @@ def accept_connection(request, user_id, action):
                 connection.save()
                 return JsonResponse({'status': 'success', 'message': 'Connection declined.'})
 
-        except Exception:
-            return JsonResponse({'status': 'error', 'message': str(Exception)})
-
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+        
 # Handle weekly digest email preferences
 @login_required
 def yes_digest_email(request):

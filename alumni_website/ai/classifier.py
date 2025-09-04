@@ -80,7 +80,6 @@ def train_and_save_model(is_goal):
     save_model(clf, model_path)
     save_model(encoded_labels_dic, encoder_path)
 
-
 # Returns predicted category and probability
 def predict_category_skill(text):
     model = load_model(SKILL_MODEL_PATH)
