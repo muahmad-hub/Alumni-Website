@@ -13,6 +13,55 @@
 
 {% block main %}
 
+<div class="modal fade" id="editTeacherInformation" tabindex="-1" aria-labelledby="editTeacherModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3 rounded-4 border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="editTeacherModalLabel">Edit Teacher Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'edit_teacher_section' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="teacher_first_name" class="form-label fw-semibold">First Name</label>
+            <input type="text" class="form-control" id="teacher_first_name" name="first_name" value="{{ profile.first_name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="teacher_last_name" class="form-label fw-semibold">Last Name</label>
+            <input type="text" class="form-control" id="teacher_last_name" name="last_name" value="{{ profile.last_name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="teacher_email" class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" id="teacher_email" name="email" value="{{ profile.user.email }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="teacher_subject" class="form-label fw-semibold">Subject</label>
+            <select class="form-control" id="teacher_subject" name="subject" required>
+              <option value="" disabled>Select a subject</option>
+              <option value="Mathematics" {% if profile.subject == 'Mathematics' %}selected{% endif %}>Mathematics</option>
+              <option value="Biology" {% if profile.subject == 'Biology' %}selected{% endif %}>Biology</option>
+              <option value="Physics" {% if profile.subject == 'Physics' %}selected{% endif %}>Physics</option>
+              <option value="Chemistry" {% if profile.subject == 'Chemistry' %}selected{% endif %}>Chemistry</option>
+              <option value="Design and Technology" {% if profile.subject == 'Design and Technology' %}selected{% endif %}>Design and Technology</option>
+              <option value="English" {% if profile.subject == 'English' %}selected{% endif %}>English</option>
+              <option value="University Counsellor" {% if profile.subject == 'University Counsellor' %}selected{% endif %}>University Counsellor</option>
+              <option value="Economics" {% if profile.subject == 'Economics' %}selected{% endif %}>Economics</option>
+              <option value="Business" {% if profile.subject == 'Business' %}selected{% endif %}>Business</option>
+              <option value="IT" {% if profile.subject == 'IT' %}selected{% endif %}>IT</option>
+              <option value="History" {% if profile.subject == 'History' %}selected{% endif %}>History</option>
+              <option value="Geography" {% if profile.subject == 'Geography' %}selected{% endif %}>Geography</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-primary save-changes">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <div class="main-wrapper container-fluid">
 
@@ -36,7 +85,7 @@
         <img src="{{ req.profile_url|default:'/static/images/profile_image.jpg' }}" alt="profile image" class="profile_image" />
         <div class="connect-details" data-user-id="{{ req.profile1.user.id }}" data-url-accept="{% url 'accept_connection' req.profile1.user.id 'accept' %}" data-url-decline="{% url 'accept_connection' req.profile1.user.id 'decline' %}">
           <div class="contact-name">
-            {% if req.profile1.first_name or req.rofile1.last_name %}
+            {% if req.profile1.first_name or req.profile1.last_name %}
                 {% if req.profile1.first_name %}{{ req.profile1.first_name }}{% if req.profile1.last_name %} {{ req.profile1.last_name }}{% endif %}{% endif %}
             {% else %}
                 No name
@@ -72,6 +121,9 @@
   {% if request.GET.message %}
     <div class="alert alert-danger">{{ request.GET.message }}</div>
   {% endif %}
+
+  <!--Checking if user is a student-->
+  {% if user.is_teacher == False %}
   
   <div class="profile-header d-flex align-items-center gap-3 mb-4">
     <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
@@ -389,6 +441,87 @@
 
 </div>
 </div>
+{% else %}
+
+  <div class="profile-header d-flex align-items-center gap-3 mb-4">
+    <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
+    <div class="profile-info">
+        <h2 class="mb-1">{% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}</h2>
+      {% if profile.user.is_superuser %}
+        <p class="text-muted mb-0 admin">Admin</p>
+      {% endif %}
+        <p class="text-muted mb-0">
+          {% if profile.subject == "University Counsellor" %}
+            {{ profile.subject }}
+          {% elif profile.subject %}
+            Teacher of {{ profile.subject }}
+          {% endif %}
+        </p>
+    </div>
+    <div class="d-flex gap-2 connection_buttons" style="margin-left: 70%;">
+      <div class="connection-display"><div class="connection-number">{{ num_of_connections }}</div><div class="connection-title text-muted">Connections</div></div>
+    </div>
+  </div>
+
+
+  <div class="section" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-header d-flex justify-content-between align-items-center mb-3">
+      <h3></h3>
+    <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editTeacherInformation">Edit</button>
+    </div>
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">First name</div>
+            <div class="fs-6">
+                {% if profile.first_name %}
+                    {{ profile.first_name }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your First name</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Last Name</div>
+            <div class="fs-6">
+                {% if profile.last_name %}
+                    {{ profile.last_name }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your Last name</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="profile-information">
+          <div class="bg-light p-3 rounded">
+            <div class="text-muted small fw-semibold">Subject</div>
+            <div class="fs-6">
+                {% if profile.subject %}
+                    {{ profile.subject }}
+                {% else %}
+                    <span class="text-muted small">Please Enter your Subject</span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+{% endif %}
+
+
+
 </div>
 
 
@@ -664,6 +797,9 @@
     </div>
   </div>
 </div>
+
+<!--Teacher section modal-->
+
 
 <!-- Email preferences modal -->
 <div class="modal fade" id="emailPreferences" tabindex="-1" aria-labelledby="emailPreferences" aria-hidden="true">

@@ -314,6 +314,31 @@ def edit_employment_status(request):
             return JsonResponse({"status": "success", "message": "Employment status updated."})
     return redirect("profile")
 
+@login_required
+def edit_teacher_section(request):
+    if request.method == "POST":
+        data = {
+            "first_name": request.POST.get("first_name"),
+            "last_name": request.POST.get("last_name"),
+            "subject": request.POST.get("subject"),
+            "email": request.POST.get("email")
+        }
+
+        profile = get_object_or_404(Profile, user = request.user)
+
+        if not data["first_name"] or not data["last_name"] or not data["subject"]:
+            return redirect_to_profile_with_message("All fields are required")
+
+        profile.first_name = data["first_name"]
+        profile.last_name = data["last_name"]
+        profile.user.email = data["email"]
+        profile.subject = data["subject"]
+
+        profile.user.save()
+        profile.save()
+
+    return redirect("profile")
+
 # Handles user's request to connect or disconnect with other user
 # Creates a connection object if users are not connected
 # Deletes connection object if users are connected

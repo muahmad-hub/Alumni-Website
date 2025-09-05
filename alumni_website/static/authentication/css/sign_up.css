@@ -138,6 +138,10 @@ a:hover {
   opacity: 0;
 }
 
+.teacher_form{
+  display: none;
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;

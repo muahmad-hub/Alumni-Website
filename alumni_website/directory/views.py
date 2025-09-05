@@ -4,7 +4,7 @@ from profiles.models import Profile, UserAlumniRecommendation
 from mentorship.models import Mentor
 from django.templatetags.static import static
 from django.db.models import Q
-from .utils import get_directory_filters
+from .utils import get_directory_filters, get_teacher_diretory_filters
 from django.utils import timezone
 from datetime import timedelta
 from ai.recommender import optimised_recommend, populate_cache, simple_recommend
@@ -129,8 +129,10 @@ def search_directory(request):
     if university and university != "University":
         filter_conditions &= Q(university__icontains=university)
         
-    alumni = Profile.objects.filter(filter_conditions).exclude(first_name__isnull=True).distinct()
-
+    alumni = Profile.objects.filter(filter_conditions).exclude(
+        Q(first_name__isnull=True) | Q(user__is_teacher=True)
+    ).distinct()
+    
     results = []
 
     for alum in alumni:
@@ -192,23 +194,73 @@ def mentor_search_directory(request):
         for skill in alum.user.profile.skills.all():
             skills_list.append(skill.skill)
 
-        if all([alum.user.profile.graduation_year, alum.user.profile.major_uni, alum.user.profile.university]):
-            result = {
-                "id": alum.user.id,
-                "first_name": alum.user.profile.first_name,
-                "last_name": alum.user.profile.last_name,
-                "skills": skills_list,
-                "profile_url": alum.user.profile.profile_url if alum.user.profile.profile_url else static("/images/profile_image.jpg"),
-                "graduation_year": alum.user.profile.graduation_year,
-                "major_uni": alum.user.profile.major_uni,
-                "university": alum.user.profile.university,
-                "has_job": alum.user.profile.has_job,
-                "employer": alum.user.profile.employer,
-                "role": alum.user.profile.role,
-            }
-            results.append(result)
+        if alum.user.is_teacher == False:
+            if all([alum.user.profile.graduation_year, alum.user.profile.major_uni, alum.user.profile.university]):
+                result = {
+                    "is_teacher": "false",
+                    "id": alum.user.id,
+                    "first_name": alum.user.profile.first_name,
+                    "last_name": alum.user.profile.last_name,
+                    "skills": skills_list,
+                    "profile_url": alum.user.profile.profile_url if alum.user.profile.profile_url else static("/images/profile_image.jpg"),
+                    "graduation_year": alum.user.profile.graduation_year,
+                    "major_uni": alum.user.profile.major_uni,
+                    "university": alum.user.profile.university,
+                    "has_job": alum.user.profile.has_job,
+                    "employer": alum.user.profile.employer,
+                    "role": alum.user.profile.role,
+                }
+                results.append(result)
+        else:
+            if all([alum.user.profile.first_name, alum.user.profile.last_name]):
+                result = {
+                    "is_teacher": "true",
+                    "id": alum.user.id,
+                    "first_name": alum.user.profile.first_name,
+                    "last_name": alum.user.profile.last_name,
+                    "subject": alum.user.profile.subject,
+                }
+                results.append(result)
     
 
+    return JsonResponse({
+        "results": results,
+    })
+
+@login_required
+def teacher_directory(request):
+    context = get_teacher_diretory_filters()
+    context["view_type"] = "alumni"
+
+    return render(request, "directory/teacher_directory.html", context)
+
+@login_required
+def teacher_search_directory(request):
+    query = request.GET.get("q", "").lower().strip()
+    subject = request.GET.get("subject", "")
+
+    filter_conditions = Q()
+
+    if query:
+        filter_conditions &= Q(first_name__icontains=query) | Q(last_name__icontains=query)
+
+    if subject and subject != "Subject":
+        filter_conditions &= Q(subject=subject)
+        
+    teachers = Profile.objects.filter(filter_conditions, user__is_teacher=True).exclude(first_name__isnull=True).distinct()
+
+    results = []
+
+    for teacher in teachers:
+        result = {
+            "id": teacher.user.id,
+            "first_name": teacher.first_name,
+            "last_name": teacher.last_name,
+            "profile_url": teacher.profile_url if teacher.profile_url else static("images/profile_image.jpg"),
+            "subject": teacher.subject
+        }
+        results.append(result)
+    
     return JsonResponse({
         "results": results,
     })

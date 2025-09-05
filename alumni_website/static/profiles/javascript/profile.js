@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var yesPreference = document.getElementById("yes-preference");
     var noPreference = document.getElementById("no-preference");
 
-    if (employed.checked) {
-        jobSection.style.display = "block";
-    } else {
-        jobSection.style.display = "none";
-    }
+    if (employed){
+        if (employed.checked) {
+            jobSection.style.display = "block";
+        } else {
+            jobSection.style.display = "none";
+        }
 
     employed.addEventListener("change", function () {
         if (employed.checked) {
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             change_employed_status("False");
         }
     })
+    }
         
     document.addEventListener("click", function(event){
         if (event.target.classList.contains("connect") || event.target.classList.contains("decline")){

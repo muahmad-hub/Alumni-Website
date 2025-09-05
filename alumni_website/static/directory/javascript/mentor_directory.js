@@ -51,6 +51,7 @@ function display_data(data){
     }
     else{
         data.results.forEach(alumni => {
+            if (alumni.is_teacher === "false"){
             let alumni_info = `
                 <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="alumni-card">
@@ -92,6 +93,33 @@ function display_data(data){
             </div>
         `
         alumni_container.innerHTML += alumni_info
+    }
+    else{
+        let alumni_info = `
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="alumni-card">
+                    <div class="mentor-content">
+                        <div class="flex-container">
+                            <img src="/static/images/profile_image.jpg" alt="Mentor" class="img-fluid profile-image" style="max-width: 120px; height: auto; float: left; margin-right: 15px;">
+                            <div class="mentor-details">
+                                <h4>${alumni.first_name || ""} ${alumni.last_name || ""}</h4>
+            `
+            if (alumni.subject === "University Counsellor"){
+                alumni_info += `<p class="mentor-class">${alumni.subject}</p>`
+            }
+            else{
+                alumni_info += `<p class="mentor-class">Teaching ${alumni.subject}</p>`
+            }
+        alumni_info += `
+                        <div id="view-profile-container"><a href="" class="view-profile" data-user-id = "${alumni.id}">View Profile<i class="bi bi-arrow-right"></i></a></div>
+                    </div> 
+                    </div>
+                </div>
+                </div>
+            </div>
+        `
+        alumni_container.innerHTML += alumni_info
+    }
     })
     }
 

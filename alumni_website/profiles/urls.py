@@ -14,6 +14,7 @@ urlpatterns = [
     path("edit_goals_section", views.edit_goals_section, name="edit_goals_section"),
     path("edit_career_section", views.edit_career_section, name="edit_career_section"),
     path("edit_employment_status", views.edit_employment_status, name="edit_employment_status"),
+    path("edit_teacher_section", views.edit_teacher_section, name="edit_teacher_section"),
     path("connect", views.connect, name="connect"),
 
     path("accept_connection/<int:user_id>/<str:action>/", views.accept_connection, name="accept_connection"),

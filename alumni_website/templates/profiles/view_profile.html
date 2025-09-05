@@ -6,7 +6,6 @@
     <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
 {% endblock %}
 
-
 {% block title %}
     User Profile
 {% endblock %}
@@ -15,344 +14,438 @@
 
 <div class="profile-container" data-aos="fade-up">
 
-
     <div class="alert alert-primary" id="connect_message">
-    Once {{ profile.last_name }} accepts the request, you can chat with them <a href="{% url 'messages' %}" class="alert-link">here</a>
+        Once {{ profile.last_name }} accepts the request, you can chat with them <a href="{% url 'messages' %}" class="alert-link">here</a>
     </div>
 
     <div class="alert alert-primary" id="mentor_message">
-    Once {{ profile.last_name }} accepts the mentor request, you can take guidance from them through the chat <a href="{% url 'messages' %}" class="alert-link">here</a>
+        Once {{ profile.last_name }} accepts the mentor request, you can take guidance from them through the chat <a href="{% url 'messages' %}" class="alert-link">here</a>
     </div>
 
+    {% if profile.user.is_teacher == False %}
+        <div class="profile-header d-flex justify-content-between align-items-center gap-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
+                <div class="profile-info">
+                    <h2 class="mb-1">
+                        {% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}
+                    </h2>
+                    {% if profile.user.is_superuser %}
+                        <p class="text-muted mb-0 admin">Admin</p>
+                    {% endif %}
+                    <p class="text-muted mb-0">
+                        {% if profile.location %}{% if profile.location == "None" %}{% else %}{{ profile.location }}{% endif %}{% endif %}
+                    </p>
+                    <p class="text-muted mb-0">
+                        {% if profile.has_job %}
+                            {{ profile.role }} at {{ profile.employer }}
+                        {% elif profile.education_level == "Still in School" %}
+                            Still in School
+                        {% else %}
+                            {{ profile.major_uni }}{% if profile.university %} at {{ profile.university }}{% endif %}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
 
-<div class="profile-header d-flex justify-content-between align-items-center gap-3 mb-4">
-  <div class="d-flex align-items-center gap-3">
-    <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
-    <div class="profile-info">
-      <h2 class="mb-1">
-        {% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}
-      </h2>
-      {% if profile.user.is_superuser %}
-        <p class="text-muted mb-0 admin">Admin</p>
-      {% endif %}
-      <p class="text-muted mb-0">
-        {% if profile.location %}{% if profile.location == "None" %}{% else %}{{ profile.location }}{% endif %}{% endif %}
-      </p>
-      <p class="text-muted mb-0">
-        {% if profile.has_job %}
-          {{ profile.role }} at {{ profile.employer }}
-        {% elif profile.education_level == "Still in School" %}
-          Still in School
-        {% else %}
-          {{ profile.major_uni }}{% if profile.university %} at {{ profile.university }}{% endif %}
+            <div class="d-flex gap-2 connection_buttons">
+                <div class="connection-display">
+                    <div class="connection-number">{{ num_of_connections }}</div>
+                    <div class="connection-title text-muted">Connections</div>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if profile.user != user %}
+                        {% if view_type == "alumni" %}
+                            <button class="btn connect btn-sm">
+                                {% if connection is None %}
+                                    Connect
+                                {% elif connection.accepted == True %}
+                                    Connected
+                                {% else %}
+                                    Connect Request sent
+                                {% endif %}
+                            </button>
+                        {% elif view_type == "mentor" %}
+                            {% if mentor_exists %}
+                                <button class="btn request_mentor btn-sm">
+                                    {% if mentor_match is None %}
+                                        Request mentor
+                                    {% elif mentor_match.accepted == True %}
+                                        Mentor Connected
+                                    {% else %}
+                                        Mentor Request Sent
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" data-aos-delay="100">
+            <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                <h3>Personal Information</h3>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">First name</div>
+                            <div class="fs-6">
+                                {% if profile.first_name %}
+                                    {{ profile.first_name }}
+                                {% else %}
+                                    No first name added yet
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Last Name</div>
+                            <div class="fs-6">
+                                {% if profile.last_name %}
+                                    {{ profile.last_name }}
+                                {% else %}
+                                    No last name added yet
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Date of Birth</div>
+                            <div class="fs-6">
+                                {% if profile.date_of_birth %}
+                                    {{ profile.date_of_birth }}
+                                {% else %}
+                                    No Date of Birth added yet
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Email Address</div>
+                            <div class="fs-6">
+                                {% if profile.user.email %}
+                                    {{ profile.user.email }}
+                                {% else %}
+                                    No email address added yet 
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" data-aos-delay="100">
+            <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                <h3>Bio Section</h3>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">About Me</div>
+                            <div class="fs-6">
+                                {% if profile.about_me %}
+                                    {{ profile.about_me }}
+                                {% else %}
+                                    No Bio added yet
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" data-aos-delay="100">
+            <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                <h3>Education</h3>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">School Graduation Year</div>
+                            <div class="fs-6">
+                                {% if profile.graduation_year %}
+                                    {{ profile.graduation_year }}
+                                {% else %}
+                                    <span class="text-muted small">Please Enter your school graduation year</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Education Level</div>
+                            <div class="fs-6">
+                                {% if profile.education_level %}
+                                    {{ profile.education_level }}
+                                {% else %}
+                                    <span class="text-muted small">Please enter your education level. e.g: Sixth Form, Bachelor's ...</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if profile.education_level != "Still in School" %} 
+                    <div class="col-md-4">
+                        <div class="profile-information">
+                            <div class="bg-light p-3 rounded">
+                                <div class="text-muted small fw-semibold">University</div>
+                                <div class="fs-6">
+                                    {% if profile.university %}
+                                        {{ profile.university }}
+                                    {% else %}
+                                        <span class="text-muted small">Please enter your university</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="profile-information">
+                            <div class="bg-light p-3 rounded">
+                                <div class="text-muted small fw-semibold">University Location</div>
+                                <div class="fs-6">
+                                    {% if profile.university_location %}
+                                        {{ profile.university_location }}
+                                    {% else %}
+                                        <span class="text-muted small">Please enter your university location</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="profile-information">
+                            <div class="bg-light p-3 rounded">
+                                <div class="text-muted small fw-semibold">University Major</div>
+                                <div class="fs-6">
+                                    {% if profile.major_uni %}
+                                        {{ profile.major_uni }}
+                                    {% else %}
+                                        <span class="text-muted small">Please enter your university major</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" data-aos-delay="100">
+            <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                <h3>Skills</h3>
+            </div>
+            <div class="row g-3">
+                {% for skill in profile.skills.all %}
+                    <div class="col-md-4">
+                        <div class="profile-information">
+                            <div class="bg-light p-3 rounded">
+                                <div class="fs-6">
+                                    {{ skill.skill }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-md-4">
+                        <div class="profile-information">
+                            <div class="bg-light p-3 rounded">
+                                <div class="fs-6">
+                                    No skills added yet
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if profile.has_job and profile.employer and profile.role %}
+            <div class="section" data-aos="fade-up" data-aos-delay="100">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                    <h3>Career</h3>
+                </div>
+                <div id="job_section">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="profile-information">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="text-muted small fw-semibold">Role</div>
+                                    <div class="fs-6">
+                                        {% if profile.role %}
+                                            {{ profile.role }}
+                                        {% else %}
+                                            No role added yet
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="profile-information">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="text-muted small fw-semibold">Employer</div>
+                                    <div class="fs-6">
+                                        {% if profile.employer %}
+                                            {{ profile.employer }}
+                                        {% else %}
+                                            No employer added yet
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endif %}
-      </p>
-    </div>
-  </div>
 
+    {% else %}
+        <div class="profile-header d-flex align-items-center gap-3 mb-4">
+            <img src="{% if profile.profile_url %}{{ profile.profile_url }}{% else %}{% static 'images/profile_image.jpg' %}{% endif %}" alt="Profile" class="avatar">
+            <div class="profile-info">
+                <h2 class="mb-1">{% if profile.first_name %}{{ profile.first_name }}{% if profile.last_name %} {{ profile.last_name }}{% endif %}{% endif %}</h2>
+                {% if profile.user.is_superuser %}
+                    <p class="text-muted mb-0 admin">Admin</p>
+                {% endif %}
+                <p class="text-muted mb-0">
+                    {% if profile.subject == "University Counsellor" %}
+                        {{ profile.subject }}
+                    {% elif profile.subject %}
+                        Teacher of {{ profile.subject }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="d-flex gap-2 connection_buttons" style="margin-left: 70%;">
+                <div class="connection-display">
+                    <div class="connection-number">{{ num_of_connections }}</div>
+                    <div class="connection-title text-muted">Connections</div>
+                </div>
+            </div>
+        </div>
 
-  <div class="d-flex gap-2 connection_buttons">
-    <div class="connection-display"><div class="connection-number">{{ num_of_connections }}</div><div class="connection-title text-muted">Connections</div></div>
-    <form method="POST">
-    {% csrf_token %}
-    {% if profile.user != user %}
-    {% if view_type == "alumni" %}
-    <button class="btn connect btn-sm">
-        {% if connection is None %}
-            Connect
-        {% elif connection.accepted == True %}
-            Connected
-        {% else %}
-            Connect Request sent
-        {% endif %}
-    </button>
-    {% elif view_type == "mentor" %}
-    {% if mentor_exists %}
-    <button class="btn request_mentor btn-sm">
-      {% if mentor_match is None %}
-        Request mentor
-      {% elif mentor_match.accepted == True %}
-        Mentor Connected
-      {% else %}
-        Mentor Request Sent
-      {% endif %}
-    </button>
+        <div class="d-flex gap-2 connection_buttons">
+            <form method="POST">
+                {% csrf_token %}
+                {% if profile.user != user %}
+                    {% if view_type == "alumni" %}
+                        <button class="btn connect btn-sm">
+                            {% if connection is None %}
+                                Connect
+                            {% elif connection.accepted == True %}
+                                Connected
+                            {% else %}
+                                Connect Request sent
+                            {% endif %}
+                        </button>
+                    {% elif view_type == "mentor" %}
+                        {% if mentor_exists %}
+                            <button class="btn request_mentor btn-sm">
+                                {% if mentor_match is None %}
+                                    Request mentor
+                                {% elif mentor_match.accepted == True %}
+                                    Mentor Connected
+                                {% else %}
+                                    Mentor Request Sent
+                                {% endif %}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="section" data-aos="fade-up" data-aos-delay="100">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">First name</div>
+                            <div class="fs-6">
+                                {% if profile.first_name %}
+                                    {{ profile.first_name }}
+                                {% else %}
+                                    <span class="text-muted small">Please Enter your First name</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Last Name</div>
+                            <div class="fs-6">
+                                {% if profile.last_name %}
+                                    {{ profile.last_name }}
+                                {% else %}
+                                    <span class="text-muted small">Please Enter your Last name</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="profile-information">
+                        <div class="bg-light p-3 rounded">
+                            <div class="text-muted small fw-semibold">Subject</div>
+                            <div class="fs-6">
+                                {% if profile.subject %}
+                                    {{ profile.subject }}
+                                {% else %}
+                                    <span class="text-muted small">Please Enter your Subject</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
-    {% endif %}
-    {%endif%}
-    </form>
-  </div>
+
 </div>
 
-
-
-  <div class="section" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-header d-flex justify-content-between align-items-center mb-3">
-      <h3>Personal Information</h3>
-    </div>
-    <div class="row g-3">
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">First name</div>
-            <div class="fs-6">
-                {% if profile.first_name %}
-                    {{ profile.first_name }}
-                {% else %}
-                    No first name added yet
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Last Name</div>
-            <div class="fs-6">
-                {% if profile.last_name %}
-                    {{ profile.last_name }}
-                {% else %}
-                    No last name added yet
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Date of Birth</div>
-            <div class="fs-6">
-                {% if profile.date_of_birth %}
-                    {{ profile.date_of_birth }}
-                {% else %}
-                    No Date of Birth added yet
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Email Address</div>
-            <div class="fs-6">
-                {% if profile.user.email %}
-                    {{ profile.user.email }}
-                {% else %}
-                    No email adress added yet 
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="section" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-header d-flex justify-content-between align-items-center mb-3">
-      <h3>Bio Section</h3>
-    </div>
-    <div class="row g-3">
-      <div class="col-md-12">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">About Me</div>
-            <div class="fs-6">
-                {% if profile.about_me %}
-                    {{ profile.about_me }}
-                {% else %}
-                    No Bio added yet
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-header d-flex justify-content-between align-items-center mb-3">
-      <h3>Education</h3>
-    </div>
-    <div class="row g-3">
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">School Graduation Year</div>
-            <div class="fs-6">
-                {% if profile.graduation_year %}
-                    {{ profile.graduation_year }}
-                {% else %}
-                    <span class="text-muted small">Please Enter your school graduation year</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Education Level</div>
-            <div class="fs-6">
-                {% if profile.education_level %}
-                    {{ profile.education_level }}
-                {% else %}
-                    <span class="text-muted small">Please enter your education level. e.g: Sixth Form, Bachelor's ...</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      {% if profile.education_level != "Still in School" %} 
-      
-      <div class="col-md-4">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">University</div>
-            <div class="fs-6">
-                {% if profile.university %}
-                    {{ profile.university }}
-                {% else %}
-                    <span class="text-muted small">Please enter your university</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">University Location</div>
-            <div class="fs-6">
-                {% if profile.university_location %}
-                    {{ profile.university_location }}
-                {% else %}
-                    <span class="text-muted small">Please enter your university location</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">University Major</div>
-            <div class="fs-6">
-                {% if profile.major_uni %}
-                    {{ profile.major_uni }}
-                {% else %}
-                    <span class="text-muted small">Please enter your university major</span>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-
-    </div>
-  </div>
-
-
-
-  <div class="section" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-header d-flex justify-content-between align-items-center mb-3">
-      <h3>Skills</h3>
-    </div>
-    <div class="row g-3">
-      {% for skill in profile.skills.all %}
-      <div class="col-md-4">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="fs-6">
-              {{ skill.skill }}
-            </div>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="col-md-4">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="fs-6">
-              No skills added yet
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-
-
-
-{% if profile.has_job and profile.employer and profile.role %}
-  <div class="section" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-header d-flex justify-content-between align-items-center mb-3">
-      <h3>Career</h3>
-    </div>
-    <div id="job_section">
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Role</div>
-            <div class="fs-6">
-              {% if profile.role %}
-              {{ profile.role }}
-              {% else %}
-              No role added yet
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="profile-information">
-          <div class="bg-light p-3 rounded">
-            <div class="text-muted small fw-semibold">Employer</div>
-            <div class="fs-6">
-              {% if profile.employer %}
-              {{ profile.employer }}
-              {% else %}
-                No employer added yet
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-  <script>
+<script>
     AOS.init({
-      duration: 700,
-      once: true,
+        duration: 700,
+        once: true,
     });
 
     var csrfToken = `{{ csrf_token }}`
     var profile_id = `{{ profile.id }}`
     var connect = `{% url 'connect' %}`
-
     var mentor_match = `{% url 'mentor_match' %}`
     var id = `{{ profile.user.id }}`
-  </script>
+</script>
 
- <script src="{% static 'profiles/javascript/connections.js' %}"></script>
+<script src="{% static 'profiles/javascript/connections.js' %}"></script>
 
-  {% endblock %}
+{% endblock %}

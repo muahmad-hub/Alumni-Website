@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static 'directory/css/mentor_directory.css' %}" rel="stylesheet">
+    <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+
+{% block title %}
+    Teacher Directory
+{% endblock %}
+
+{% block main %}
+
+
+<div class="mentors"> 
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4 section-header" data-aos="fade-up" data-aos-delay="200">
+      <h3>Our Teachers</h3>
+      <p class="lead">Connect with our amazing Teachers</p>
+    </div>
+
+    <div class="search-container text-center mb-5" data-aos="fade-up" data-aos-delay="300">
+      
+      <div class="search-flex-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name">
+
+          <select class="form-control select-filter uni" id="teacher">
+          <option default>Subject</option>
+          {% for subject in subjects %}
+              <option>{{ subject.subject }}</option>
+          {% endfor %}
+          </select>
+      </div>
+    </div>
+    <div id="alumni-container" class="row g-4"></div>
+  </div>
+</div>
+
+<script>
+  SearchURL = "{% url 'teacher_search_directory' %}"
+</script>
+<script src="{% static 'directory/javascript/teacher_directory.js' %}"></script>
+{% endblock %}

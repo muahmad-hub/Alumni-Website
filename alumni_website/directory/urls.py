@@ -7,4 +7,6 @@ urlpatterns = [
     path("search_directory/", views.search_directory, name="search_directory"),
     path("mentor_directory/", views.mentor_directory, name="mentor_directory"),
     path("mentor_search_directory", views.mentor_search_directory, name="mentor_search_directory"),
+    path("teacher_directory/", views.teacher_directory, name="teacher_directory"),
+    path("teacher_search_directory", views.teacher_search_directory, name="teacher_search_directory"),
 ]

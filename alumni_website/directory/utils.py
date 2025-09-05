@@ -8,3 +8,10 @@ def get_directory_filters():
         "years": years,
         "university": universities,
     }
+
+def get_teacher_diretory_filters():
+    subjects = Profile.objects.filter(subject__isnull=False).values("subject").distinct()
+
+    return{
+        "subjects": subjects,
+    }

@@ -41,7 +41,32 @@
             </div>
             </div>
             <div class="input-field">
-            <input type="number" class="form-control" id="graduation-year" name="graduation-year" placeholder="School Graduation Year" min="2021" max="2030" required/>
+                <label class="form-check-label">Are you a teacher?</label>
+                <input type="checkbox" id="isTeacher" name="isTeacher" required />
+            </div>
+            <div class="student_form">
+                <div class="input-field">
+                <input type="number" class="form-control" id="graduation-year" name="graduation-year" placeholder="School Graduation Year" min="2021" max="2030" required/>
+                </div>
+            </div>
+            <div class="teacher_form">
+                <div class="input-field">
+                    <select class="form-control" name="subject" id="subject" required>
+                        <option value="" disabled selected>Select a subject</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Design and Technology">Design and Technology</option>
+                        <option value="English">English</option>
+                        <option value="University Counsellor">University Counsellor</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Business">Business</option>
+                        <option value="IT">IT</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                    </select>
+                </div>
             </div>
             <div class="input-field">
                 <input type="email" placeholder="Email" id="emailInput" required name="email" required/>
@@ -69,4 +94,8 @@
     </div>
 
 
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'authentication/javascript/sign_up.js' %}"></script>
 {% endblock %}
