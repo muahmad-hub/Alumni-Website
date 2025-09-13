@@ -101,7 +101,7 @@ def activate_account(request, token):
 def login_view(request):
     if request.method == "POST":
         # Login is limited to 5 attempts in 15 minutes
-        if is_rate_limited(request, 'login', limit=50000, window=900):
+        if is_rate_limited(request, 'login', limit=5, window=900):
             messages.error(request, "Too many login attempts. Please try again later.")
             return render(request, "authentication/login.html")
 
@@ -109,7 +109,7 @@ def login_view(request):
         password = request.POST["password"]
         
         try:
-            user_obj = Users.objects.get(email=email)
+            user_obj = Users.objects.filter(email=email).first()
             user = authenticate(request, username=user_obj.username, password=password)
         except Users.DoesNotExist:
             user = None
@@ -135,8 +135,7 @@ def login_view(request):
 # View for handling sign up process
 def sign_up(request):
     if request.method == "POST":
-        # Attempts limited to 2 in 1 hour
-        if is_rate_limited(request, 'signup', limit=20000, window=3600):
+        if is_rate_limited(request, 'signup', limit=2, window=3600):
             messages.error(request, "Too many signup attempts. Please try again later.")
             return render(request, "authentication/sign_up.html")
 
@@ -146,12 +145,20 @@ def sign_up(request):
         first_name = request.POST["first-name"]
         last_name = request.POST["last-name"]
 
-        is_teacher = request.POST["isTeacher"]
-
-        if not is_teacher:
-            graduation_year = request.POST["graduation-year"]
+        is_teacher = request.POST.get("isTeacher", False)
+        
+        if is_teacher:
+            subject = request.POST.get("subject", "")
+            if not subject:
+                messages.error(request, "Subject is required for teachers")
+                return render(request, "authentication/sign_up.html")
+            graduation_year = None
         else:
-            subject = request.POST["subject"]
+            graduation_year = request.POST.get("graduation-year", "")
+            if not graduation_year:
+                messages.error(request, "Graduation year is required for students")
+                return render(request, "authentication/sign_up.html")
+            subject = None
         
         if password != confirmation:
             messages.error(request, "Passwords must match")
@@ -178,39 +185,27 @@ def sign_up(request):
                 )
             return render(request, "authentication/login.html")
 
-
         try:
-            if is_teacher:           
-                user = Users.objects.create_user(
-                    email=email, 
-                    username=email, 
-                    password=password,
-                    is_active=False,
-                    is_teacher = True,
-                )
-                user.save()
-                
-                profile = Profile.objects.create(user=user)
-                profile.first_name = first_name
-                profile.last_name = last_name
+            user = Users.objects.create_user(
+                email=email, 
+                username=email, 
+                password=password,
+                is_active=False,
+                is_teacher=bool(is_teacher)
+            )
+            user.save()
+            
+            profile = Profile.objects.create(user=user)
+            profile.first_name = first_name
+            profile.last_name = last_name
+            
+            if is_teacher:
                 profile.subject = subject
-                profile.save()
             else:
-                user = Users.objects.create_user(
-                    email=email, 
-                    username=email, 
-                    password=password,
-                    is_active=False
-                )
-                user.save()
-                
-                profile = Profile.objects.create(user=user)
-                profile.first_name = first_name
-                profile.last_name = last_name
                 profile.graduation_year = graduation_year
-                profile.save()
+                
+            profile.save()
 
-            # Use asynchrnous email sending
             if send_activation_email_asynchronous(user, request):
                 messages.success(
                     request,
@@ -218,7 +213,10 @@ def sign_up(request):
                     "⚠️ Important: It may be in your SPAM/Junk folder."
                 )
             else:
-                messages.warning(request, "Account created but couldn't send activation email. Please contact oryxalumni@gmail.com for manual activation.")
+                messages.warning(
+                    request, 
+                    "Account created but couldn't send activation email. Please contact oryxalumni@gmail.com for manual activation."
+                )
             
             return render(request, "authentication/login.html")
             
