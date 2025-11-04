@@ -6,6 +6,7 @@ from django.utils.crypto import get_random_string
 from django.core.cache import cache
 from django.urls import reverse
 from django.template.loader import render_to_string
+import os
 
 def send_activation_email_asynchronous(user, request):
     try:
@@ -41,13 +42,15 @@ def send_activation_email_asynchronous(user, request):
 def _send_email_thread(subject, message, html_message, recipient_email):
     try:
         sendgrid_backend = EmailBackend(
-            host=settings.SENDGRID_SMTP_HOST,
-            port=settings.SENDGRID_SMTP_PORT,
-            username=settings.SENDGRID_SMTP_USER,
-            password=settings.SENDGRID_SMTP_PASSWORD,
+            host='smtp.sendgrid.net',
+            port=587,
+            username='apikey',
+            password=os.environ.get("API_KEY_SENDGRID"),
             use_tls=True,
-            timeout=settings.SENDGRID_EMAIL_TIMEOUT
+            timeout=180
         )
+
+        print("Sendgrid backend configured properly")
 
         send_mail(
             subject,
