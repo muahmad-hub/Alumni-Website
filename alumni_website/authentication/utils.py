@@ -30,7 +30,7 @@ def send_activation_email_asynchronous(user, request):
 
         text_message = f"Hi {user.email}, please activate your account: {activation_link}"
 
-        logger.info("Starting activation email thread for %s", getattr(user, 'email', 'unknown'))
+        print(f"Starting activation email thread for {getattr(user, 'email', 'unknown')}")
         email_thread = threading.Thread(
             target=_send_email_thread,
             args=(subject, text_message, html_message, user.email)
@@ -40,7 +40,7 @@ def send_activation_email_asynchronous(user, request):
 
         return True
     except Exception as e:
-        print("Error in send_activation_email_asynchronous for %s: %s", getattr(user, 'email', 'unknown'), e)
+        print(f"Error in send_activation_email_asynchronous for {getattr(user, 'email', 'unknown')}: {e}")
         return False
 
 
@@ -49,7 +49,7 @@ def _send_via_sendgrid_api(subject, text_message, html_message, recipient_email)
         from sendgrid import SendGridAPIClient
         from sendgrid.helpers.mail import Mail
     except Exception as imp_e:
-        print("sendgrid package import failed: %s", imp_e)
+        print(f"sendgrid package import failed: {imp_e}")
         raise
 
     sg_api_key = os.environ.get('API_KEY_SENDGRID')
@@ -65,48 +65,43 @@ def _send_via_sendgrid_api(subject, text_message, html_message, recipient_email)
 
     sg = SendGridAPIClient(sg_api_key)
     response = sg.send(mail)
-    print("SendGrid Web API send status=%s for %s", getattr(response, 'status_code', None), recipient_email)
+    print(f"SendGrid Web API send status={getattr(response, 'status_code', None)} for {recipient_email}")
     return response
 
 
 def _send_email_thread(subject, message, html_message, recipient_email):
     try:
-        logger.info("Attempting SendGrid Web API send to %s", recipient_email)
+        print(f"Attempting SendGrid Web API send to {recipient_email}")
         resp = _send_via_sendgrid_api(subject, message, html_message, recipient_email)
-        logger.info("SendGrid Web API send succeeded for %s (status=%s)", recipient_email, getattr(resp, 'status_code', None))
+        print(f"SendGrid Web API send succeeded for {recipient_email} (status={getattr(resp, 'status_code', None)})")
         return
     except Exception as api_exc:
         tb_api = traceback.format_exc()
-        print("SendGrid Web API send failed for %s: %s\nTraceback:\n%s", recipient_email, api_exc, tb_api)
-
+        print(f"SendGrid Web API send failed for {recipient_email}: {api_exc}\nTraceback:\n{tb_api}")
     try:
-        print("Configuring SendGrid SMTP backend for recipient=%s host=%s port=%s timeout=%s",
-                    recipient_email,
-                    os.environ.get('SENDGRID_SMTP_HOST', 'smtp.sendgrid.net'),
-                    os.environ.get('SENDGRID_SMTP_PORT', 587),
-                    os.environ.get('SENDGRID_EMAIL_TIMEOUT', 180))
+        print(f"Configuring Gmail SMTP backend for recipient={recipient_email} host={settings.EMAIL_HOST} port={settings.EMAIL_PORT} timeout={getattr(settings, 'EMAIL_TIMEOUT', None)}")
 
-        sendgrid_backend = EmailBackend(
-            host=os.environ.get('SENDGRID_SMTP_HOST', 'smtp.sendgrid.net'),
-            port=int(os.environ.get('SENDGRID_SMTP_PORT', 587)),
-            username=os.environ.get('SENDGRID_SMTP_USER', 'apikey'),
-            password=os.environ.get('API_KEY_SENDGRID'),
-            use_tls=True,
-            timeout=int(os.environ.get('SENDGRID_EMAIL_TIMEOUT', 180))
+        gmail_backend = EmailBackend(
+            host=getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com'),
+            port=getattr(settings, 'EMAIL_PORT', 587),
+            username=getattr(settings, 'EMAIL_HOST_USER', None),
+            password=getattr(settings, 'EMAIL_HOST_PASSWORD', None),
+            use_tls=getattr(settings, 'EMAIL_USE_TLS', True),
+            timeout=getattr(settings, 'EMAIL_TIMEOUT', 30)
         )
 
-        print("Attempting to send activation email to %s via SendGrid SMTP", recipient_email)
+        print(f"Attempting to send activation email to {recipient_email} via Gmail SMTP")
         send_mail(
             subject,
             message,
-            settings.SENDGRID_FROM_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [recipient_email],
             html_message=html_message,
             fail_silently=False,
-            connection=sendgrid_backend,
+            connection=gmail_backend,
         )
-        print("Email sent successfully to %s via SMTP", recipient_email)
-    except Exception as smtp_exc:
-        tb_smtp = traceback.format_exc()
-        print("SMTP send failed for %s: %s\nTraceback:\n%s", recipient_email, smtp_exc, tb_smtp)
+        print(f"Email sent successfully to {recipient_email} via Gmail SMTP")
+    except Exception as gmail_exc:
+        tb_gmail = traceback.format_exc()
+        print(f"Gmail SMTP send failed for {recipient_email}: {gmail_exc}\nTraceback:\n{tb_gmail}")
         return

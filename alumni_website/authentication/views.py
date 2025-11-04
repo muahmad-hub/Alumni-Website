@@ -135,7 +135,7 @@ def login_view(request):
 # View for handling sign up process
 def sign_up(request):
     if request.method == "POST":
-        if is_rate_limited(request, 'signup', limit=2, window=3600):
+        if is_rate_limited(request, 'signup', limit=200, window=3600):
             messages.error(request, "Too many signup attempts. Please try again later.")
             return render(request, "authentication/sign_up.html")
 
