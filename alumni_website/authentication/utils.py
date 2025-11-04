@@ -1,4 +1,5 @@
 import threading
+import traceback
 from django.core.mail import send_mail
 from django.core.mail.backends.smtp import EmailBackend
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.core.cache import cache
 from django.urls import reverse
 from django.template.loader import render_to_string
 import os
+
 
 def send_activation_email_asynchronous(user, request):
     try:
@@ -27,6 +29,7 @@ def send_activation_email_asynchronous(user, request):
         
         text_message = f"Hi {user.email}, please activate your account: {activation_link}"
         
+        print("Starting activation email thread for %s", getattr(user, 'email', 'unknown'))
         email_thread = threading.Thread(
             target=_send_email_thread,
             args=(subject, text_message, html_message, user.email)
@@ -36,22 +39,25 @@ def send_activation_email_asynchronous(user, request):
         
         return True
     except Exception as e:
-        print(f"Error in send_activation_email_asynchronous: {e}")
+        print("Error in send_activation_email_asynchronous for %s: %s", getattr(user, 'email', 'unknown'), e)
         return False
     
 def _send_email_thread(subject, message, html_message, recipient_email):
     try:
+        print("Configuring SendGrid SMTP backend for recipient=%s host=%s port=%s timeout=%s",
+                    recipient_email, os.environ.get('SENDGRID_SMTP_HOST', 'smtp.sendgrid.net'),
+                    os.environ.get('SENDGRID_SMTP_PORT', 587), os.environ.get('SENDGRID_EMAIL_TIMEOUT', 180))
+
         sendgrid_backend = EmailBackend(
-            host='smtp.sendgrid.net',
-            port=587,
-            username='apikey',
-            password=os.environ.get("API_KEY_SENDGRID"),
+            host=os.environ.get('SENDGRID_SMTP_HOST', 'smtp.sendgrid.net'),
+            port=int(os.environ.get('SENDGRID_SMTP_PORT', 587)),
+            username=os.environ.get('SENDGRID_SMTP_USER', 'apikey'),
+            password=os.environ.get('API_KEY_SENDGRID'),
             use_tls=True,
-            timeout=180
+            timeout=int(os.environ.get('SENDGRID_EMAIL_TIMEOUT', 180))
         )
 
-        print("Sendgrid backend configured properly")
-
+        print("Attempting to send activation email to %s via SendGrid SMTP", recipient_email)
         send_mail(
             subject,
             message,
@@ -61,6 +67,7 @@ def _send_email_thread(subject, message, html_message, recipient_email):
             fail_silently=False,
             connection=sendgrid_backend,
         )
-        print(f"Email sent successfully to {recipient_email}")
+        print("Email sent successfully to %s", recipient_email)
     except Exception as e:
-        print(f"Error sending email: {e}")
+        tb = traceback.format_exc()
+        print("Error sending email to %s: %s\nTraceback:\n%s", recipient_email, e, tb)
