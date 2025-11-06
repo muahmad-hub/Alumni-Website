@@ -863,3 +863,17 @@ self.group = await database_sync_to_async(get_object_or_404)(
 - I got reported by people that the weren't receiving emails and after looking into it I found out that Render had just recently blocked all outbound SMTPs for the free instance I was using.
 - I had also recently switched my sendgrid account and it wasn't working properly either, so the website wasn't able to send any emails of any kind (which also blocked sign ups)
 - Currently, I am trying to send all the emails through sendgrid. This works in development but need to test in production
+### Operational Error
+- Django app on Render was constantly throwing `OperationalError` and `connection refused` errors when connecting to Supabase.
+#### Main Cause
+- I was using Session pooler initially for the Supabase connection. This was causing too many persistents DB connections.
+- I also had 5 Uptime robots, creating unecesarry DB connections
+#### Solution 
+- I swithed form Session pooler to Transaction pooler for better connection management
+- I also added this to Django settings to ensure that broken connection are refreshed
+```python
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+```
+- I reduced number of uptime robots
+#### Result
+- As of now the app has not produced any 500 errors and is looking stable, but will need to monitor for some time to ensure this solves the problem

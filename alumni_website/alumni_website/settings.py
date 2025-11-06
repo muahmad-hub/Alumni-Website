@@ -159,6 +159,8 @@ elif ENVIRONMENT == "PRODUCTION":
             ssl_require=True,
         )
     }
+    DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+
 
 #Adding bootsraps for messages
 
