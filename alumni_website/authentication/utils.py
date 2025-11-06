@@ -45,51 +45,22 @@ def send_activation_email_asynchronous(user, request):
 
 
 def _send_via_sendgrid_api(subject, text_message, html_message, recipient_email):
-    try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-    except Exception as imp_e:
-        print(f"sendgrid package import failed: {imp_e}")
-        raise
-
-    sg_api_key = os.environ.get('API_KEY_SENDGRID')
-    if not sg_api_key:
-        raise RuntimeError('SendGrid API key missing: set API_KEY_SENDGRID in environment')
-
-    mail = Mail(
-        from_email=settings.SENDGRID_FROM_EMAIL,
-        to_emails=recipient_email,
-        subject=subject,
-        html_content=html_message or text_message,
-    )
-
-    sg = SendGridAPIClient(sg_api_key)
-    response = sg.send(mail)
-    print(f"SendGrid Web API send status={getattr(response, 'status_code', None)} for {recipient_email}")
-    return response
+    raise RuntimeError("Direct sendgrid package usage disabled; use Django EMAIL_BACKEND")
 
 
 def _send_email_thread(subject, message, html_message, recipient_email):
     try:
-        print(f"Attempting SendGrid Web API send to {recipient_email}")
-        resp = _send_via_sendgrid_api(subject, message, html_message, recipient_email)
-        print(f"SendGrid Web API send succeeded for {recipient_email} (status={getattr(resp, 'status_code', None)})")
+        print(f"Attempting to send email to {recipient_email} via Django EMAIL_BACKEND")
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        print(f"Email sent successfully to {recipient_email} via Django EMAIL_BACKEND")
+    except Exception as exc:
+        tb = traceback.format_exc()
+        print(f"Django email send failed for {recipient_email}: {exc}\nTraceback:\n{tb}")
         return
-    except Exception as api_exc:
-        tb_api = traceback.format_exc()
-        print(f"SendGrid Web API send failed for {recipient_email}: {api_exc}\nTraceback:\n{tb_api}")
-        try:
-            print(f"Attempting to send email to {recipient_email} via Django EMAIL_BACKEND")
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [recipient_email],
-                html_message=html_message,
-                fail_silently=False,
-            )
-            print(f"Email sent successfully to {recipient_email} via Django EMAIL_BACKEND")
-        except Exception as exc:
-            tb = traceback.format_exc()
-            print(f"Django email send failed for {recipient_email}: {exc}\nTraceback:\n{tb}")
-            return
