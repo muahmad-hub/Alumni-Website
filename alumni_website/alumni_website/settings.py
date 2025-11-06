@@ -235,10 +235,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'core.sendgrid_email_backend.SendGridAPIBackend'
 
-# Default from address (used by the backend if configured)
 DEFAULT_FROM_EMAIL = formataddr((
-    os.getenv("EMAIL_FROM_NAME") or os.environ.get('SENDGRID_FROM_EMAIL_NAME') or '',
-    os.getenv("EMAIL_FROM_ADDRESS") or os.environ.get('SENDGRID_FROM_EMAIL_ADDRESS') or 'noreply@oryxalumni.com'
+    os.getenv("SENDGRID_FROM_EMAIL_NAME") or os.getenv("EMAIL_FROM_NAME") or '',
+    os.getenv("SENDGRID_FROM_EMAIL_ADDRESS") or os.getenv("EMAIL_FROM_ADDRESS") or 'noreply@oryxalumni.com'
 ))
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
@@ -248,9 +247,14 @@ EMAIL_HOST_USER = os.getenv("EMAIL_FROM_ADDRESS")
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 30))
 
-SENDGRID_API_KEY = os.environ.get('API_KEY_SENDGRID')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY') or os.environ.get('API_KEY_SENDGRID')
 SENDGRID_API_URL = os.environ.get('SENDGRID_API_URL', 'https://api.sendgrid.com/v3/mail/send')
 SENDGRID_API_TIMEOUT = int(os.environ.get('SENDGRID_API_TIMEOUT', 30))
+
+SENDGRID_FROM_EMAIL = formataddr((
+    os.environ.get('SENDGRID_FROM_EMAIL_NAME') or os.getenv('EMAIL_FROM_NAME') or '',
+    os.environ.get('SENDGRID_FROM_EMAIL_ADDRESS') or os.getenv('EMAIL_FROM_ADDRESS') or 'noreply@oryxalumni.com'
+))
 
 CACHES = {
     'default': {

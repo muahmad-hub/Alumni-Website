@@ -1,6 +1,7 @@
 import base64
 import json
 from typing import List
+from email.utils import parseaddr
 
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import EmailMessage
@@ -64,11 +65,16 @@ class SendGridAPIBackend(BaseEmailBackend):
             }
         ]
 
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SENDGRID_FROM_EMAIL', None)
+        raw_from = getattr(settings, 'SENDGRID_FROM_EMAIL', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or ''
+        name, email_address = parseaddr(raw_from)
+
+        from_field = {'email': email_address}
+        if name:
+            from_field['name'] = name
 
         payload = {
             'personalizations': personalizations,
-            'from': {'email': from_email},
+            'from': from_field,
             'content': content,
         }
 
