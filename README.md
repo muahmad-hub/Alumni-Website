@@ -1,4 +1,5 @@
 # Alumni Website - AI-Powered Networking Platform
+>For more details: [Technical Details](docs/technical_details.md) and [Dev logs](docs/dev_logs.md)
 ## Table of Contents
 - [Quick Overview](#quick-overview)
 - [Key Features](#key-features)

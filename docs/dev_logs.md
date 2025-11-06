@@ -857,3 +857,9 @@ self.group = await database_sync_to_async(get_object_or_404)(
 - I tried reducing the Dataset used to train the skill classifier from ~500 fields to ~300 fields by removing two categories, leaving me with 5 skill categories.
 - Surprisingly, this seemed to improve the F1 score from 66% to 71%. I think this is because categorizing skills into categories is quite complex because a single skill can overlap in many categories like "Technical Writing" could overlap with Communication, Technical, and Academic skills. Plus, adding more categories seems to confuse the system.
 - So as of now my final F1 score is 87% for goals and 71% for skills.
+
+## Date: November 6
+### Email Error
+- I got reported by people that the weren't receiving emails and after looking into it I found out that Render had just recently blocked all outbound SMTPs for the free instance I was using.
+- I had also recently switched my sendgrid account and it wasn't working properly either, so the website wasn't able to send any emails of any kind (which also blocked sign ups)
+- Currently, I am trying to send all the emails through sendgrid. This works in development but need to test in production

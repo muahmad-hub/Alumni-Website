@@ -78,30 +78,18 @@ def _send_email_thread(subject, message, html_message, recipient_email):
     except Exception as api_exc:
         tb_api = traceback.format_exc()
         print(f"SendGrid Web API send failed for {recipient_email}: {api_exc}\nTraceback:\n{tb_api}")
-    try:
-        print(f"Configuring Gmail SMTP backend for recipient={recipient_email} host={settings.EMAIL_HOST} port={settings.EMAIL_PORT} timeout={getattr(settings, 'EMAIL_TIMEOUT', None)}")
-
-        gmail_backend = EmailBackend(
-            host=getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com'),
-            port=getattr(settings, 'EMAIL_PORT', 587),
-            username=getattr(settings, 'EMAIL_HOST_USER', None),
-            password=getattr(settings, 'EMAIL_HOST_PASSWORD', None),
-            use_tls=getattr(settings, 'EMAIL_USE_TLS', True),
-            timeout=getattr(settings, 'EMAIL_TIMEOUT', 30)
-        )
-
-        print(f"Attempting to send activation email to {recipient_email} via Gmail SMTP")
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient_email],
-            html_message=html_message,
-            fail_silently=False,
-            connection=gmail_backend,
-        )
-        print(f"Email sent successfully to {recipient_email} via Gmail SMTP")
-    except Exception as gmail_exc:
-        tb_gmail = traceback.format_exc()
-        print(f"Gmail SMTP send failed for {recipient_email}: {gmail_exc}\nTraceback:\n{tb_gmail}")
-        return
+        try:
+            print(f"Attempting to send email to {recipient_email} via Django EMAIL_BACKEND")
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [recipient_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            print(f"Email sent successfully to {recipient_email} via Django EMAIL_BACKEND")
+        except Exception as exc:
+            tb = traceback.format_exc()
+            print(f"Django email send failed for {recipient_email}: {exc}\nTraceback:\n{tb}")
+            return

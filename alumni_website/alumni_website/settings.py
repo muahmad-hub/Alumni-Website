@@ -233,29 +233,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@oryxalumni.com')
 
 
-# Default Gmail SMTP (for notifications)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_BACKEND = 'core.sendgrid_email_backend.SendGridAPIBackend'
+
+# Default from address (used by the backend if configured)
+DEFAULT_FROM_EMAIL = formataddr((
+    os.getenv("EMAIL_FROM_NAME") or os.environ.get('SENDGRID_FROM_EMAIL_NAME') or '',
+    os.getenv("EMAIL_FROM_ADDRESS") or os.environ.get('SENDGRID_FROM_EMAIL_ADDRESS') or 'noreply@oryxalumni.com'
+))
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_FROM_ADDRESS")
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = formataddr((
-    os.getenv("EMAIL_FROM_NAME"),
-    os.getenv("EMAIL_FROM_ADDRESS")
-))
-EMAIL_TIMEOUT = 30
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 30))
 
-# SendGrid SMTP (for authentication emails)
-SENDGRID_SMTP_HOST = 'smtp.sendgrid.net'
-SENDGRID_SMTP_PORT = 587
-SENDGRID_SMTP_USER = 'apikey'
-SENDGRID_SMTP_PASSWORD = os.environ.get("API_KEY_SENDGRID")
-SENDGRID_FROM_EMAIL = formataddr((
-    os.environ.get("SENDGRID_FROM_EMAIL_NAME"),
-    os.environ.get("SENDGRID_FROM_EMAIL_ADDRESS")
-))
-SENDGRID_EMAIL_TIMEOUT = 60
+SENDGRID_API_KEY = os.environ.get('API_KEY_SENDGRID')
+SENDGRID_API_URL = os.environ.get('SENDGRID_API_URL', 'https://api.sendgrid.com/v3/mail/send')
+SENDGRID_API_TIMEOUT = int(os.environ.get('SENDGRID_API_TIMEOUT', 30))
 
 CACHES = {
     'default': {
