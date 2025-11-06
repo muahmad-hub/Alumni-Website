@@ -4,7 +4,7 @@ from profiles.models import Profile
 from django.contrib import messages
 from django.shortcuts import render
 from django.http import JsonResponse
-
+from django.db import connection
 
 # View to handle homepage view
 # Alerts users if important information in profile hasn't been added
@@ -29,3 +29,12 @@ def home(request):
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
+
+def db_health_check(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1;")
+        return JsonResponse({"db": "ok"})
+    except Exception as e:
+        return JsonResponse({"db": "error", "detail": str(e)}, status=500)
+
